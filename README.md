@@ -3,6 +3,7 @@ https://github.com/mimilib/hexapod-robot-stm32/blob/main/%E5%9F%BA%E4%BA%8E%E7%A
 
 # 演示视频
 https://www.bilibili.com/video/BV17b411F7X8
+![image](https://user-images.githubusercontent.com/88232613/129832474-5bf86442-a4d7-40c6-bcee-d166429032cf.png)
 
 # 主要代码清单
 
