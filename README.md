@@ -1,5 +1,5 @@
 ![image](https://user-images.githubusercontent.com/88232613/134380951-979ff163-ba17-4e2c-a9e9-869cf6a3d5dc.png)
-  # 来颗##Star##求求了
+  # 来颗Star求求了
 ![image](https://user-images.githubusercontent.com/88232613/134380958-f5b0dd5b-09b2-4cdc-812f-69e3ab85aa36.png)
 
 # 论文
