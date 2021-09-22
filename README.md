@@ -1,3 +1,5 @@
+# 来颗\star求求了
+
 # 论文
 [基于等效连杆模型的六足机器人行进姿态闭环控制_李昂_吉林大学学报工学版](https://github.com/mimilib/hexapod-robot-stm32/blob/main/%E5%9F%BA%E4%BA%8E%E7%AD%89%E6%95%88%E8%BF%9E%E6%9D%86%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%85%AD%E8%B6%B3%E6%9C%BA%E5%99%A8%E4%BA%BA%E8%A1%8C%E8%BF%9B%E5%A7%BF%E6%80%81%E9%97%AD%E7%8E%AF%E6%8E%A7%E5%88%B6_%E6%9D%8E%E6%98%82.pdf)
 
