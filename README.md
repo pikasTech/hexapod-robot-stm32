@@ -5,6 +5,7 @@
 </div>
 
 <img align="right" src="https://emojis.slackmojis.com/emojis/images/1563480763/5999/meow_party.gif" width="60" height="60"/>
+<img align="left" src="https://emojis.slackmojis.com/emojis/images/1563480763/5999/meow_party.gif" width="60" height="60"/>
 
 # 来颗Star求求了
 
