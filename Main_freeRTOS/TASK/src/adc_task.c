@@ -1,47 +1,41 @@
-#include "adc_task.h" 
-#include "current.h"
+#include "adc_task.h"
 #include "FreeRTOS.h"
-#include "task.h"
-#include "adc.h"
 #include "action_task.h"
+#include "adc.h"
+#include "current.h"
+#include "task.h"
 extern int current_single;
 extern int test_point[];
 extern u16 adcx;
 extern __IO uint16_t ADC_ConvertedValue[];
-int valuel_max_normal[6]={118,2045,891,1118,2947,706};
-u8  flag_action_normal[6]={0};
-int value1_max[6]={0};
-//adcÈÎÎñº¯Êý
-void adc_task(void *pvParameters)
-{
-	
-	while(1)
-		{	
-			int j;		
-			int i;
-			int temp_val1=0;
-			for(i=0;i<6;i++)
-				{
-				for(j=0;j<30;j++)
-								{
-									//temp_val1+= //Ä³¸öÍ¨µÀµÄµçÑ¹Öµ=DMAÍ¨µÀÄÃµ½µÄÄÇ¸öÊý×éÀïÃæµÄÖµ¾ÍÊÇµçÑ¹Öµ
-										temp_val1+=ADC_ConvertedValue[i];
-										vTaskDelay(1);
-								}
-										test_point[i]=temp_val1;											
-										if(value1_max[i]<=temp_val1)
-									  value1_max[i]=temp_val1;
-										temp_val1=0;
+int valuel_max_normal[6] = {118, 2045, 891, 1118, 2947, 706};
+u8 flag_action_normal[6] = {0};
+int value1_max[6] = {0};
+// adcï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+void adc_task(void* pvParameters) {
+    while (1) {
+        int j;
+        int i;
+        int temp_val1 = 0;
+        for (i = 0; i < 6; i++) {
+            for (j = 0; j < 30; j++) {
+                // temp_val1+= //Ä³ï¿½ï¿½Í¨ï¿½ï¿½ï¿½Äµï¿½Ñ¹Öµ=DMAÍ¨ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ç¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½Çµï¿½Ñ¹Öµ
+                temp_val1 += ADC_ConvertedValue[i];
+                vTaskDelay(1);
+            }
+            test_point[i] = temp_val1;
+            if (value1_max[i] <= temp_val1)
+                value1_max[i] = temp_val1;
+            temp_val1 = 0;
+        }
 
-				}
-				
-						for(i=0;i<6;i++)
-					{
-						if((test_point[i])<150)	{flag_action_normal[i]=1;}
-						if((test_point[i])>150) {flag_action_normal[i]=0;}
-
-					}	
-				
-		}
+        for (i = 0; i < 6; i++) {
+            if ((test_point[i]) < 150) {
+                flag_action_normal[i] = 1;
+            }
+            if ((test_point[i]) > 150) {
+                flag_action_normal[i] = 0;
+            }
+        }
+    }
 }
-

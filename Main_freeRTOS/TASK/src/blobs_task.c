@@ -1,69 +1,66 @@
-#include "blobs_task.h" 
+#include "blobs_task.h"
 #include "FreeRTOS.h"
+#include "action_task_723.h"
 #include "task.h"
 #include "usart.h"
-#include "action_task_723.h"
-//blobsÈÎÎñº¯Êý
-struct BLOB_USE blobs_use; 
+// blobsï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+struct BLOB_USE blobs_use;
 #define error 0
 #define right 1
 
-
-float blobs_goal=0;
+float blobs_goal = 0;
 float blobs_Integral;
-float Kp_blobs=-0.02f;
+float Kp_blobs = -0.02f;
 float Kd_blobs;
 float Ki_blobs;
 
-float pid_blobs(float Angle)
-{  
-	 static float Bias_last;
-   float Bias;
-	 float balance;
-	 float blobs_D;
-	 Bias=Angle-(blobs_goal);       //===Çó³öÆ½ºâµÄ½Ç¶ÈÖÐÖµ ºÍ»úÐµÏà¹Ø
-	 blobs_Integral+=Bias;
-	 blobs_D=Bias-Bias_last;
-   balance=Kp_blobs*Bias+blobs_D*Kd_blobs+blobs_Integral*Ki_blobs;   //===¼ÆËãÆ½ºâ¿ØÖÆµÄµç»úPWM  PD¿ØÖÆ   kpÊÇPÏµÊý kdÊÇDÏµÊý 
-	 Bias_last=Bias;
-	 return balance;
+float pid_blobs(float Angle) {
+    static float Bias_last;
+    float Bias;
+    float balance;
+    float blobs_D;
+    Bias = Angle - (blobs_goal);  //===ï¿½ï¿½ï¿½Æ½ï¿½ï¿½Ä½Ç¶ï¿½ï¿½ï¿½Öµ ï¿½Í»ï¿½Ðµï¿½ï¿½ï¿½
+    blobs_Integral += Bias;
+    blobs_D = Bias - Bias_last;
+    balance = Kp_blobs * Bias + blobs_D * Kd_blobs +
+              blobs_Integral *
+                  Ki_blobs;  //===ï¿½ï¿½ï¿½ï¿½Æ½ï¿½ï¿½ï¿½ï¿½ÆµÄµï¿½ï¿½PWM  PDï¿½ï¿½ï¿½ï¿½   kpï¿½ï¿½PÏµï¿½ï¿½ kdï¿½ï¿½DÏµï¿½ï¿½
+    Bias_last = Bias;
+    return balance;
 }
 
 float PidOutPut_blobs;
-void blobs_task(void *pvParameters)
-{
+void blobs_task(void* pvParameters) {
+    while (1) {
+        u8 STA_blobs;
 
-	while(1)
-	{
-		u8 STA_blobs;
+        if (blobs.x == 255 && blobs.y == 255)
+            STA_blobs = error;
+        else
+            STA_blobs = right;
 
-		if (blobs.x==255&&blobs.y==255) STA_blobs=error;
-		else STA_blobs=right;
-		
-		if(STA_blobs==right)
-		{
-		blobs_use.x=blobs.x-80;
-		blobs_use.y=-(blobs.y-60);
-		}
-		
-		PidOutPut_blobs=pid_blobs(blobs_use.x);
-		if (PidOutPut_blobs<=0.15f);
-		else PidOutPut_blobs=0.15f;
-		if (PidOutPut_blobs<=-0.15f)PidOutPut_blobs=-0.15f;
-		
-		if (STA_blobs==right)
-		{
-		Order[2]=PidOutPut_blobs; 
-		Order[2]=PidOutPut_blobs;
-		}
-		if(STA_blobs==error)
-		{
-			Order[2]=0; 
-		  Order[2]=0;
-		}
-		
-		vTaskDelay(20);
-		
-	}
+        if (STA_blobs == right) {
+            blobs_use.x = blobs.x - 80;
+            blobs_use.y = -(blobs.y - 60);
+        }
 
+        PidOutPut_blobs = pid_blobs(blobs_use.x);
+        if (PidOutPut_blobs <= 0.15f)
+            ;
+        else
+            PidOutPut_blobs = 0.15f;
+        if (PidOutPut_blobs <= -0.15f)
+            PidOutPut_blobs = -0.15f;
+
+        if (STA_blobs == right) {
+            Order[2] = PidOutPut_blobs;
+            Order[2] = PidOutPut_blobs;
+        }
+        if (STA_blobs == error) {
+            Order[2] = 0;
+            Order[2] = 0;
+        }
+
+        vTaskDelay(20);
+    }
 }

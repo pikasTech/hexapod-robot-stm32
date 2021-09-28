@@ -1,346 +1,307 @@
-#include "start_task.h" 
+#include "start_task.h"
 #include "FreeRTOS.h"
 #include "task.h"
-extern	TaskHandle_t StartTask_Handler;		
-		
-		//×ÜÈÎÎñ¹ÜÀí
-		
-			 //ÈÎÎñÓÅÏÈ¼¶
-		#define systime_TASK_PRIO		5
-		//ÈÎÎñ¶ÑÕ»´óÐ¡	
-		#define systime_STK_SIZE 		256
-		//ÈÎÎñ¾ä±ú
-		TaskHandle_t systimeTask_Handler;
-		//ÈÎÎñº¯Êý
-		void systime_task(void *pvParameters);		
-		
-			 //ÈÎÎñÓÅÏÈ¼¶
-		#define angle_TASK_PRIO		4
-		//ÈÎÎñ¶ÑÕ»´óÐ¡	
-		#define angle_STK_SIZE 		256
-		//ÈÎÎñ¾ä±ú
-		TaskHandle_t angleTask_Handler;
-		//ÈÎÎñº¯Êý
-		void angle_task(void *pvParameters);
-		
-		//ÈÎÎñÓÅÏÈ¼¶
-		#define action_TASK_PRIO		4
-		//ÈÎÎñ¶ÑÕ»´óÐ¡	
-		#define action_STK_SIZE 		256  
-		//ÈÎÎñ¾ä±ú
-		TaskHandle_t actionTask_Handler;
-		//ÈÎÎñº¯Êý
-		void action_task(void *pvParameters);		
+extern TaskHandle_t StartTask_Handler;
 
-//		//ÈÎÎñÓÅÏÈ¼¶
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½
+#define systime_TASK_PRIO 5
+//ï¿½ï¿½ï¿½ï¿½ï¿½Õ»ï¿½ï¿½Ð¡
+#define systime_STK_SIZE 256
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+TaskHandle_t systimeTask_Handler;
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+void systime_task(void* pvParameters);
+
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½
+#define angle_TASK_PRIO 4
+//ï¿½ï¿½ï¿½ï¿½ï¿½Õ»ï¿½ï¿½Ð¡
+#define angle_STK_SIZE 256
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+TaskHandle_t angleTask_Handler;
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+void angle_task(void* pvParameters);
+
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½
+#define action_TASK_PRIO 4
+//ï¿½ï¿½ï¿½ï¿½ï¿½Õ»ï¿½ï¿½Ð¡
+#define action_STK_SIZE 256
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+TaskHandle_t actionTask_Handler;
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+void action_task(void* pvParameters);
+
+//		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½
 //		#define adc_TASK_PRIO		5
-//		//ÈÎÎñ¶ÑÕ»´óÐ¡	
-//		#define adc_STK_SIZE 		128  
-//		//ÈÎÎñ¾ä±ú
+//		//ï¿½ï¿½ï¿½ï¿½ï¿½Õ»ï¿½ï¿½Ð¡
+//		#define adc_STK_SIZE 		128
+//		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //		TaskHandle_t adcTask_Handler;
-//		//ÈÎÎñº¯Êý
+//		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //		void adc_task(void *pvParameters);
-//		
-				//ÈÎÎñÓÅÏÈ¼¶
-		#define ps2_TASK_PRIO		3
-		//ÈÎÎñ¶ÑÕ»´óÐ¡	
-		#define ps2_STK_SIZE 		256  
-		//ÈÎÎñ¾ä±ú
-		TaskHandle_t ps2Task_Handler;
-		//ÈÎÎñº¯Êý
-		void ps2_task(void *pvParameters);
-		
-				//ÈÎÎñÓÅÏÈ¼¶
-		#define s32_TASK_PRIO		3
-		//ÈÎÎñ¶ÑÕ»´óÐ¡	
-		#define s32_STK_SIZE 		256  
-		//ÈÎÎñ¾ä±ú
-		TaskHandle_t s32Task_Handler;
-		//ÈÎÎñº¯Êý
-		void s32_task(void *pvParameters);		
-		
-						//ÈÎÎñÓÅÏÈ¼¶
-		#define s32high_TASK_PRIO		3
-		//ÈÎÎñ¶ÑÕ»´óÐ¡	
-		#define s32high_STK_SIZE 		256  
-		//ÈÎÎñ¾ä±ú
-		TaskHandle_t s32highTask_Handler;
-		//ÈÎÎñº¯Êý
-		void s32high_task(void *pvParameters);		
+//
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½
+#define ps2_TASK_PRIO 3
+//ï¿½ï¿½ï¿½ï¿½ï¿½Õ»ï¿½ï¿½Ð¡
+#define ps2_STK_SIZE 256
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+TaskHandle_t ps2Task_Handler;
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+void ps2_task(void* pvParameters);
 
-//		//ÈÎÎñÓÅÏÈ¼¶
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½
+#define s32_TASK_PRIO 3
+//ï¿½ï¿½ï¿½ï¿½ï¿½Õ»ï¿½ï¿½Ð¡
+#define s32_STK_SIZE 256
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+TaskHandle_t s32Task_Handler;
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+void s32_task(void* pvParameters);
+
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½
+#define s32high_TASK_PRIO 3
+//ï¿½ï¿½ï¿½ï¿½ï¿½Õ»ï¿½ï¿½Ð¡
+#define s32high_STK_SIZE 256
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+TaskHandle_t s32highTask_Handler;
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+void s32high_task(void* pvParameters);
+
+//		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½
 //		#define shiboqi_TASK_PRIO		4
-//		//ÈÎÎñ¶ÑÕ»´óÐ¡	
-//		#define shiboqi_STK_SIZE 		128  
-//		//ÈÎÎñ¾ä±ú
+//		//ï¿½ï¿½ï¿½ï¿½ï¿½Õ»ï¿½ï¿½Ð¡
+//		#define shiboqi_STK_SIZE 		128
+//		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //		TaskHandle_t shiboqiTask_Handler;
-//		//ÈÎÎñº¯Êý
+//		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //		void shiboqi_task(void *pvParameters);
 
-//		//ÈÎÎñÓÅÏÈ¼¶
+//		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½
 //		#define sanjiaobo_TASK_PRIO		3
-//		//ÈÎÎñ¶ÑÕ»´óÐ¡	
-//		#define sanjiaobo_STK_SIZE 		128  
-//		//ÈÎÎñ¾ä±ú
+//		//ï¿½ï¿½ï¿½ï¿½ï¿½Õ»ï¿½ï¿½Ð¡
+//		#define sanjiaobo_STK_SIZE 		128
+//		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //		TaskHandle_t sanjiaoboTask_Handler;
-//		//ÈÎÎñº¯Êý
+//		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //		void sanjiaobo_task(void *pvParameters);
-//		
-//		//ÈÎÎñÓÅÏÈ¼¶
+//
+//		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½
 //		#define rtp_test_TASK_PRIO		2
-//		//ÈÎÎñ¶ÑÕ»´óÐ¡	
-//		#define rtp_test_STK_SIZE 		128  
-//		//ÈÎÎñ¾ä±ú
+//		//ï¿½ï¿½ï¿½ï¿½ï¿½Õ»ï¿½ï¿½Ð¡
+//		#define rtp_test_STK_SIZE 		128
+//		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //		TaskHandle_t rtp_testTask_Handler;
-//		//ÈÎÎñº¯Êý
+//		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //		void rtp_test_task(void *pvParameters);
-		
-		
-						//ÈÎÎñÓÅÏÈ¼¶
-		#define banlance_TASK_PRIO		1
-		//ÈÎÎñ¶ÑÕ»´óÐ¡	
-		#define banlance_STK_SIZE 		256  
-		//ÈÎÎñ¾ä±ú
-		TaskHandle_t banlanceTask_Handler;
-		//ÈÎÎñº¯Êý
-		void banlance_task(void *pvParameters);
-		
-		
-								//ÈÎÎñÓÅÏÈ¼¶
-		#define blobs_TASK_PRIO		2
-		//ÈÎÎñ¶ÑÕ»´óÐ¡	
-		#define blobs_STK_SIZE 		256  
-		//ÈÎÎñ¾ä±ú
-		TaskHandle_t blobsTask_Handler;
-		//ÈÎÎñº¯Êý
-		void blobs_task(void *pvParameters);
-		
-		
-								//ÈÎÎñÓÅÏÈ¼¶
-		#define genetic_TASK_PRIO		1
-		//ÈÎÎñ¶ÑÕ»´óÐ¡	
-		#define genetic_STK_SIZE 		256  
-		//ÈÎÎñ¾ä±ú
-		TaskHandle_t geneticTask_Handler;
-		//ÈÎÎñº¯Êý
-		void genetic_task(void *pvParameters);		
-		
-		
-								//ÈÎÎñÓÅÏÈ¼¶
-		#define touch_TASK_PRIO		1
-		//ÈÎÎñ¶ÑÕ»´óÐ¡	
-		#define touch_STK_SIZE 		256  
-		//ÈÎÎñ¾ä±ú
-		TaskHandle_t touchTask_Handler;
-		//ÈÎÎñº¯Êý
-		void touch_task(void *pvParameters);		
-				
-								//ÈÎÎñÓÅÏÈ¼¶
-		#define simulization_TASK_PRIO		1
-		//ÈÎÎñ¶ÑÕ»´óÐ¡	
-		#define simulization_STK_SIZE 		256  
-		//ÈÎÎñ¾ä±ú
-		TaskHandle_t simulizationTask_Handler;
-		//ÈÎÎñº¯Êý
-		void simulization_task(void *pvParameters);		
-								
-		
-struct Task_Enable_Flag_Type
-{
-	u8 action_task_flag;
-	u8 banlance_task_flag;	
-	u8 angle_task_flag;
-	u8 systime_task_flag;
-	u8 ps2_task_flag;
-	u8 s32_task_flag;
-	u8 shiboqi_task_flag;
-	u8 rtp_test_task_flag;
-	u8 sanjiaobo_task_flag;
-	u8 adc_task_flag;
-	u8 blobs_task_flag;
-	u8 s32high_task_flag;
-	u8 genetic_task_flag;
-	u8 touch_task_flag;
-	u8 simulization_task_flag;
-}task_enable_flag={
-	/*action*/		1,
-	/*banlance*/	1,
-	/*angle*/			1,
-	/*systime*/		1,
-	/*ps2*/				0,
-	/*s32*/				0,
-	/*shiboqi*/		0,
-	/*rtp_test*/	0,
-	/*sanjiaobo*/	0,
-	/*adc*/				0,
-	/*blobs*/			0,
-	/*s32high*/		0,
-	/*genetic*/		0,
-	/*touch*/			1,
-	/*simulazation*/ 1
-									};
-		
-//¿ªÊ¼ÈÎÎñº¯Êý
-void start_task(void *pvParameters)
-{
-			taskENTER_CRITICAL();           //½øÈëÁÙ½çÇø
-	if (task_enable_flag.action_task_flag)
-	{
-			//´´½¨actionÈÎÎñ
-			xTaskCreate((TaskFunction_t )action_task,             
-									(const char*    )"action_task",           
-									(uint16_t       )action_STK_SIZE,        
-									(void*          )NULL,                  
-									(UBaseType_t    )action_TASK_PRIO,        
-									(TaskHandle_t*  )&actionTask_Handler);   
-	}
-	if (task_enable_flag.banlance_task_flag)
-	{		//´´½¨banlanceÈÎÎñ
-			xTaskCreate((TaskFunction_t )banlance_task,             
-									(const char*    )"banlance_task",           
-									(uint16_t       )banlance_STK_SIZE,        
-									(void*          )NULL,                  
-									(UBaseType_t    )banlance_TASK_PRIO,        
-									(TaskHandle_t*  )&banlanceTask_Handler);
-						
-	}
-	if (task_enable_flag.angle_task_flag){
-			//´´½¨angleÈÎÎñ
-			xTaskCreate((TaskFunction_t )angle_task,             
-									(const char*    )"angle_task",           
-									(uint16_t       )angle_STK_SIZE,        
-									(void*          )NULL,                  
-									(UBaseType_t    )angle_TASK_PRIO,        
-									(TaskHandle_t*  )&angleTask_Handler);				
-	}
-	if (task_enable_flag.systime_task_flag){
-			//´´½¨systimeÈÎÎñ
-			xTaskCreate((TaskFunction_t )systime_task,             
-									(const char*    )"systime_task",           
-									(uint16_t       )systime_STK_SIZE,        
-									(void*          )NULL,                  
-									(UBaseType_t    )systime_TASK_PRIO,        
-									(TaskHandle_t*  )&systimeTask_Handler);				
-	}				
-	if (task_enable_flag.ps2_task_flag){					
-			//´´½¨ps2ÈÎÎñ
-			xTaskCreate((TaskFunction_t )ps2_task,             
-									(const char*    )"ps2_task",           
-									(uint16_t       )ps2_STK_SIZE,        
-									(void*          )NULL,                  
-									(UBaseType_t    )ps2_TASK_PRIO,        
-									(TaskHandle_t*  )&ps2Task_Handler);										
-	}		
-	if (task_enable_flag.s32_task_flag){				
-			//´´½¨s32ÈÎÎñ
-			xTaskCreate((TaskFunction_t )s32_task,             
-									(const char*    )"s32_task",           
-									(uint16_t       )s32_STK_SIZE,        
-									(void*          )NULL,                  
-									(UBaseType_t    )s32_TASK_PRIO,        
-									(TaskHandle_t*  )&s32Task_Handler);										
-	}								
-								
-	if (task_enable_flag.blobs_task_flag)
-	{				
-			//´´½¨blobsÈÎÎñ
-			xTaskCreate((TaskFunction_t )blobs_task,             
-									(const char*    )"blobs_task",           
-									(uint16_t       )blobs_STK_SIZE,        
-									(void*          )NULL,                  
-									(UBaseType_t    )blobs_TASK_PRIO,        
-									(TaskHandle_t*  )&blobsTask_Handler);					
-	}
-						
 
-	if (task_enable_flag.s32high_task_flag){
-			//´´½¨s32highÈÎÎñ
-			xTaskCreate((TaskFunction_t )s32high_task,             
-									(const char*    )"s32high_task",           
-									(uint16_t       )s32_STK_SIZE,        
-									(void*          )NULL,                  
-									(UBaseType_t    )s32_TASK_PRIO,        
-									(TaskHandle_t*  )&s32Task_Handler);									
-	}								
-	
-	if (task_enable_flag.genetic_task_flag){				
-			//´´½¨geneticÈÎÎñ
-			xTaskCreate((TaskFunction_t )genetic_task,             
-									(const char*    )"genetic_task",           
-									(uint16_t       )genetic_STK_SIZE,        
-									(void*          )NULL,                  
-									(UBaseType_t    )genetic_TASK_PRIO,        
-									(TaskHandle_t*  )&geneticTask_Handler);										
-	}	
-	
-	if (task_enable_flag.touch_task_flag){				
-			//´´½¨touchÈÎÎñ
-			xTaskCreate((TaskFunction_t )touch_task,             
-									(const char*    )"touch_task",           
-									(uint16_t       )touch_STK_SIZE,        
-									(void*          )NULL,                  
-									(UBaseType_t    )touch_TASK_PRIO,        
-									(TaskHandle_t*  )&touchTask_Handler);										
-	}	
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½
+#define banlance_TASK_PRIO 1
+//ï¿½ï¿½ï¿½ï¿½ï¿½Õ»ï¿½ï¿½Ð¡
+#define banlance_STK_SIZE 256
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+TaskHandle_t banlanceTask_Handler;
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+void banlance_task(void* pvParameters);
 
-	if (task_enable_flag.simulization_task_flag){				
-			//´´½¨simulizationÈÎÎñ
-			xTaskCreate((TaskFunction_t )simulization_task,             
-									(const char*    )"simulization_task",           
-									(uint16_t       )simulization_STK_SIZE,        
-									(void*          )NULL,                  
-									(UBaseType_t    )simulization_TASK_PRIO,        
-									(TaskHandle_t*  )&simulizationTask_Handler);										
-	}		
-															
-			vTaskDelete(StartTask_Handler); //É¾³ý¿ªÊ¼ÈÎÎñ
-			taskEXIT_CRITICAL();            //ÍË³öÁÙ½çÇø
-	
-						
-	
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½
+#define blobs_TASK_PRIO 2
+//ï¿½ï¿½ï¿½ï¿½ï¿½Õ»ï¿½ï¿½Ð¡
+#define blobs_STK_SIZE 256
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+TaskHandle_t blobsTask_Handler;
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+void blobs_task(void* pvParameters);
+
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½
+#define genetic_TASK_PRIO 1
+//ï¿½ï¿½ï¿½ï¿½ï¿½Õ»ï¿½ï¿½Ð¡
+#define genetic_STK_SIZE 256
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+TaskHandle_t geneticTask_Handler;
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+void genetic_task(void* pvParameters);
+
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½
+#define touch_TASK_PRIO 1
+//ï¿½ï¿½ï¿½ï¿½ï¿½Õ»ï¿½ï¿½Ð¡
+#define touch_STK_SIZE 256
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+TaskHandle_t touchTask_Handler;
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+void touch_task(void* pvParameters);
+
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½
+#define simulization_TASK_PRIO 1
+//ï¿½ï¿½ï¿½ï¿½ï¿½Õ»ï¿½ï¿½Ð¡
+#define simulization_STK_SIZE 256
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+TaskHandle_t simulizationTask_Handler;
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+void simulization_task(void* pvParameters);
+
+struct Task_Enable_Flag_Type {
+    u8 action_task_flag;
+    u8 banlance_task_flag;
+    u8 angle_task_flag;
+    u8 systime_task_flag;
+    u8 ps2_task_flag;
+    u8 s32_task_flag;
+    u8 shiboqi_task_flag;
+    u8 rtp_test_task_flag;
+    u8 sanjiaobo_task_flag;
+    u8 adc_task_flag;
+    u8 blobs_task_flag;
+    u8 s32high_task_flag;
+    u8 genetic_task_flag;
+    u8 touch_task_flag;
+    u8 simulization_task_flag;
+} task_enable_flag = {
+    /*action*/ 1,
+    /*banlance*/ 1,
+    /*angle*/ 1,
+    /*systime*/ 1,
+    /*ps2*/ 0,
+    /*s32*/ 0,
+    /*shiboqi*/ 0,
+    /*rtp_test*/ 0,
+    /*sanjiaobo*/ 0,
+    /*adc*/ 0,
+    /*blobs*/ 0,
+    /*s32high*/ 0,
+    /*genetic*/ 0,
+    /*touch*/ 1,
+    /*simulazation*/ 1};
+
+//ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+void start_task(void* pvParameters) {
+    taskENTER_CRITICAL();  //ï¿½ï¿½ï¿½ï¿½ï¿½Ù½ï¿½ï¿½ï¿½
+    if (task_enable_flag.action_task_flag) {
+        //ï¿½ï¿½ï¿½ï¿½actionï¿½ï¿½ï¿½ï¿½
+        xTaskCreate((TaskFunction_t)action_task, (const char*)"action_task",
+                    (uint16_t)action_STK_SIZE, (void*)NULL,
+                    (UBaseType_t)action_TASK_PRIO,
+                    (TaskHandle_t*)&actionTask_Handler);
+    }
+    if (task_enable_flag.banlance_task_flag) {  //ï¿½ï¿½ï¿½ï¿½banlanceï¿½ï¿½ï¿½ï¿½
+        xTaskCreate((TaskFunction_t)banlance_task, (const char*)"banlance_task",
+                    (uint16_t)banlance_STK_SIZE, (void*)NULL,
+                    (UBaseType_t)banlance_TASK_PRIO,
+                    (TaskHandle_t*)&banlanceTask_Handler);
+    }
+    if (task_enable_flag.angle_task_flag) {
+        //ï¿½ï¿½ï¿½ï¿½angleï¿½ï¿½ï¿½ï¿½
+        xTaskCreate((TaskFunction_t)angle_task, (const char*)"angle_task",
+                    (uint16_t)angle_STK_SIZE, (void*)NULL,
+                    (UBaseType_t)angle_TASK_PRIO,
+                    (TaskHandle_t*)&angleTask_Handler);
+    }
+    if (task_enable_flag.systime_task_flag) {
+        //ï¿½ï¿½ï¿½ï¿½systimeï¿½ï¿½ï¿½ï¿½
+        xTaskCreate((TaskFunction_t)systime_task, (const char*)"systime_task",
+                    (uint16_t)systime_STK_SIZE, (void*)NULL,
+                    (UBaseType_t)systime_TASK_PRIO,
+                    (TaskHandle_t*)&systimeTask_Handler);
+    }
+    if (task_enable_flag.ps2_task_flag) {
+        //ï¿½ï¿½ï¿½ï¿½ps2ï¿½ï¿½ï¿½ï¿½
+        xTaskCreate((TaskFunction_t)ps2_task, (const char*)"ps2_task",
+                    (uint16_t)ps2_STK_SIZE, (void*)NULL,
+                    (UBaseType_t)ps2_TASK_PRIO,
+                    (TaskHandle_t*)&ps2Task_Handler);
+    }
+    if (task_enable_flag.s32_task_flag) {
+        //ï¿½ï¿½ï¿½ï¿½s32ï¿½ï¿½ï¿½ï¿½
+        xTaskCreate((TaskFunction_t)s32_task, (const char*)"s32_task",
+                    (uint16_t)s32_STK_SIZE, (void*)NULL,
+                    (UBaseType_t)s32_TASK_PRIO,
+                    (TaskHandle_t*)&s32Task_Handler);
+    }
+
+    if (task_enable_flag.blobs_task_flag) {
+        //ï¿½ï¿½ï¿½ï¿½blobsï¿½ï¿½ï¿½ï¿½
+        xTaskCreate((TaskFunction_t)blobs_task, (const char*)"blobs_task",
+                    (uint16_t)blobs_STK_SIZE, (void*)NULL,
+                    (UBaseType_t)blobs_TASK_PRIO,
+                    (TaskHandle_t*)&blobsTask_Handler);
+    }
+
+    if (task_enable_flag.s32high_task_flag) {
+        //ï¿½ï¿½ï¿½ï¿½s32highï¿½ï¿½ï¿½ï¿½
+        xTaskCreate((TaskFunction_t)s32high_task, (const char*)"s32high_task",
+                    (uint16_t)s32_STK_SIZE, (void*)NULL,
+                    (UBaseType_t)s32_TASK_PRIO,
+                    (TaskHandle_t*)&s32Task_Handler);
+    }
+
+    if (task_enable_flag.genetic_task_flag) {
+        //ï¿½ï¿½ï¿½ï¿½geneticï¿½ï¿½ï¿½ï¿½
+        xTaskCreate((TaskFunction_t)genetic_task, (const char*)"genetic_task",
+                    (uint16_t)genetic_STK_SIZE, (void*)NULL,
+                    (UBaseType_t)genetic_TASK_PRIO,
+                    (TaskHandle_t*)&geneticTask_Handler);
+    }
+
+    if (task_enable_flag.touch_task_flag) {
+        //ï¿½ï¿½ï¿½ï¿½touchï¿½ï¿½ï¿½ï¿½
+        xTaskCreate((TaskFunction_t)touch_task, (const char*)"touch_task",
+                    (uint16_t)touch_STK_SIZE, (void*)NULL,
+                    (UBaseType_t)touch_TASK_PRIO,
+                    (TaskHandle_t*)&touchTask_Handler);
+    }
+
+    if (task_enable_flag.simulization_task_flag) {
+        //ï¿½ï¿½ï¿½ï¿½simulizationï¿½ï¿½ï¿½ï¿½
+        xTaskCreate((TaskFunction_t)simulization_task,
+                    (const char*)"simulization_task",
+                    (uint16_t)simulization_STK_SIZE, (void*)NULL,
+                    (UBaseType_t)simulization_TASK_PRIO,
+                    (TaskHandle_t*)&simulizationTask_Handler);
+    }
+
+    vTaskDelete(StartTask_Handler);  //É¾ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½
+    taskEXIT_CRITICAL();             //ï¿½Ë³ï¿½ï¿½Ù½ï¿½ï¿½ï¿½
 }
-
-
 
 /*
 if (task_enable_flag.shiboqi_task_flag)
 {
-    //´´½¨shiboqiÈÎÎñ
-    xTaskCreate((TaskFunction_t )shiboqi_task,             
-                (const char*    )"shiboqi_task",           
-                (uint16_t       )shiboqi_STK_SIZE,        
-                (void*          )NULL,                  
-                (UBaseType_t    )shiboqi_TASK_PRIO,        
-                (TaskHandle_t*  )&shiboqiTask_Handler);   
+    //ï¿½ï¿½ï¿½ï¿½shiboqiï¿½ï¿½ï¿½ï¿½
+    xTaskCreate((TaskFunction_t )shiboqi_task,
+                (const char*    )"shiboqi_task",
+                (uint16_t       )shiboqi_STK_SIZE,
+                (void*          )NULL,
+                (UBaseType_t    )shiboqi_TASK_PRIO,
+                (TaskHandle_t*  )&shiboqiTask_Handler);
 }
 if (task_enable_flag.rtp_test_task_flag)
-{								
-    //´´½¨rtp_testÈÎÎñ
-    xTaskCreate((TaskFunction_t )rtp_test_task,     
-                (const char*    )"rtp_test_task",   
+{
+    //ï¿½ï¿½ï¿½ï¿½rtp_testï¿½ï¿½ï¿½ï¿½
+    xTaskCreate((TaskFunction_t )rtp_test_task,
+                (const char*    )"rtp_test_task",
                 (uint16_t       )rtp_test_STK_SIZE,
                 (void*          )NULL,
                 (UBaseType_t    )rtp_test_TASK_PRIO,
-                (TaskHandle_t*  )&rtp_testTask_Handler); 
+                (TaskHandle_t*  )&rtp_testTask_Handler);
 }
 if (task_enable_flag.sanjiaobo_task_flag)
-{								
-		//´´½¨sanjiaoboÈÎÎñ
-    xTaskCreate((TaskFunction_t )sanjiaobo_task,             
-                (const char*    )"sanjiaobo_task",           
-                (uint16_t       )sanjiaobo_STK_SIZE,        
-                (void*          )NULL,                  
-                (UBaseType_t    )sanjiaobo_TASK_PRIO,        
-                (TaskHandle_t*  )&sanjiaoboTask_Handler);  
+{
+                //ï¿½ï¿½ï¿½ï¿½sanjiaoboï¿½ï¿½ï¿½ï¿½
+    xTaskCreate((TaskFunction_t )sanjiaobo_task,
+                (const char*    )"sanjiaobo_task",
+                (uint16_t       )sanjiaobo_STK_SIZE,
+                (void*          )NULL,
+                (UBaseType_t    )sanjiaobo_TASK_PRIO,
+                (TaskHandle_t*  )&sanjiaoboTask_Handler);
 }
 if (task_enable_flag.adc_task_flag)
-{																
-		//´´½¨adcÈÎÎñ
-    xTaskCreate((TaskFunction_t )adc_task,             
-                (const char*    )"adc_task",           
-                (uint16_t       )adc_STK_SIZE,        
-                (void*          )NULL,                  
-                (UBaseType_t    )adc_TASK_PRIO,        
-                (TaskHandle_t*  )&adcTask_Handler); 	
+{
+                //ï¿½ï¿½ï¿½ï¿½adcï¿½ï¿½ï¿½ï¿½
+    xTaskCreate((TaskFunction_t )adc_task,
+                (const char*    )"adc_task",
+                (uint16_t       )adc_STK_SIZE,
+                (void*          )NULL,
+                (UBaseType_t    )adc_TASK_PRIO,
+                (TaskHandle_t*  )&adcTask_Handler);
 }
 */
