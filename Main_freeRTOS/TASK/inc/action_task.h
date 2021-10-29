@@ -26,16 +26,19 @@ extern float Action_T;
 extern float Action_T_per_V;
 extern float speed;
 extern u8 STA_STOP;
-extern u8 STA_TIME_STOP;//单步停止位
-extern u8 STA_TEST_TaiJiao;//抬脚测试标志位
-extern u8 STA_ACTION;//运行模式
+extern u8 STA_TIME_STOP;     //单步停止位
+extern u8 STA_TEST_TaiJiao;  //抬脚测试标志位
+extern u8 STA_ACTION;        //运行模式
 //伸展系数
-extern double L_init,L_init_best;
+extern double L_init, L_init_best;
 
 //机身高度
-extern double H_init,H_init_best;
+extern double H_init, H_init_best;
 
-
-void LH_to_xyz_init(double T03[3][1],double d[4],double L,double H,double xyz_init[3]);
+void LH_to_xyz_init(double T03[3][1],
+                    double d[4],
+                    double L,
+                    double H,
+                    double xyz_init[3]);
 
 #endif

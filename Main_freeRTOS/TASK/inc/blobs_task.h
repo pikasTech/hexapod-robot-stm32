@@ -4,5 +4,4 @@
 
 extern struct BLOB_USE blobs_use;
 
-
 #endif

@@ -2,7 +2,7 @@
 #define __MPU6050_TASK_H
 #include "sys.h"
 
-extern double theatx,theaty;//可控旋转角
+extern double theatx, theaty;  //可控旋转角
 //机器人足端向量
 extern double T06_RF[3];
 extern double T06_RM[3];
@@ -42,8 +42,7 @@ extern double d_LF[4];
 extern double d_LM[4];
 extern double d_LB[4];
 
-struct INIT_BuChang
-{
+struct INIT_BuChang {
     float rf;
     float rm;
     float rb;
@@ -53,7 +52,7 @@ struct INIT_BuChang
 };
 
 extern struct _lobot_servo_ servos_array[18];
-extern u8 flag_action_run_single,flag_action_run_continiue;
+extern u8 flag_action_run_single, flag_action_run_continiue;
 
 void T06_init(void);
 void T06_init_ideal(void);
