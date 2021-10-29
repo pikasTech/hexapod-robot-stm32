@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "genetic.h"
-#include "action_task_723.h"
+#include "action_task.h"
 #include "FreeRTOS.h"
 #include "task.h"
 //用于求解函数y=x^6-10x^5-26x^4+344x^3+193x^2-1846x-1680在（-8，8）之间的最小值

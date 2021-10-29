@@ -205,21 +205,21 @@ u8 GT9147_Scan(u8 mode)
                 }
             }
             res=1;
-            if(tp_dev.x[0]>lcddev.width||tp_dev.y[0]>lcddev.height)//非法数据(坐标超出了)
-            {
-                if((mode&0XF)>1)        //有其他点有数据,则复第二个触点的数据到第一个触点.
-                {
-                    tp_dev.x[0]=tp_dev.x[1];
-                    tp_dev.y[0]=tp_dev.y[1];
-                    t=0;                //触发一次,则会最少连续监测10次,从而提高命中率
-                }else                   //非法数据,则忽略此次数据(还原原来的)
-                {
-                    tp_dev.x[0]=tp_dev.x[4];
-                    tp_dev.y[0]=tp_dev.y[4];
-                    mode=0X80;
-                    tp_dev.sta=tempsta; //恢复tp_dev.sta
-                }
-            }else t=0;                  //触发一次,则会最少连续监测10次,从而提高命中率
+//            if(tp_dev.x[0]>lcddev.width||tp_dev.y[0]>lcddev.height)//非法数据(坐标超出了)
+//            {
+//                if((mode&0XF)>1)        //有其他点有数据,则复第二个触点的数据到第一个触点.
+//                {
+//                    tp_dev.x[0]=tp_dev.x[1];
+//                    tp_dev.y[0]=tp_dev.y[1];
+//                    t=0;                //触发一次,则会最少连续监测10次,从而提高命中率
+//                }else                   //非法数据,则忽略此次数据(还原原来的)
+//                {
+//                    tp_dev.x[0]=tp_dev.x[4];
+//                    tp_dev.y[0]=tp_dev.y[4];
+//                    mode=0X80;
+//                    tp_dev.sta=tempsta; //恢复tp_dev.sta
+//                }
+//            }else t=0;                  //触发一次,则会最少连续监测10次,从而提高命中率
         }
     }
     if((mode&0X8F)==0X80)//无触摸点按下

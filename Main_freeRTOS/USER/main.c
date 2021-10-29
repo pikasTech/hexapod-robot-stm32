@@ -4,7 +4,6 @@
 #include "usart.h"
 #include "led.h"
 #include "timer.h"
-#include "lcd.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include "key.h"
@@ -20,10 +19,12 @@
 #include "shiboqi_task.h"
 #include "start_task.h"
 #include "balance_task.h"
+#include "action_task.h"
+
 // #include "mpu6050.h"
 #include "pstwo.h"
 #include "ps2_task.h"
-#include "action_task_723.h"
+#include "action_task.h"
 
 
 
@@ -142,7 +143,7 @@ int main(void)
     T06_init();                 //初始化末端位置
     T06_init_ideal();       //初始化末端位置理想值
     KEY_EXTI_Init();
-    action_init();
+    //action_init();
 
 #if 1
     //创建开始任务
