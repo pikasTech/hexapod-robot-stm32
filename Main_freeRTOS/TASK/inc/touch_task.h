@@ -20,13 +20,13 @@ extern u8 STA_ChuDi_rf;
 extern u8 STA_ChuDi_rb;
 struct TOUCH
 {
-	u8 rf;
-	u8 rm;
-	u8 rb;
-	u8 lf;
-	u8 lm;
-	u8 lb;
-}; 				
+    u8 rf;
+    u8 rm;
+    u8 rb;
+    u8 lf;
+    u8 lm;
+    u8 lb;
+};
 extern struct TOUCH touch_use;
 
 void get_touch(struct TOUCH *touch_fun);

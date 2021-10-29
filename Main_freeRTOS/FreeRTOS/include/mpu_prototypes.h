@@ -150,8 +150,8 @@ UBaseType_t MPU_uxQueueGetQueueNumber( QueueHandle_t xQueue );
 uint8_t MPU_ucQueueGetQueueType( QueueHandle_t xQueue );
 
 /* MPU versions of timers.h API function. */
-TimerHandle_t MPU_xTimerCreate(	const char * const pcTimerName, const TickType_t xTimerPeriodInTicks, const UBaseType_t uxAutoReload, void * const pvTimerID, TimerCallbackFunction_t pxCallbackFunction );
-TimerHandle_t MPU_xTimerCreateStatic(	const char * const pcTimerName, const TickType_t xTimerPeriodInTicks, const UBaseType_t uxAutoReload, void * const pvTimerID, TimerCallbackFunction_t pxCallbackFunction, StaticTimer_t *pxTimerBuffer );
+TimerHandle_t MPU_xTimerCreate( const char * const pcTimerName, const TickType_t xTimerPeriodInTicks, const UBaseType_t uxAutoReload, void * const pvTimerID, TimerCallbackFunction_t pxCallbackFunction );
+TimerHandle_t MPU_xTimerCreateStatic(   const char * const pcTimerName, const TickType_t xTimerPeriodInTicks, const UBaseType_t uxAutoReload, void * const pvTimerID, TimerCallbackFunction_t pxCallbackFunction, StaticTimer_t *pxTimerBuffer );
 void * MPU_pvTimerGetTimerID( const TimerHandle_t xTimer );
 void MPU_vTimerSetTimerID( TimerHandle_t xTimer, void *pvNewID );
 BaseType_t MPU_xTimerIsTimerActive( TimerHandle_t xTimer );

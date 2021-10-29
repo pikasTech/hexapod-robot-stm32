@@ -1,41 +1,41 @@
 #ifndef __USART_H
 #define __USART_H
-#include "stdio.h"	
+#include "stdio.h"
 #include "stm32f4xx_conf.h"
-#include "sys.h" 
-//////////////////////////////////////////////////////////////////////////////////	 
-//±¾³ÌĞòÖ»¹©Ñ§Ï°Ê¹ÓÃ£¬Î´¾­×÷ÕßĞí¿É£¬²»µÃÓÃÓÚÆäËüÈÎºÎÓÃÍ¾
-//Mini STM32¿ª·¢°å
-//´®¿Ú1³õÊ¼»¯		   
-//ÕıµãÔ­×Ó@ALIENTEK
-//¼¼ÊõÂÛÌ³:www.openedv.csom
-//ĞŞ¸ÄÈÕÆÚ:2011/6/14
-//°æ±¾£ºV1.4
-//°æÈ¨ËùÓĞ£¬µÁ°æ±Ø¾¿¡£
-//Copyright(C) ÕıµãÔ­×Ó 2009-2019
+#include "sys.h"
+//////////////////////////////////////////////////////////////////////////////////
+//æœ¬ç¨‹åºåªä¾›å­¦ä¹ ä½¿ç”¨ï¼Œæœªç»ä½œè€…è®¸å¯ï¼Œä¸å¾—ç”¨äºå…¶å®ƒä»»ä½•ç”¨é€”
+//Mini STM32å¼€å‘æ¿
+//ä¸²å£1åˆå§‹åŒ–
+//æ­£ç‚¹åŸå­@ALIENTEK
+//æŠ€æœ¯è®ºå›:www.openedv.csom
+//ä¿®æ”¹æ—¥æœŸ:2011/6/14
+//ç‰ˆæœ¬ï¼šV1.4
+//ç‰ˆæƒæ‰€æœ‰ï¼Œç›—ç‰ˆå¿…ç©¶ã€‚
+//Copyright(C) æ­£ç‚¹åŸå­ 2009-2019
 //All rights reserved
 //********************************************************************************
-//V1.3ĞŞ¸ÄËµÃ÷ 
-//Ö§³ÖÊÊÓ¦²»Í¬ÆµÂÊÏÂµÄ´®¿Ú²¨ÌØÂÊÉèÖÃ.
-//¼ÓÈëÁË¶ÔprintfµÄÖ§³Ö
-//Ôö¼ÓÁË´®¿Ú½ÓÊÕÃüÁî¹¦ÄÜ.
-//ĞŞÕıÁËprintfµÚÒ»¸ö×Ö·û¶ªÊ§µÄbug
-//V1.4ĞŞ¸ÄËµÃ÷
-//1,ĞŞ¸Ä´®¿Ú³õÊ¼»¯IOµÄbug
-//2,ĞŞ¸ÄÁËUSART_RX_STA,Ê¹µÃ´®¿Ú×î´ó½ÓÊÕ×Ö½ÚÊıÎª2µÄ14´Î·½
-//3,Ôö¼ÓÁËUSART_REC_LEN,ÓÃÓÚ¶¨Òå´®¿Ú×î´óÔÊĞí½ÓÊÕµÄ×Ö½ÚÊı(²»´óÓÚ2µÄ14´Î·½)
-//4,ĞŞ¸ÄÁËEN_USART1_RXµÄÊ¹ÄÜ·½Ê½
-////////////////////////////////////////////////////////////////////////////////// 	
-#define USART_REC_LEN  			200  	//¶¨Òå×î´ó½ÓÊÕ×Ö½ÚÊı 200
-#define EN_USART1_RX 			1		//Ê¹ÄÜ£¨1£©/½ûÖ¹£¨0£©´®¿Ú1½ÓÊÕ
+//V1.3ä¿®æ”¹è¯´æ˜
+//æ”¯æŒé€‚åº”ä¸åŒé¢‘ç‡ä¸‹çš„ä¸²å£æ³¢ç‰¹ç‡è®¾ç½®.
+//åŠ å…¥äº†å¯¹printfçš„æ”¯æŒ
+//å¢åŠ äº†ä¸²å£æ¥æ”¶å‘½ä»¤åŠŸèƒ½.
+//ä¿®æ­£äº†printfç¬¬ä¸€ä¸ªå­—ç¬¦ä¸¢å¤±çš„bug
+//V1.4ä¿®æ”¹è¯´æ˜
+//1,ä¿®æ”¹ä¸²å£åˆå§‹åŒ–IOçš„bug
+//2,ä¿®æ”¹äº†USART_RX_STA,ä½¿å¾—ä¸²å£æœ€å¤§æ¥æ”¶å­—èŠ‚æ•°ä¸º2çš„14æ¬¡æ–¹
+//3,å¢åŠ äº†USART_REC_LEN,ç”¨äºå®šä¹‰ä¸²å£æœ€å¤§å…è®¸æ¥æ”¶çš„å­—èŠ‚æ•°(ä¸å¤§äº2çš„14æ¬¡æ–¹)
+//4,ä¿®æ”¹äº†EN_USART1_RXçš„ä½¿èƒ½æ–¹å¼
+//////////////////////////////////////////////////////////////////////////////////
+#define USART_REC_LEN           200     //å®šä¹‰æœ€å¤§æ¥æ”¶å­—èŠ‚æ•° 200
+#define EN_USART1_RX            1       //ä½¿èƒ½ï¼ˆ1ï¼‰/ç¦æ­¢ï¼ˆ0ï¼‰ä¸²å£1æ¥æ”¶
 #define EN_USART2_RX      1
-#define EN_USART3_RX			1
-#define EN_UART4_RX				1
+#define EN_USART3_RX            1
+#define EN_UART4_RX             1
 #define EN_USART6_RX      1
-	  	
-extern u8  USART_RX_BUF[USART_REC_LEN]; //½ÓÊÕ»º³å,×î´óUSART_REC_LEN¸ö×Ö½Ú.Ä©×Ö½ÚÎª»»ĞĞ·û 
-extern u16 USART_RX_STA;         		//½ÓÊÕ×´Ì¬±ê¼Ç	
-//Èç¹ûÏë´®¿ÚÖĞ¶Ï½ÓÊÕ£¬Çë²»Òª×¢ÊÍÒÔÏÂºê¶¨Òå
+
+extern u8  USART_RX_BUF[USART_REC_LEN]; //æ¥æ”¶ç¼“å†²,æœ€å¤§USART_REC_LENä¸ªå­—èŠ‚.æœ«å­—èŠ‚ä¸ºæ¢è¡Œç¬¦
+extern u16 USART_RX_STA;                //æ¥æ”¶çŠ¶æ€æ ‡è®°
+//å¦‚æœæƒ³ä¸²å£ä¸­æ–­æ¥æ”¶ï¼Œè¯·ä¸è¦æ³¨é‡Šä»¥ä¸‹å®å®šä¹‰
 void uart1_init(u32 bound);
 void uart2_init(u32 bound);
 void uart3_init(u32 bound);
@@ -46,79 +46,79 @@ void uartWriteBuf(uint8_t *buf, uint8_t len);
 
 struct BLOB_USE
 {
-	int x;
-	int y;
+    int x;
+    int y;
 };
 
 struct BLOB
 {
-	unsigned char x;
-	unsigned char y;
+    unsigned char x;
+    unsigned char y;
 };
 
 struct STime
 {
-	unsigned char ucYear;
-	unsigned char ucMonth;
-	unsigned char ucDay;
-	unsigned char ucHour;
-	unsigned char ucMinute;
-	unsigned char ucSecond;
-	unsigned short usMiliSecond;
+    unsigned char ucYear;
+    unsigned char ucMonth;
+    unsigned char ucDay;
+    unsigned char ucHour;
+    unsigned char ucMinute;
+    unsigned char ucSecond;
+    unsigned short usMiliSecond;
 };
 struct SAcc
 {
-	short a[3];
-	short T;
+    short a[3];
+    short T;
 };
 struct SGyro
 {
-	short w[3];
-	short T;
+    short w[3];
+    short T;
 };
 struct SAngle
 {
-	short Angle[3];
-	short T;
+    short Angle[3];
+    short T;
 };
 struct SMag
 {
-	short h[3];
-	short T;
+    short h[3];
+    short T;
 };
 
 struct SDStatus
 {
-	short sDStatus[4];
+    short sDStatus[4];
 };
 
 struct SPress
 {
-	long lPressure;
-	long lAltitude;
+    long lPressure;
+    long lAltitude;
 };
 
 struct SLonLat
 {
-	long lLon;
-	long lLat;
+    long lLon;
+    long lLat;
 };
 
 struct SGPSV
 {
-	short sGPSHeight;
-	short sGPSYaw;
-	long lGPSVelocity;
+    short sGPSHeight;
+    short sGPSYaw;
+    long lGPSVelocity;
 };
 
 struct small32
 {
-	u16 dist;
-	u16 adc1;
-	u16 adc2;
-	u16 adc3;
+    u16 dist;
+    u16 adc1;
+    u16 adc2;
+    u16 adc3;
 };
-	
+
 struct _rplidar_response_measurement_node_t {
     u8    sync_quality;      // syncbit:1;syncbit_inverse:1;quality:6;
     u16   angle_q6_checkbit; // check_bit:1;angle_q6:15;
@@ -127,16 +127,16 @@ struct _rplidar_response_measurement_node_t {
 
 
 extern struct _rplidar_response_measurement_node_t node_dis;
-extern struct STime		stcTime;
-extern struct SAcc 		stcAcc;
-extern struct SGyro 		stcGyro;
-extern struct SAngle 	stcAngle;
-extern struct SMag 		stcMag;
+extern struct STime     stcTime;
+extern struct SAcc      stcAcc;
+extern struct SGyro         stcGyro;
+extern struct SAngle    stcAngle;
+extern struct SMag      stcMag;
 extern struct SDStatus stcDStatus;
-extern struct SPress 	stcPress;
-extern struct SLonLat 	stcLonLat;
-extern struct SGPSV 		stcGPSV;
-extern struct BLOB			blobs;
+extern struct SPress    stcPress;
+extern struct SLonLat   stcLonLat;
+extern struct SGPSV         stcGPSV;
+extern struct BLOB          blobs;
 extern struct small32  RF_s32,RM_s32,RB_s32,LF_s32,LM_s32,LB_s32;
 
 int fputc4(int ch);

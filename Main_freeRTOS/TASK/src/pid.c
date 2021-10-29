@@ -1,27 +1,27 @@
-/*P µ÷½ÚËÙ¶È¼Ó¿ì£¨³¬Á¿Ôö´ó£¬Õñµ´´ÎÊýÔö¶à£©  
-I Ïû³ýÎÈÌ¬ Ìá¸ß¾«¶È
-D  Ê¹³¬µ÷Á¿¼õÐ¡ µÖÏûÖÍºó*/
+/*P è°ƒèŠ‚é€Ÿåº¦åŠ å¿«ï¼ˆè¶…é‡å¢žå¤§ï¼ŒæŒ¯è¡æ¬¡æ•°å¢žå¤šï¼‰
+I æ¶ˆé™¤ç¨³æ€ æé«˜ç²¾åº¦
+D  ä½¿è¶…è°ƒé‡å‡å° æŠµæ¶ˆæ»žåŽ*/
 #include "pid.h"
 void PID_Calculate(PID *pid)
 {   float DelEk;
-	  //ÏÂÃæÎª¼ò»¯±äÁ¿£¬×îÖÕ½«»ý·ÖÏî·´À¡»¯ÎªIout 
-	  float Iout,Pout,Dout;	 
-	  pid->Ek=pid->Presentvale-pid->Setvalue; //µ±Ç°Æ«²î
-	  Pout=pid->Kp*pid->Ek;      //±ÈÀýÏîÊä³ö
-		//»ý·ÖÏîµÄ¼ò»¯ºÍÊä³ö
-	  pid->SumEk+=pid->Ek;          //ÀúÊ·Æ«²îÖ®ºÍ
-	  if(pid->SumEk>2000.0f) pid->SumEk=2000.0f;
-	  else if(pid->SumEk<-2000.0f) pid->SumEk=-2000.0f;
-	  else ;
-	  DelEk=pid->Ek-pid->Ek_1;      //×î½üÁ½´ÎÆ«²î
-		  
-	  Iout=pid->Ki*pid->SumEk;//»ý·ÖÏîÊä³ö
-	  //Î¢·ÖÏîµÄ¼ò»¯ºÍÊä³ö
-	 
-	  Dout=pid->Kd*DelEk;   //Î¢·ÖÏîÊä³ö
-	  //±¾´ÎÓ¦¸ÃÏÞ·ùÊä³ö    µç»úÖÐÏÞ·ù
-	  
-		pid->Ek_1=pid->Ek; //¸üÐÂÆ«²î 
-	  pid->OUT=Pout+Iout+Dout+pid->OUT_0; //ÔÚµç»ú²¿·Ö
+      //ä¸‹é¢ä¸ºç®€åŒ–å˜é‡ï¼Œæœ€ç»ˆå°†ç§¯åˆ†é¡¹åé¦ˆåŒ–ä¸ºIout
+      float Iout,Pout,Dout;
+      pid->Ek=pid->Presentvale-pid->Setvalue; //å½“å‰åå·®
+      Pout=pid->Kp*pid->Ek;      //æ¯”ä¾‹é¡¹è¾“å‡º
+        //ç§¯åˆ†é¡¹çš„ç®€åŒ–å’Œè¾“å‡º
+      pid->SumEk+=pid->Ek;          //åŽ†å²åå·®ä¹‹å’Œ
+      if(pid->SumEk>2000.0f) pid->SumEk=2000.0f;
+      else if(pid->SumEk<-2000.0f) pid->SumEk=-2000.0f;
+      else ;
+      DelEk=pid->Ek-pid->Ek_1;      //æœ€è¿‘ä¸¤æ¬¡åå·®
+
+      Iout=pid->Ki*pid->SumEk;//ç§¯åˆ†é¡¹è¾“å‡º
+      //å¾®åˆ†é¡¹çš„ç®€åŒ–å’Œè¾“å‡º
+
+      Dout=pid->Kd*DelEk;   //å¾®åˆ†é¡¹è¾“å‡º
+      //æœ¬æ¬¡åº”è¯¥é™å¹…è¾“å‡º    ç”µæœºä¸­é™å¹…
+
+        pid->Ek_1=pid->Ek; //æ›´æ–°åå·®
+      pid->OUT=Pout+Iout+Dout+pid->OUT_0; //åœ¨ç”µæœºéƒ¨åˆ†
 }
 

@@ -47,8 +47,8 @@
 //{
 //    /*return msp430_reg_int_cb(int_param->cb, int_param->pin, int_param->lp_exit,
 //        int_param->active_low);*/
-//		return 0;
-//}	  
+//      return 0;
+//}
 //#define log_i(...)     do {} while (0)
 //#define log_e(...)     do {} while (0)
 #define log_e    //printf
@@ -500,12 +500,12 @@ const struct hw_s hw = {
 };
 */
 const struct hw_s hw={
-  0x68,	 //addr
-  1024,	 //max_fifo
-  118,	 //num_reg
-  340,	 //temp_sens
-  -521,	 //temp_offset
-  256	 //bank_size
+  0x68,  //addr
+  1024,  //max_fifo
+  118,   //num_reg
+  340,   //temp_sens
+  -521,  //temp_offset
+  256    //bank_size
 };
 const struct gyro_reg_s reg = {
 0x75,  //who_am_i
@@ -539,7 +539,7 @@ const struct gyro_reg_s reg = {
 
 //const struct test_s test = {
 //    .gyro_sens      = 32768/250,
-//    .accel_sens     = 32768/16,	  
+//    .accel_sens     = 32768/16,
 //    .reg_rate_div   = 0,    /* 1kHz. */
 //    .reg_lpf        = 1,    /* 188Hz. */
 //    .reg_gyro_fsr   = 0,    /* 250dps. */
@@ -554,27 +554,27 @@ const struct gyro_reg_s reg = {
 //    .max_accel_var  = 0.14f
 //};
 const struct test_s test={
-32768/250,		 //gyro_sens
-32768/16,		 //	accel_sens
-0,				 //	reg_rate_div
-1,				//	reg_lpf
-0,				 //	reg_gyro_fsr
-0x18,			//	reg_accel_fsr
-50,				//	wait_ms
-5,				//	packet_thresh
-10.0f,			 //	min_dps
-105.0f,			 //	max_dps
-0.14f,			//	max_gyro_var
-0.3f,		   //	min_g
-0.95f,		   //	max_g
-0.14f		   //	max_accel_var
+32768/250,       //gyro_sens
+32768/16,        // accel_sens
+0,               // reg_rate_div
+1,              //  reg_lpf
+0,               // reg_gyro_fsr
+0x18,           //  reg_accel_fsr
+50,             //  wait_ms
+5,              //  packet_thresh
+10.0f,           // min_dps
+105.0f,          // max_dps
+0.14f,          //  max_gyro_var
+0.3f,          //   min_g
+0.95f,         //   max_g
+0.14f          //   max_accel_var
 };
 /*
 static struct gyro_state_s st = {
     .reg = &reg,
     .hw = &hw,
     .test = &test
-};	*/
+};  */
 static struct gyro_state_s st={
   &reg,
   &hw,
@@ -1110,7 +1110,7 @@ int mpu_reset_fifo(void)
         data = BIT_FIFO_RST | BIT_DMP_RST;
         if (i2c_write(st.hw->addr, st.reg->user_ctrl, 1, &data))
             return -1;
-       
+
         data = BIT_DMP_EN | BIT_FIFO_EN;
         if (st.chip_cfg.sensors & INV_XYZ_COMPASS)
             data |= BIT_AUX_IF_EN;
@@ -1135,7 +1135,7 @@ int mpu_reset_fifo(void)
             data = BIT_FIFO_EN | BIT_AUX_IF_EN;
         if (i2c_write(st.hw->addr, st.reg->user_ctrl, 1, &data))
             return -1;
-    
+
         if (st.chip_cfg.int_enable)
             data = BIT_DATA_RDY_EN;
         else

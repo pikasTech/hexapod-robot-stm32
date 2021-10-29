@@ -3,5 +3,5 @@
 #include "sys.h"
 
 extern u8 shiboqi_ch;
- 				    
+
 #endif

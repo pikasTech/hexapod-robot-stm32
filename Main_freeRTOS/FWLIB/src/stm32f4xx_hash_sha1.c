@@ -14,13 +14,13 @@
                  ##### How to use this driver #####
  ===================================================================
  [..]
-   (#) Enable The HASH controller clock using 
+   (#) Enable The HASH controller clock using
        RCC_AHB2PeriphClockCmd(RCC_AHB2Periph_HASH, ENABLE); function.
-  
+
    (#) Calculate the HASH SHA1 Digest using HASH_SHA1() function.
-  
+
    (#) Calculate the HMAC SHA1 Digest using HMAC_SHA1() function.
-  
+
 @endverbatim
   *
   ******************************************************************************
@@ -34,8 +34,8 @@
   *
   *        http://www.st.com/software_license_agreement_liberty_v2
   *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   * See the License for the specific language governing permissions and
   * limitations under the License.
@@ -50,7 +50,7 @@
   * @{
   */
 
-/** @defgroup HASH 
+/** @defgroup HASH
   * @brief HASH driver modules
   * @{
   */
@@ -66,12 +66,12 @@
 
 /** @defgroup HASH_Private_Functions
   * @{
-  */ 
+  */
 
 /** @defgroup HASH_Group6 High Level SHA1 functions
- *  @brief   High Level SHA1 Hash and HMAC functions 
+ *  @brief   High Level SHA1 Hash and HMAC functions
  *
-@verbatim   
+@verbatim
  ===============================================================================
                ##### High Level SHA1 Hash and HMAC functions #####
  ===============================================================================
@@ -158,7 +158,7 @@ ErrorStatus HASH_SHA1(uint8_t *Input, uint32_t Ilen, uint8_t Output[20])
 /**
   * @brief  Compute the HMAC SHA1 digest.
   * @param  Key: pointer to the Key used for HMAC.
-  * @param  Keylen: length of the Key used for HMAC.  
+  * @param  Keylen: length of the Key used for HMAC.
   * @param  Input: pointer to the Input buffer to be treated.
   * @param  Ilen: length of the Input buffer.
   * @param  Output: the returned digest
@@ -259,7 +259,7 @@ ErrorStatus HMAC_SHA1(uint8_t *Key, uint32_t Keylen, uint8_t *Input,
       status = ERROR;
     }
     else
-    {  
+    {
       /* Configure the number of valid bits in last word of the Key */
       HASH_SetLastWordValidBitsNbr(nbvalidbitskey);
 
@@ -300,24 +300,24 @@ ErrorStatus HMAC_SHA1(uint8_t *Key, uint32_t Keylen, uint8_t *Input,
         outputaddr+=4;
         *(uint32_t*)(outputaddr)  = __REV(SHA1_MessageDigest.Data[4]);
       }
-    }  
+    }
   }
-  return status;  
+  return status;
 }
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
+  */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

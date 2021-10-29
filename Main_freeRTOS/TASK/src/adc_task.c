@@ -1,4 +1,4 @@
-#include "adc_task.h" 
+#include "adc_task.h"
 #include "current.h"
 #include "FreeRTOS.h"
 #include "task.h"
@@ -11,37 +11,37 @@ extern __IO uint16_t ADC_ConvertedValue[];
 int valuel_max_normal[6]={118,2045,891,1118,2947,706};
 u8  flag_action_normal[6]={0};
 int value1_max[6]={0};
-//adcÈÎÎñº¯Êý
+//adcä»»åŠ¡å‡½æ•°
 void adc_task(void *pvParameters)
 {
-	
-	while(1)
-		{	
-			int j;		
-			int i;
-			int temp_val1=0;
-			for(i=0;i<6;i++)
-				{
-				for(j=0;j<30;j++)
-								{
-									//temp_val1+= //Ä³¸öÍ¨µÀµÄµçÑ¹Öµ=DMAÍ¨µÀÄÃµ½µÄÄÇ¸öÊý×éÀïÃæµÄÖµ¾ÍÊÇµçÑ¹Öµ
-										temp_val1+=ADC_ConvertedValue[i];
-										vTaskDelay(1);
-								}
-										test_point[i]=temp_val1;											
-										if(value1_max[i]<=temp_val1)
-									  value1_max[i]=temp_val1;
-										temp_val1=0;
 
-				}
-				
-						for(i=0;i<6;i++)
-					{
-						if((test_point[i])<150)	{flag_action_normal[i]=1;}
-						if((test_point[i])>150) {flag_action_normal[i]=0;}
+    while(1)
+        {
+            int j;
+            int i;
+            int temp_val1=0;
+            for(i=0;i<6;i++)
+                {
+                for(j=0;j<30;j++)
+                                {
+                                    //temp_val1+= //æŸä¸ªé€šé“çš„ç”µåŽ‹å€¼=DMAé€šé“æ‹¿åˆ°çš„é‚£ä¸ªæ•°ç»„é‡Œé¢çš„å€¼å°±æ˜¯ç”µåŽ‹å€¼
+                                        temp_val1+=ADC_ConvertedValue[i];
+                                        vTaskDelay(1);
+                                }
+                                        test_point[i]=temp_val1;
+                                        if(value1_max[i]<=temp_val1)
+                                      value1_max[i]=temp_val1;
+                                        temp_val1=0;
 
-					}	
-				
-		}
+                }
+
+                        for(i=0;i<6;i++)
+                    {
+                        if((test_point[i])<150) {flag_action_normal[i]=1;}
+                        if((test_point[i])>150) {flag_action_normal[i]=0;}
+
+                    }
+
+        }
 }
 

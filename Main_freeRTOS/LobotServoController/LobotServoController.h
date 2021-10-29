@@ -1,8 +1,8 @@
 /*******************************************************************************
-* ÎÄ¼şÃû: LobotServoController.h
-* ×÷Õß: ÉîÛÚÀÖ»ÃË÷¶û¿Æ¼¼
-* ÈÕÆÚ£º20160806
-* LSCÏµÁĞ¶æ»ú¿ØÖÆ°å¶ş´Î¿ª·¢Ê¾Àı
+* æ–‡ä»¶å: LobotServoController.h
+* ä½œè€…: æ·±åœ³ä¹å¹»ç´¢å°”ç§‘æŠ€
+* æ—¥æœŸï¼š20160806
+* LSCç³»åˆ—èˆµæœºæ§åˆ¶æ¿äºŒæ¬¡å¼€å‘ç¤ºä¾‹
 *******************************************************************************/
 
 #ifndef LOBOTSERVOCONTROLLER_H_
@@ -12,21 +12,21 @@
 #include "bool.h"
 #include "usart.h"
 
-#define FRAME_HEADER 0x55             //Ö¡Í·
-#define CMD_SERVO_MOVE 0x03           //¶æ»úÒÆ¶¯Ö¸Áî
-#define CMD_ACTION_GROUP_RUN 0x06     //ÔËĞĞ¶¯×÷×éÖ¸Áî
-#define CMD_ACTION_GROUP_STOP 0x07    //Í£Ö¹¶¯×÷×éÖ¸Áî
-#define CMD_ACTION_GROUP_SPEED 0x0B   //ÉèÖÃ¶¯×÷×éÔËĞĞËÙ¶È
-#define CMD_GET_BATTERY_VOLTAGE 0x0F  //»ñÈ¡µç³ØµçÑ¹Ö¸Áî
+#define FRAME_HEADER 0x55             //å¸§å¤´
+#define CMD_SERVO_MOVE 0x03           //èˆµæœºç§»åŠ¨æŒ‡ä»¤
+#define CMD_ACTION_GROUP_RUN 0x06     //è¿è¡ŒåŠ¨ä½œç»„æŒ‡ä»¤
+#define CMD_ACTION_GROUP_STOP 0x07    //åœæ­¢åŠ¨ä½œç»„æŒ‡ä»¤
+#define CMD_ACTION_GROUP_SPEED 0x0B   //è®¾ç½®åŠ¨ä½œç»„è¿è¡Œé€Ÿåº¦
+#define CMD_GET_BATTERY_VOLTAGE 0x0F  //è·å–ç”µæ± ç”µå‹æŒ‡ä»¤
 
 extern bool isUartRxCompleted;
 extern uint8_t LobotRxBuf[16];
 extern uint16_t batteryVolt;
 extern void receiveHandle(void);
 
-typedef struct _lobot_servo_ {  //¶æ»úID,¶æ»úÄ¿±êÎ»ÖÃ
-	uint8_t ID;
-	uint16_t Position;
+typedef struct _lobot_servo_ {  //èˆµæœºID,èˆµæœºç›®æ ‡ä½ç½®
+    uint8_t ID;
+    uint16_t Position;
 } LobotServo;
 
 

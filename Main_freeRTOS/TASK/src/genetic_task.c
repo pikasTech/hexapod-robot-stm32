@@ -1,38 +1,38 @@
-#include "genetic_task.h" 
+#include "genetic_task.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include "action_task_723.h"
-//geneticÈÎÎñº¯Êı
+//geneticä»»åŠ¡å‡½æ•°
 
 int genetic_mode;
 int genetic_start=0;
 void genetic_task(void *pvParameters)
 {
 
-	while(1)
-	{
-	
-			int i;
-			while(STA_STOP==1)vTaskDelay(30);		
-			while(genetic_start==0)vTaskDelay(30);	
-			initiate();				//²úÉú³õÊ¼»¯ÖÖÈº 
-			evaluation( 0 ,genetic_mode);		//¶Ô³õÊ¼»¯ÖÖÈº½øĞĞÆÀ¹À¡¢ÅÅĞò 
+    while(1)
+    {
 
-			for( i = 0 ; i < MAXloop ; i++ )
-		{
-			while(STA_STOP==1)vTaskDelay(30);
-			cross();			//½øĞĞ½»²æ²Ù×÷ 
-			evaluation( 1 ,genetic_mode);	//¶Ô×ÓÖÖÈº½øĞĞÆÀ¹À¡¢ÅÅĞò 
-			mutation(genetic_mode);			//±äÒì²Ù×÷ 				
-			selection();		//¶Ô¸¸×ÓÖÖÈºÖĞÑ¡Ôñ×îÓÅµÄNUM¸ö×÷ÎªĞÂµÄ¸¸ÖÖÈº 
-			if( record() == 1 )	//Âú×ãÖÕÖ¹¹æÔò1£¬Ôòflag=1²¢Í£Ö¹Ñ­»· 
-			{
-				break;
-			}
-		}
-		
-		while(1)  		vTaskDelay(30);
-		
-	}
+            int i;
+            while(STA_STOP==1)vTaskDelay(30);
+            while(genetic_start==0)vTaskDelay(30);
+            initiate();             //äº§ç”Ÿåˆå§‹åŒ–ç§ç¾¤
+            evaluation( 0 ,genetic_mode);       //å¯¹åˆå§‹åŒ–ç§ç¾¤è¿›è¡Œè¯„ä¼°ã€æ’åº
+
+            for( i = 0 ; i < MAXloop ; i++ )
+        {
+            while(STA_STOP==1)vTaskDelay(30);
+            cross();            //è¿›è¡Œäº¤å‰æ“ä½œ
+            evaluation( 1 ,genetic_mode);   //å¯¹å­ç§ç¾¤è¿›è¡Œè¯„ä¼°ã€æ’åº
+            mutation(genetic_mode);         //å˜å¼‚æ“ä½œ
+            selection();        //å¯¹çˆ¶å­ç§ç¾¤ä¸­é€‰æ‹©æœ€ä¼˜çš„NUMä¸ªä½œä¸ºæ–°çš„çˆ¶ç§ç¾¤
+            if( record() == 1 ) //æ»¡è¶³ç»ˆæ­¢è§„åˆ™1ï¼Œåˆ™flag=1å¹¶åœæ­¢å¾ªç¯
+            {
+                break;
+            }
+        }
+
+        while(1)        vTaskDelay(30);
+
+    }
 
 }

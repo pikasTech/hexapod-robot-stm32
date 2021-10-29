@@ -33,7 +33,7 @@ struct int_param_s {
     unsigned long pin;
     void (*cb)(volatile void*);
     void *arg;
-#endif		*/
+#endif      */
 };
 
 #define MPU_INT_STATUS_DATA_READY       (0x0001)

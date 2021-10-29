@@ -1,4 +1,4 @@
-#include "action_task.h" 
+#include "action_task.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include "usart.h"
@@ -6,9 +6,9 @@
 #include "adc_task.h"
 #include "sys.h"
 #include "balance_task.h"
-//Ìí¼ÓÍâ²¿Í·ÎÄ¼ş PID
+//æ·»åŠ å¤–éƒ¨å¤´æ–‡ä»¶ PID
 #include "pid.h"
-/*ÉùÃ÷Íâ²¿PID±äÁ¿À´ĞŞ¸Ä¹Ì¶¨µÄ°Ú¶¯Ì¬ÏÂµÄ3 ºÍXXÌ¬ÏÂµÄ5*/
+/*å£°æ˜å¤–éƒ¨PIDå˜é‡æ¥ä¿®æ”¹å›ºå®šçš„æ‘†åŠ¨æ€ä¸‹çš„3 å’ŒXXæ€ä¸‹çš„5*/
 extern PID  RF_DIS;
 extern PID  RM_DIS;
 extern PID  RB_DIS;
@@ -16,26 +16,26 @@ extern PID  LF_DIS;
 extern PID  LM_DIS;
 extern PID  LB_DIS;
 
-/*ÉùÃ÷²¿·ÖLRL ºÍRLRÍÈ¸ß·Ö±ğÉèÖÃ*/
-void LRL_high_single(int time,float h1,float h2,float h3); //LRLË³ĞòÎªLF RM LB
-void RLR_high_single(int time,float h1,float h2,float h3); //RLRË³ĞòÎªRF LM RB
+/*å£°æ˜éƒ¨åˆ†LRL å’ŒRLRè…¿é«˜åˆ†åˆ«è®¾ç½®*/
+void LRL_high_single(int time,float h1,float h2,float h3); //LRLé¡ºåºä¸ºLF RM LB
+void RLR_high_single(int time,float h1,float h2,float h3); //RLRé¡ºåºä¸ºRF LM RB
 
 int action_t;
 int action_n=0;
 float angle_test[6];
 
 #define S10 0
-#define S0 	1
+#define S0  1
 #define S01 2
-#define S1 	3
+#define S1  3
 
-//ÉìÕ¹ÏµÊı
+//ä¼¸å±•ç³»æ•°
 double L_init=10;
 
-//»úÉí¸ß¶È
+//æœºèº«é«˜åº¦
 double H_init=-15;
 
-//Ğı×ªºóÄ©¶Ë³õÄ©Î»ÖÃ
+//æ—‹è½¬åæœ«ç«¯åˆæœ«ä½ç½®
 double RF_P1z[3];
 double RM_P1z[3];
 double RB_P1z[3];
@@ -44,274 +44,274 @@ double LM_P1z[3];
 double LB_P1z[3];
 
 
-//Ê±¼äÆğµã
+//æ—¶é—´èµ·ç‚¹
 long int LRL_t0;
 long int RLR_t0;
 
-//¹ı¶ÉÕ¼¿Õ±È
+//è¿‡æ¸¡å ç©ºæ¯”
 float LRL_R0=0.4f;
 
-//¹ı¶ÉÌáÇ°Õ¼¿Õ±È
+//è¿‡æ¸¡æå‰å ç©ºæ¯”
 
 float LRL_R0f=0.5f;
 
-//Ç°Éê±ÈÀı
+//å‰ç”³æ¯”ä¾‹
 float LRL_Rf=0.5f;
 
-//Ç°×ª±ÈÀı
+//å‰è½¬æ¯”ä¾‹
 float LRL_Rz=0.5f;
 
-//Ç°Éê±ÈÀı
+//å‰ç”³æ¯”ä¾‹
 float LRL_Rf_use=0.5f;
 
-//Ç°×ª±ÈÀı
+//å‰è½¬æ¯”ä¾‹
 float LRL_Rz_use=0.5f;
 
-//Ê±¼ä
+//æ—¶é—´
 long int LRL_t;
 long int RLR_t;
 
-//Ïà
+//ç›¸
 int LRL_S;
 int RLR_S;
-//ÏàÎ»
+//ç›¸ä½
 float LRL_phase;
 float RLR_phase;
 
-//ÖÜÆÚ
+//å‘¨æœŸ
 float LRL_T=2000;
 float RLR_T=2000;
-//¹ı¶ÈÏà10ÁÙ½ç
+//è¿‡åº¦ç›¸10ä¸´ç•Œ
 float LRL_phase10;
 float RLR_phase10;
-//°Ú¶¯Ïà0ÁÙ½ç
+//æ‘†åŠ¨ç›¸0ä¸´ç•Œ
 float LRL_phase0;
 float RLR_phase0;
-//¹ı¶ÈÏà01ÁÙ½ç
+//è¿‡åº¦ç›¸01ä¸´ç•Œ
 float LRL_phase01=0.5f;
 float RLR_phase01=0.5f;
 
-//²½³¤
+//æ­¥é•¿
 float LRL_step;
 float RLR_step;
-//ÒÆ¶¯ÃüÁîÏòÁ¿ [Vx,Vy,w]
-float LRL_O[3]; 
+//ç§»åŠ¨å‘½ä»¤å‘é‡ [Vx,Vy,w]
+float LRL_O[3];
 float RLR_O[3];
-float LRL_O_use[3]; 
+float LRL_O_use[3];
 float RLR_O_use[3];
-//²½³¤ÏòÁ¿ [x,y]
+//æ­¥é•¿å‘é‡ [x,y]
 float LRL_L[2];
 float RLR_L[2];
-//Ğı×ª½Ç²½³¤
+//æ—‹è½¬è§’æ­¥é•¿
 float LRL_theat;
 float RLR_theat;
-//Æ½ÒÆ¹ì¼£ÆğµãÏòÁ¿ [x1,y1]
+//å¹³ç§»è½¨è¿¹èµ·ç‚¹å‘é‡ [x1,y1]
 float LRL_P1[2];
 float RLR_P1[2];
-//Æ½ÒÆ¹ì¼£ÖÕµãÏòÁ¿ [x2,y2]
+//å¹³ç§»è½¨è¿¹ç»ˆç‚¹å‘é‡ [x2,y2]
 float LRL_P2[2];
 float RLR_P2[2];
-//Ğı×ª¹ì¼£Æğµã½Ç¶È [theat1]
+//æ—‹è½¬è½¨è¿¹èµ·ç‚¹è§’åº¦ [theat1]
 float LRL_theat1;
 float RLR_theat1;
-//Ğı×ª¹ì¼£ÖÕµã½Ç¶È [theat2]
+//æ—‹è½¬è½¨è¿¹ç»ˆç‚¹è§’åº¦ [theat2]
 float LRL_theat2;
 float RLR_theat2;
 
-u8 STA_START;//Æô¶¯±êÖ¾
-u8 STA_STAND=1;//¾²Á¢±êÖ¾
-u8 STA_STOP=1;//Í£Ö¹±êÖ¾
-//ÏòÁ¿ÑØZÖáĞı×ª£¨Ğı×ª¾ØÕó·¨£©
+u8 STA_START;//å¯åŠ¨æ ‡å¿—
+u8 STA_STAND=1;//é™ç«‹æ ‡å¿—
+u8 STA_STOP=1;//åœæ­¢æ ‡å¿—
+//å‘é‡æ²¿Zè½´æ—‹è½¬ï¼ˆæ—‹è½¬çŸ©é˜µæ³•ï¼‰
 void rotate_z(double input[3],double output[3],double theat)
 {
-	
-	double matrix2[3][1];
-	double matrix[3][1];
-	double matrix1[3][3];
-    int i,j,k;   
 
-	
-	matrix2[0][0]=input[0];
+    double matrix2[3][1];
+    double matrix[3][1];
+    double matrix1[3][3];
+    int i,j,k;
+
+
+    matrix2[0][0]=input[0];
   matrix2[1][0]=input[1];
   matrix2[2][0]=input[2];
-	
-	matrix1[0][0]=cos(theat);
-	matrix1[0][1]=-sin(theat);
-	matrix1[0][2]=0;
-	matrix1[1][0]=sin(theat);
-	matrix1[1][1]=cos(theat);
-	matrix1[1][2]=0;
-	matrix1[2][0]=0;
-	matrix1[2][1]=0;
-	matrix1[2][2]=1;
+
+    matrix1[0][0]=cos(theat);
+    matrix1[0][1]=-sin(theat);
+    matrix1[0][2]=0;
+    matrix1[1][0]=sin(theat);
+    matrix1[1][1]=cos(theat);
+    matrix1[1][2]=0;
+    matrix1[2][0]=0;
+    matrix1[2][1]=0;
+    matrix1[2][2]=1;
 
     /*???matrix:*/
     for(i=0;i<3;i++){
         for(j=0;j<1;j++){
-            matrix[i][j]=0; 
-        } 
-    } 
+            matrix[i][j]=0;
+        }
+    }
 
     for(i=0;i<3;i++){
         for(j=0;j<1;j++){
             for(k=0;k<3;k++){
-                matrix[i][j]=matrix[i][j]+matrix1[i][k]*matrix2[k][j]; 
-            } 
-        } 
+                matrix[i][j]=matrix[i][j]+matrix1[i][k]*matrix2[k][j];
+            }
+        }
     }
 
-	output[0]=matrix[0][0];
-	output[1]=matrix[1][0];
-	output[2]=matrix[2][0];		
-		
-		
+    output[0]=matrix[0][0];
+    output[1]=matrix[1][0];
+    output[2]=matrix[2][0];
+
+
 }
 
-//»úÉí¸ß¶È¡¢ÉìÕ¹³Ì¶È¿ØÖÆ
+//æœºèº«é«˜åº¦ã€ä¼¸å±•ç¨‹åº¦æ§åˆ¶
 void LH_to_xyz_init(double T03[3][1],double d[4],double L,double H,double xyz_init[3])
 {
-	
-	double t1,t2,t3,t4,t5;
-	double c4,s4;
-	double d3,d4,d5,d6;
+
+    double t1,t2,t3,t4,t5;
+    double c4,s4;
+    double d3,d4,d5,d6;
   double x03,y03,z03;
-	double x,y,z;
-	
-	d3=d[0];
-	d4=d[1];
-	d5=d[2];
-	d6=d[3];
-	
-	x03=T03[0][0];
-	y03=T03[1][0];
-	z03=T03[2][0];
-	//¼ÆËã T1 T2
-	t1=atan2(y03,x03);
-	t2=asin(z03/d3);
-	//¼ÆËã T3
-	t3=0;//³õÊ¼Î»ÖÃÎª0		
-	//¼ÆËã T5
-	t5=-acos((L*L+H*H-d5*d5-d6*d6)/(d5*d6*2.0f));
-	//¼ÆËã T4
-	c4=	\
+    double x,y,z;
 
-	(d5*L + d6*L*cos(t5) + d6*H*sin(t5))/(d6*d6*cos(t5)*cos(t5) + d6*d6*sin(t5)*sin(t5)			\
-	+ d5*d5 + 2.0f*d5*d6*cos(t5));
+    d3=d[0];
+    d4=d[1];
+    d5=d[2];
+    d6=d[3];
 
-	s4=	\
-	
-	(d5*H - d6*L*sin(t5) + d6*H*cos(t5))/(d6*d6*cos(t5)*cos(t5) + d6*d6*sin(t5)*sin(t5)			\
-	+ d5*d5 + 2.0f*d5*d6*cos(t5));
-	t4=atan2(s4,c4);
-	
-	x =		\
-	 
-	d3*cos(t1)*cos(t2) - d6*(cos(t5)*(cos(t4)*(sin(t1)*sin(t3) - cos(t1)*cos(t2)*cos(t3))				\
-	+ cos(t1)*sin(t2)*sin(t4)) - sin(t5)*(sin(t4)*(sin(t1)*sin(t3) - cos(t1)*cos(t2)*cos(t3))		\
-	- cos(t1)*cos(t4)*sin(t2))) - d5*(cos(t4)*(sin(t1)*sin(t3) - cos(t1)*cos(t2)*cos(t3))				\
-	+ cos(t1)*sin(t2)*sin(t4)) - d4*(sin(t1)*sin(t3) - cos(t1)*cos(t2)*cos(t3))									;
-	 
-	y =		\
-	 
-	d4*(cos(t1)*sin(t3) + cos(t2)*cos(t3)*sin(t1)) + d6*(cos(t5)*(cos(t4)*(cos(t1)*sin(t3)			\
-	+ cos(t2)*cos(t3)*sin(t1)) - sin(t1)*sin(t2)*sin(t4)) - sin(t5)*(sin(t4)*(cos(t1)*sin(t3)		\
-	+ cos(t2)*cos(t3)*sin(t1)) + cos(t4)*sin(t1)*sin(t2))) + d5*(cos(t4)*(cos(t1)*sin(t3)				\
-	+ cos(t2)*cos(t3)*sin(t1)) - sin(t1)*sin(t2)*sin(t4)) + d3*cos(t2)*sin(t1)									;
-	 
-	
-	z =		\
-	 
-	d5*(cos(t2)*sin(t4) + cos(t3)*cos(t4)*sin(t2)) + d6*(cos(t5)*(cos(t2)*sin(t4)								\
-	+ cos(t3)*cos(t4)*sin(t2)) + sin(t5)*(cos(t2)*cos(t4) - cos(t3)*sin(t2)*sin(t4)))						\
-	+ d3*sin(t2) + d4*cos(t3)*sin(t2)																														;
+    x03=T03[0][0];
+    y03=T03[1][0];
+    z03=T03[2][0];
+    //è®¡ç®— T1 T2
+    t1=atan2(y03,x03);
+    t2=asin(z03/d3);
+    //è®¡ç®— T3
+    t3=0;//åˆå§‹ä½ç½®ä¸º0
+    //è®¡ç®— T5
+    t5=-acos((L*L+H*H-d5*d5-d6*d6)/(d5*d6*2.0f));
+    //è®¡ç®— T4
+    c4= \
 
-	
-	xyz_init[0]=x;
-	xyz_init[1]=y;
-	xyz_init[2]=z;
-	
+    (d5*L + d6*L*cos(t5) + d6*H*sin(t5))/(d6*d6*cos(t5)*cos(t5) + d6*d6*sin(t5)*sin(t5)         \
+    + d5*d5 + 2.0f*d5*d6*cos(t5));
+
+    s4= \
+
+    (d5*H - d6*L*sin(t5) + d6*H*cos(t5))/(d6*d6*cos(t5)*cos(t5) + d6*d6*sin(t5)*sin(t5)         \
+    + d5*d5 + 2.0f*d5*d6*cos(t5));
+    t4=atan2(s4,c4);
+
+    x =     \
+
+    d3*cos(t1)*cos(t2) - d6*(cos(t5)*(cos(t4)*(sin(t1)*sin(t3) - cos(t1)*cos(t2)*cos(t3))               \
+    + cos(t1)*sin(t2)*sin(t4)) - sin(t5)*(sin(t4)*(sin(t1)*sin(t3) - cos(t1)*cos(t2)*cos(t3))       \
+    - cos(t1)*cos(t4)*sin(t2))) - d5*(cos(t4)*(sin(t1)*sin(t3) - cos(t1)*cos(t2)*cos(t3))               \
+    + cos(t1)*sin(t2)*sin(t4)) - d4*(sin(t1)*sin(t3) - cos(t1)*cos(t2)*cos(t3))                                 ;
+
+    y =     \
+
+    d4*(cos(t1)*sin(t3) + cos(t2)*cos(t3)*sin(t1)) + d6*(cos(t5)*(cos(t4)*(cos(t1)*sin(t3)          \
+    + cos(t2)*cos(t3)*sin(t1)) - sin(t1)*sin(t2)*sin(t4)) - sin(t5)*(sin(t4)*(cos(t1)*sin(t3)       \
+    + cos(t2)*cos(t3)*sin(t1)) + cos(t4)*sin(t1)*sin(t2))) + d5*(cos(t4)*(cos(t1)*sin(t3)               \
+    + cos(t2)*cos(t3)*sin(t1)) - sin(t1)*sin(t2)*sin(t4)) + d3*cos(t2)*sin(t1)                                  ;
+
+
+    z =     \
+
+    d5*(cos(t2)*sin(t4) + cos(t3)*cos(t4)*sin(t2)) + d6*(cos(t5)*(cos(t2)*sin(t4)                               \
+    + cos(t3)*cos(t4)*sin(t2)) + sin(t5)*(cos(t2)*cos(t4) - cos(t3)*sin(t2)*sin(t4)))                       \
+    + d3*sin(t2) + d4*cos(t3)*sin(t2)                                                                                                                       ;
+
+
+    xyz_init[0]=x;
+    xyz_init[1]=y;
+    xyz_init[2]=z;
+
 }
 
-//LRL×é ÍÈ¸ßÉèÖÃ
+//LRLç»„ è…¿é«˜è®¾ç½®
 void LRL_high(int time,float h)
 {
-	 T06_LF[2]=T06_init_LF[2]+h;	
+     T06_LF[2]=T06_init_LF[2]+h;
 
-	 T06_RM[2]=T06_init_RM[2]+h;
+     T06_RM[2]=T06_init_RM[2]+h;
 
-   T06_LB[2]=T06_init_LB[2]+h;	
-	
-		 vTaskDelay(time);
+   T06_LB[2]=T06_init_LB[2]+h;
+
+         vTaskDelay(time);
 }
 void LRL_high_single(int time, float h1,float h2,float h3)
 {
-   T06_LF[2]=T06_init_LF[2]+h1;	
+   T06_LF[2]=T06_init_LF[2]+h1;
 
-	 T06_RM[2]=T06_init_RM[2]+h2;
+     T06_RM[2]=T06_init_RM[2]+h2;
 
-   T06_LB[2]=T06_init_LB[2]+h3;	
-	
-		 vTaskDelay(time);
+   T06_LB[2]=T06_init_LB[2]+h3;
+
+         vTaskDelay(time);
 }
 
-////LRL×é Î»ÖÃÉèÖÃ
+////LRLç»„ ä½ç½®è®¾ç½®
 void LRL_position(int time,float x,float y,float theat)
 {
-	 rotate_z(T06_init_LF,LF_P1z,theat);//Ğı×ª±ä»»
-	 T06_LF[0]=LF_P1z[0]+x;
-	 T06_LF[1]=LF_P1z[1]+y;
+     rotate_z(T06_init_LF,LF_P1z,theat);//æ—‹è½¬å˜æ¢
+     T06_LF[0]=LF_P1z[0]+x;
+     T06_LF[1]=LF_P1z[1]+y;
 
-	 rotate_z(T06_init_RM,RM_P1z,theat);//Ğı×ª±ä»»
-	 T06_RM[0]=RM_P1z[0]+x;
-	 T06_RM[1]=RM_P1z[1]+y;
+     rotate_z(T06_init_RM,RM_P1z,theat);//æ—‹è½¬å˜æ¢
+     T06_RM[0]=RM_P1z[0]+x;
+     T06_RM[1]=RM_P1z[1]+y;
 
-	 rotate_z(T06_init_LB,LB_P1z,theat);//Ğı×ª±ä»»
-	 T06_LB[0]=LB_P1z[0]+x;
-	 T06_LB[1]=LB_P1z[1]+y;	
-	
-	
-		 vTaskDelay(time);
-	
+     rotate_z(T06_init_LB,LB_P1z,theat);//æ—‹è½¬å˜æ¢
+     T06_LB[0]=LB_P1z[0]+x;
+     T06_LB[1]=LB_P1z[1]+y;
+
+
+         vTaskDelay(time);
+
 }
 
 
 
-//RLR×é ÍÈ¸ßÉèÖÃ
+//RLRç»„ è…¿é«˜è®¾ç½®
 void RLR_high(int time,float h )
 {
-	
-	 T06_RF[2]=T06_init_RF[2]+h;	
-	 T06_LM[2]=T06_init_LM[2]+h;
-   T06_RB[2]=T06_init_RB[2]+h;	
-	
-		 vTaskDelay(time);
-	
+
+     T06_RF[2]=T06_init_RF[2]+h;
+     T06_LM[2]=T06_init_LM[2]+h;
+   T06_RB[2]=T06_init_RB[2]+h;
+
+         vTaskDelay(time);
+
 }
 void RLR_high_single(int time, float h1,float h2,float h3)
 {
-	 T06_RF[2]=T06_init_RF[2]+h1;	
-	 T06_LM[2]=T06_init_LM[2]+h2;
-   T06_RB[2]=T06_init_RB[2]+h3;	
-		 vTaskDelay(time);
+     T06_RF[2]=T06_init_RF[2]+h1;
+     T06_LM[2]=T06_init_LM[2]+h2;
+   T06_RB[2]=T06_init_RB[2]+h3;
+         vTaskDelay(time);
 }
 
 
-////RLR×é Î»ÖÃÉèÖÃ
+////RLRç»„ ä½ç½®è®¾ç½®
 void RLR_position(int time,float x,float y,float theat)
 {
-	 rotate_z(T06_init_RF,RF_P1z,theat);//Ğı×ª±ä»»
-	 T06_RF[0]=RF_P1z[0]+x;
-	 T06_RF[1]=RF_P1z[1]+y;
+     rotate_z(T06_init_RF,RF_P1z,theat);//æ—‹è½¬å˜æ¢
+     T06_RF[0]=RF_P1z[0]+x;
+     T06_RF[1]=RF_P1z[1]+y;
 
-	 rotate_z(T06_init_LM,LM_P1z,theat);//Ğı×ª±ä»»
-	 T06_LM[0]=LM_P1z[0]+x;	
-	 T06_LM[1]=LM_P1z[1]+y;	
-	
-	 rotate_z(T06_init_RB,RB_P1z,theat);//Ğı×ª±ä»»
-	 T06_RB[0]=RB_P1z[0]+x;		
-	 T06_RB[1]=RB_P1z[1]+y;	
-	
-	 vTaskDelay(time);
+     rotate_z(T06_init_LM,LM_P1z,theat);//æ—‹è½¬å˜æ¢
+     T06_LM[0]=LM_P1z[0]+x;
+     T06_LM[1]=LM_P1z[1]+y;
+
+     rotate_z(T06_init_RB,RB_P1z,theat);//æ—‹è½¬å˜æ¢
+     T06_RB[0]=RB_P1z[0]+x;
+     T06_RB[1]=RB_P1z[1]+y;
+
+     vTaskDelay(time);
 }
 
 
@@ -321,303 +321,303 @@ float y_from_action_task;
 
 void wetherClearOrder(void)
 {
-			int i;
-			if(STA_STOP==1)for(i=0;i<3;i++)LRL_O_use[i]=0;
-			else for(i=0;i<3;i++)LRL_O_use[i]=LRL_O[i];
+            int i;
+            if(STA_STOP==1)for(i=0;i<3;i++)LRL_O_use[i]=0;
+            else for(i=0;i<3;i++)LRL_O_use[i]=LRL_O[i];
 
-			for(i=0;i<3;i++)RLR_O_use[i]=LRL_O_use[i];
+            for(i=0;i<3;i++)RLR_O_use[i]=LRL_O_use[i];
 }
-				
+
 void generateStepVector(void)
 {
-				//¼ÆËãÆ½ÒÆ²½³¤ÏòÁ¿
-				LRL_L[0]=LRL_O_use[0]*LRL_T/1000.0f;
-				LRL_L[1]=LRL_O_use[1]*LRL_T/1000.0f;
+                //è®¡ç®—å¹³ç§»æ­¥é•¿å‘é‡
+                LRL_L[0]=LRL_O_use[0]*LRL_T/1000.0f;
+                LRL_L[1]=LRL_O_use[1]*LRL_T/1000.0f;
 
-				RLR_L[0]=LRL_O_use[0]*LRL_T/1000.0f;
-				RLR_L[1]=LRL_O_use[1]*LRL_T/1000.0f;
+                RLR_L[0]=LRL_O_use[0]*LRL_T/1000.0f;
+                RLR_L[1]=LRL_O_use[1]*LRL_T/1000.0f;
 
-				//¼ÆËãĞı×ª½Ç²½³¤
-				
-				LRL_theat=LRL_O_use[2]*LRL_T/1000.0f;
-	
-				RLR_theat=RLR_O_use[2]*RLR_T/1000.0f;				
-				}
-				
-				void generateInitialAndEndPosition(void)	
-				{
-				if(STA_START==1)LRL_Rf_use=0,LRL_Rz_use=0;//Æô¶¯Ê±Ç°Éì±ÈºÍÇ°×ª±ÈÖÃ1
-				else LRL_Rf_use=LRL_Rf,LRL_Rz_use=LRL_Rz;
-				
-				//¼ÆËãÆ½ÒÆ±ä»»³õÄ©Î»ÖÃ
-				LRL_P1[0]=LRL_L[0]*LRL_Rf_use;
-				LRL_P1[1]=LRL_L[1]*LRL_Rf_use;
+                //è®¡ç®—æ—‹è½¬è§’æ­¥é•¿
 
-				LRL_P2[0]=-LRL_L[0]*(1-LRL_Rf_use);
-				LRL_P2[1]=-LRL_L[1]*(1-LRL_Rf_use);
-				
-				RLR_P1[0]=RLR_L[0]*LRL_Rf_use;
-				RLR_P1[1]=RLR_L[1]*LRL_Rf_use;
+                LRL_theat=LRL_O_use[2]*LRL_T/1000.0f;
 
-				RLR_P2[0]=-RLR_L[0]*(1-LRL_Rf_use);
-				RLR_P2[1]=-RLR_L[1]*(1-LRL_Rf_use);
+                RLR_theat=RLR_O_use[2]*RLR_T/1000.0f;
+                }
 
-				//¼ÆËãĞı×ª±ä»»³õÄ©Î»ÖÃ
-				LRL_theat1=LRL_theat*LRL_Rz_use;
-				LRL_theat2=-LRL_theat*(1-LRL_Rz_use);
-				
-				RLR_theat1=RLR_theat*LRL_Rz_use;
-				RLR_theat2=-RLR_theat*(1-LRL_Rz_use);
+                void generateInitialAndEndPosition(void)
+                {
+                if(STA_START==1)LRL_Rf_use=0,LRL_Rz_use=0;//å¯åŠ¨æ—¶å‰ä¼¸æ¯”å’Œå‰è½¬æ¯”ç½®1
+                else LRL_Rf_use=LRL_Rf,LRL_Rz_use=LRL_Rz;
+
+                //è®¡ç®—å¹³ç§»å˜æ¢åˆæœ«ä½ç½®
+                LRL_P1[0]=LRL_L[0]*LRL_Rf_use;
+                LRL_P1[1]=LRL_L[1]*LRL_Rf_use;
+
+                LRL_P2[0]=-LRL_L[0]*(1-LRL_Rf_use);
+                LRL_P2[1]=-LRL_L[1]*(1-LRL_Rf_use);
+
+                RLR_P1[0]=RLR_L[0]*LRL_Rf_use;
+                RLR_P1[1]=RLR_L[1]*LRL_Rf_use;
+
+                RLR_P2[0]=-RLR_L[0]*(1-LRL_Rf_use);
+                RLR_P2[1]=-RLR_L[1]*(1-LRL_Rf_use);
+
+                //è®¡ç®—æ—‹è½¬å˜æ¢åˆæœ«ä½ç½®
+                LRL_theat1=LRL_theat*LRL_Rz_use;
+                LRL_theat2=-LRL_theat*(1-LRL_Rz_use);
+
+                RLR_theat1=RLR_theat*LRL_Rz_use;
+                RLR_theat2=-RLR_theat*(1-LRL_Rz_use);
 
 
-				}					
-				void gainPhase(void)
-				{
-					//»ñÈ¡µ±Ç°Ê±¼ä
-				LRL_t=systime-LRL_t0;
-				
-				//»ñÈ¡µ±Ç°ÏàÎ»
-				LRL_phase=LRL_t/LRL_T;
-				RLR_phase=LRL_phase+0.5f;
-					
+                }
+                void gainPhase(void)
+                {
+                    //è·å–å½“å‰æ—¶é—´
+                LRL_t=systime-LRL_t0;
+
+                //è·å–å½“å‰ç›¸ä½
+                LRL_phase=LRL_t/LRL_T;
+                RLR_phase=LRL_phase+0.5f;
+
 }
 void wetherGoToNextCycle()
-			{	
-								//½øÈëÏÂÒ»ÖÜÆÚ
-				if(STA_STAND==0&&LRL_phase>=1)
-				{
-						LRL_phase=0,LRL_t0=systime,STA_START=0;//½áÊøÆô¶¯ÖÜÆÚ£¬½øÈëÕı³£ÔËĞĞÖÜÆÚ
-				}
-				//½øÈëÏÂÒ»ÖÜÆÚ
-				if(STA_STAND==0&&RLR_phase>=1)
-				{
-					RLR_phase-=1;
-				}
-			}
+            {
+                                //è¿›å…¥ä¸‹ä¸€å‘¨æœŸ
+                if(STA_STAND==0&&LRL_phase>=1)
+                {
+                        LRL_phase=0,LRL_t0=systime,STA_START=0;//ç»“æŸå¯åŠ¨å‘¨æœŸï¼Œè¿›å…¥æ­£å¸¸è¿è¡Œå‘¨æœŸ
+                }
+                //è¿›å…¥ä¸‹ä¸€å‘¨æœŸ
+                if(STA_STAND==0&&RLR_phase>=1)
+                {
+                    RLR_phase-=1;
+                }
+            }
 void startUpOrEnd(void)
 {
-					
-									if(	(LRL_phase>=0.5f&&LRL_phase<=0.53f)			\
-					||(RLR_phase>=0.5f&&RLR_phase<=0.53f)	)
-				{
-					//ÅĞ¶ÏÊÇ·ñĞèÒªÇĞ»»ÖÁ¾²Á¢×´Ì¬
-					if(	(LRL_O_use[0]>-0.05f&&LRL_O_use[0]<0.05f)			\
-						&&(LRL_O_use[1]>-0.05f&&LRL_O_use[1]<0.05f)			\
-						&&(LRL_O_use[2]>-0.005f&&LRL_O_use[2]<0.005f)			\
-						&&(RLR_O_use[0]>-0.05f&&RLR_O_use[0]<0.05f)			\
-						&&(RLR_O_use[1]>-0.05f&&RLR_O_use[1]<0.05f)			\
-						&&(RLR_O_use[2]>-0.005f&&RLR_O_use[2]<0.005f)			\
-						)STA_STAND=1;//ÇĞ»»ÖÁ¾²Á¢×´Ì¬					
-				}
-				
-				if(STA_STAND==1)//¾²Á¢Ê±¼ì²âÊÇ·ñĞèÒªÆô¶¯
-				{
-					LRL_t0=systime;//¾²Á¢;
-					if(	(LRL_O_use[0]>-0.05f&&LRL_O_use[0]<0.05f)				\
-							&&(LRL_O_use[1]>-0.05f&&LRL_O_use[1]<0.05f)			\
-							&&(LRL_O_use[2]>-0.005f&&LRL_O_use[2]<0.005f)			\
-							&&(RLR_O_use[0]>-0.05f&&RLR_O_use[0]<0.05f)			\
-							&&(RLR_O_use[1]>-0.05f&&RLR_O_use[1]<0.05f)			\
-							&&(RLR_O_use[2]>-0.005f&&RLR_O_use[2]<0.005f)			\
-							);
-					else STA_STAND=0,STA_START=1;//ĞèÒªÒÆ¶¯Ê±Æô¶¯
-				}
-				
-								wetherClearOrder();	//ÅĞ¶ÏÊÇ·ñÍ£Ö¹
-					
-}					
+
+                                    if( (LRL_phase>=0.5f&&LRL_phase<=0.53f)         \
+                    ||(RLR_phase>=0.5f&&RLR_phase<=0.53f)   )
+                {
+                    //åˆ¤æ–­æ˜¯å¦éœ€è¦åˆ‡æ¢è‡³é™ç«‹çŠ¶æ€
+                    if( (LRL_O_use[0]>-0.05f&&LRL_O_use[0]<0.05f)           \
+                        &&(LRL_O_use[1]>-0.05f&&LRL_O_use[1]<0.05f)         \
+                        &&(LRL_O_use[2]>-0.005f&&LRL_O_use[2]<0.005f)           \
+                        &&(RLR_O_use[0]>-0.05f&&RLR_O_use[0]<0.05f)         \
+                        &&(RLR_O_use[1]>-0.05f&&RLR_O_use[1]<0.05f)         \
+                        &&(RLR_O_use[2]>-0.005f&&RLR_O_use[2]<0.005f)           \
+                        )STA_STAND=1;//åˆ‡æ¢è‡³é™ç«‹çŠ¶æ€
+                }
+
+                if(STA_STAND==1)//é™ç«‹æ—¶æ£€æµ‹æ˜¯å¦éœ€è¦å¯åŠ¨
+                {
+                    LRL_t0=systime;//é™ç«‹;
+                    if( (LRL_O_use[0]>-0.05f&&LRL_O_use[0]<0.05f)               \
+                            &&(LRL_O_use[1]>-0.05f&&LRL_O_use[1]<0.05f)         \
+                            &&(LRL_O_use[2]>-0.005f&&LRL_O_use[2]<0.005f)           \
+                            &&(RLR_O_use[0]>-0.05f&&RLR_O_use[0]<0.05f)         \
+                            &&(RLR_O_use[1]>-0.05f&&RLR_O_use[1]<0.05f)         \
+                            &&(RLR_O_use[2]>-0.005f&&RLR_O_use[2]<0.005f)           \
+                            );
+                    else STA_STAND=0,STA_START=1;//éœ€è¦ç§»åŠ¨æ—¶å¯åŠ¨
+                }
+
+                                wetherClearOrder(); //åˆ¤æ–­æ˜¯å¦åœæ­¢
+
+}
 void wetherChangeState(void)
 {
-								//¼ÆËãÏàÎ»ÁÙ½çÖµ
-				LRL_phase10=LRL_R0/4.0f;
-				LRL_phase0=0.5f-LRL_phase10;
+                                //è®¡ç®—ç›¸ä½ä¸´ç•Œå€¼
+                LRL_phase10=LRL_R0/4.0f;
+                LRL_phase0=0.5f-LRL_phase10;
 
 
-//				RLR_phase10=LRL_R0/4.0f;
-//				RLR_phase0=0.5f-LRL_phase10;	
-				//ÏàÇĞ»»
-				if(LRL_phase>=0&&LRL_phase<LRL_phase10)LRL_S=S10;
-				else if(LRL_phase>=LRL_phase10&&LRL_phase<LRL_phase0)LRL_S=S0;
-				else if(LRL_phase>=LRL_phase0&&LRL_phase<LRL_phase01)LRL_S=S01;				
-				else if(LRL_phase>=LRL_phase01&&LRL_phase<1)LRL_S=S1;				
-				
-				//ÏàÇĞ»»
-				if(RLR_phase>=0&&RLR_phase<LRL_phase10)RLR_S=S10;
-				else if(RLR_phase>=LRL_phase10&&RLR_phase<LRL_phase0)RLR_S=S0;
-				else if(RLR_phase>=LRL_phase0&&RLR_phase<LRL_phase01)RLR_S=S01;				
-				else if(RLR_phase>=LRL_phase01&&RLR_phase<1)RLR_S=S1;				
+//              RLR_phase10=LRL_R0/4.0f;
+//              RLR_phase0=0.5f-LRL_phase10;
+                //ç›¸åˆ‡æ¢
+                if(LRL_phase>=0&&LRL_phase<LRL_phase10)LRL_S=S10;
+                else if(LRL_phase>=LRL_phase10&&LRL_phase<LRL_phase0)LRL_S=S0;
+                else if(LRL_phase>=LRL_phase0&&LRL_phase<LRL_phase01)LRL_S=S01;
+                else if(LRL_phase>=LRL_phase01&&LRL_phase<1)LRL_S=S1;
+
+                //ç›¸åˆ‡æ¢
+                if(RLR_phase>=0&&RLR_phase<LRL_phase10)RLR_S=S10;
+                else if(RLR_phase>=LRL_phase10&&RLR_phase<LRL_phase0)RLR_S=S0;
+                else if(RLR_phase>=LRL_phase0&&RLR_phase<LRL_phase01)RLR_S=S01;
+                else if(RLR_phase>=LRL_phase01&&RLR_phase<1)RLR_S=S1;
 }
-				
+
 void action()
 {
-				//¾²Á¢×´Ì¬Ê±±£³Ö¾²Á¢
-				if(STA_STAND==1)
-				{
-					LRL_position(0,0,0,0);
-					RLR_position(0,0,0,0);
-					LRL_high(0,0);
-					RLR_high(0,0);
-				}
-				
-				//ÔË¶¯×´Ì¬Ê±Ö´ĞĞ¶¯×÷
-				if(STA_STAND==0)
-				{
-					//¹ı¶ÈÏà01
-					if(LRL_S==S01)
-					{
-						float kh;
-						float h1,h2,h3;                      
-						kh=(0-LF_DIS.OUT)/(LRL_phase10*(1-LRL_R0f));
-						h1=LF_DIS.OUT+kh* (LRL_phase-LRL_phase0);
-						if(h1<=0)h1=0;
-						
-						kh=(0-RM_DIS.OUT)/(LRL_phase10*(1-LRL_R0f));
-						h2=RM_DIS.OUT+kh* (LRL_phase-LRL_phase0);
-						if(h2<=0)h2=0;
-						
-						kh=(0-LB_DIS.OUT)/(LRL_phase10*(1-LRL_R0f));
-						h2=LB_DIS.OUT+kh* (LRL_phase-LRL_phase0);
-						if(h3<=0)h3=0;
-					
-						LRL_high_single(0,h1,h2,h3);
-						//LRL_high(0,h);//ÂäÍÈ	
-					}
-					//°Ú¶¯Ïà0
-					else if(LRL_S==S0)
-					{
-						//¸ù¾İÄ©¶Ë³õÄ©Î»ÖÃÉú³ÉÖ±Ïß¹ì¼£
-						float kx;
-						float ky;
-						float ktheat;
-						kx=(LRL_P1[0]-LRL_P2[0])/(0.5f-2*LRL_phase10);
-						ky=(LRL_P1[1]-LRL_P2[1])/(0.5f-2*LRL_phase10);
-						ktheat=(LRL_theat1-LRL_theat2)/(0.5f-2*LRL_phase10);
-						LRL_position(0,	LRL_P2[0]+kx*(LRL_phase-LRL_phase10),LRL_P2[1]+ky*(LRL_phase-LRL_phase10),LRL_theat2+ktheat*(LRL_phase-LRL_phase10));
-					}
-					//¹ı¶ÈÏà10					
-					else if(LRL_S==S10)
-					{
-						float kh;
-						float h1,h2,h3;
-						kh=(LF_DIS.OUT-0)/(LRL_phase10*(1-LRL_R0f));
-						if(LRL_phase<LRL_phase10*LRL_R0f)h1=0;
-						else	h1=0+kh*(LRL_phase-LRL_phase10*LRL_R0f);
-						
-							kh=(RM_DIS.OUT-0)/(LRL_phase10*(1-LRL_R0f));
-						if(LRL_phase<LRL_phase10*LRL_R0f)h2=0;
-						else	h2=0+kh*(LRL_phase-LRL_phase10*LRL_R0f);
-						
-							kh=(LB_DIS.OUT-0)/(LRL_phase10*(1-LRL_R0f));
-						if(LRL_phase<LRL_phase10*LRL_R0f)h3=0;
-						else	h3=0+kh*(LRL_phase-LRL_phase10*LRL_R0f);
-						
-							LRL_high_single(0,h1,h2,h3);
-						
-						//LRL_high(0,h);//ÂäÍÈ	
-					}
-					//Ö§³ÅÏà1
-					else if(LRL_S==S1)
-					{
-						//¸ù¾İÄ©¶Ë³õÄ©Î»ÖÃÉú³ÉÖ±Ïß¹ì¼£
-						float kx;
-						float ky;
-						float ktheat;
-						kx=(LRL_P2[0]-LRL_P1[0])/0.5f;
-						ky=(LRL_P2[1]-LRL_P1[1])/0.5f;
-						ktheat=(LRL_theat2-LRL_theat1)/0.5f;
-						LRL_position(		0,LRL_P1[0]+kx*(LRL_phase-0.5f),	LRL_P1[1]+ky*(LRL_phase-0.5f),LRL_theat1+ktheat*(LRL_phase-0.5f)  );
-					}					
+                //é™ç«‹çŠ¶æ€æ—¶ä¿æŒé™ç«‹
+                if(STA_STAND==1)
+                {
+                    LRL_position(0,0,0,0);
+                    RLR_position(0,0,0,0);
+                    LRL_high(0,0);
+                    RLR_high(0,0);
+                }
 
-					
-					
-					//¹ı¶ÈÏà01
-					if(RLR_S==S01)
-					{
-						float kh;
-						float h1,h2,h3;
-						kh=(0-RF_DIS.OUT)/(LRL_phase10*(1-LRL_R0f));
-						h1=RF_DIS.OUT+kh* (RLR_phase-LRL_phase0);
-						if(h1<=0)h1=0;
-						kh=(0-LM_DIS.OUT)/(LRL_phase10*(1-LRL_R0f));
-						h2=LM_DIS.OUT+kh* (RLR_phase-LRL_phase0);
-						if(h2<=0)h2=0;
-						kh=(0-RB_DIS.OUT)/(LRL_phase10*(1-LRL_R0f));
-						h3=RB_DIS.OUT+kh* (RLR_phase-LRL_phase0);
-						if(h3<=0)h3=0;
-						
-						RLR_high_single(0,h1,h2,h3);
-						//RLR_high(0,h);//ÂäÍÈ	
-					}
-					//°Ú¶¯Ïà0
-					else if(RLR_S==S0)
-					{
-						//¸ù¾İÄ©¶Ë³õÄ©Î»ÖÃÉú³ÉÖ±Ïß¹ì¼£
-						float kx;
-						float ky;
-						float ktheat;
-						kx=(RLR_P1[0]-RLR_P2[0])/(0.5f-2*LRL_phase10);
-						ky=(RLR_P1[1]-RLR_P2[1])/(0.5f-2*LRL_phase10);
-						ktheat=(RLR_theat1-RLR_theat2)/(0.5f-2*LRL_phase10);
-						RLR_position(0,	RLR_P2[0]+kx*(RLR_phase-LRL_phase10),RLR_P2[1]+ky*(RLR_phase-LRL_phase10),RLR_theat2+ktheat*(RLR_phase-LRL_phase10));
-					}
-					//¹ı¶ÈÏà10					
-					else if(RLR_S==S10)
-					{
-					  float kh;
-						float h1,h2,h3;
-						kh=(RF_DIS.OUT-0)/(LRL_phase10*(1-LRL_R0f));
-						if(RLR_phase<LRL_phase10*LRL_R0f)h1=0;
-						else	h1=0+kh*(RLR_phase-LRL_phase10*LRL_R0f);
-						
-						kh=(LM_DIS.OUT-0)/(LRL_phase10*(1-LRL_R0f));
-						if(RLR_phase<LRL_phase10*LRL_R0f)h2=0;
-						else	h2=0+kh*(RLR_phase-LRL_phase10*LRL_R0f);
-						
-						kh=(RB_DIS.OUT-0)/(LRL_phase10*(1-LRL_R0f));
-						if(RLR_phase<LRL_phase10*LRL_R0f)h3=0;
-						else	h3=0+kh*(RLR_phase-LRL_phase10*LRL_R0f);
-						
-						RLR_high_single(0,h1,h2,h3);
-						//RLR_high(0,h);//ÂäÍÈ	
-					}
-					//Ö§³ÅÏà1					
-					else if(RLR_S==S1)
-					{
-						//¸ù¾İÄ©¶Ë³õÄ©Î»ÖÃÉú³ÉÖ±Ïß¹ì¼£
-						float kx;
-						float ky;
-						float ktheat;
-						kx=(RLR_P2[0]-RLR_P1[0])/0.5f;
-						ky=(RLR_P2[1]-RLR_P1[1])/0.5f;
-						ktheat=(RLR_theat2-RLR_theat1)/0.5f;
-						RLR_position(		0,RLR_P1[0]+kx*(RLR_phase-0.5f),	RLR_P1[1]+ky*(RLR_phase-0.5f),RLR_theat1+ktheat*(RLR_phase-0.5f)  );
-					}					
-				}
-					
-	//Æ½ÒÆ
+                //è¿åŠ¨çŠ¶æ€æ—¶æ‰§è¡ŒåŠ¨ä½œ
+                if(STA_STAND==0)
+                {
+                    //è¿‡åº¦ç›¸01
+                    if(LRL_S==S01)
+                    {
+                        float kh;
+                        float h1,h2,h3;
+                        kh=(0-LF_DIS.OUT)/(LRL_phase10*(1-LRL_R0f));
+                        h1=LF_DIS.OUT+kh* (LRL_phase-LRL_phase0);
+                        if(h1<=0)h1=0;
+
+                        kh=(0-RM_DIS.OUT)/(LRL_phase10*(1-LRL_R0f));
+                        h2=RM_DIS.OUT+kh* (LRL_phase-LRL_phase0);
+                        if(h2<=0)h2=0;
+
+                        kh=(0-LB_DIS.OUT)/(LRL_phase10*(1-LRL_R0f));
+                        h2=LB_DIS.OUT+kh* (LRL_phase-LRL_phase0);
+                        if(h3<=0)h3=0;
+
+                        LRL_high_single(0,h1,h2,h3);
+                        //LRL_high(0,h);//è½è…¿
+                    }
+                    //æ‘†åŠ¨ç›¸0
+                    else if(LRL_S==S0)
+                    {
+                        //æ ¹æ®æœ«ç«¯åˆæœ«ä½ç½®ç”Ÿæˆç›´çº¿è½¨è¿¹
+                        float kx;
+                        float ky;
+                        float ktheat;
+                        kx=(LRL_P1[0]-LRL_P2[0])/(0.5f-2*LRL_phase10);
+                        ky=(LRL_P1[1]-LRL_P2[1])/(0.5f-2*LRL_phase10);
+                        ktheat=(LRL_theat1-LRL_theat2)/(0.5f-2*LRL_phase10);
+                        LRL_position(0, LRL_P2[0]+kx*(LRL_phase-LRL_phase10),LRL_P2[1]+ky*(LRL_phase-LRL_phase10),LRL_theat2+ktheat*(LRL_phase-LRL_phase10));
+                    }
+                    //è¿‡åº¦ç›¸10
+                    else if(LRL_S==S10)
+                    {
+                        float kh;
+                        float h1,h2,h3;
+                        kh=(LF_DIS.OUT-0)/(LRL_phase10*(1-LRL_R0f));
+                        if(LRL_phase<LRL_phase10*LRL_R0f)h1=0;
+                        else    h1=0+kh*(LRL_phase-LRL_phase10*LRL_R0f);
+
+                            kh=(RM_DIS.OUT-0)/(LRL_phase10*(1-LRL_R0f));
+                        if(LRL_phase<LRL_phase10*LRL_R0f)h2=0;
+                        else    h2=0+kh*(LRL_phase-LRL_phase10*LRL_R0f);
+
+                            kh=(LB_DIS.OUT-0)/(LRL_phase10*(1-LRL_R0f));
+                        if(LRL_phase<LRL_phase10*LRL_R0f)h3=0;
+                        else    h3=0+kh*(LRL_phase-LRL_phase10*LRL_R0f);
+
+                            LRL_high_single(0,h1,h2,h3);
+
+                        //LRL_high(0,h);//è½è…¿
+                    }
+                    //æ”¯æ’‘ç›¸1
+                    else if(LRL_S==S1)
+                    {
+                        //æ ¹æ®æœ«ç«¯åˆæœ«ä½ç½®ç”Ÿæˆç›´çº¿è½¨è¿¹
+                        float kx;
+                        float ky;
+                        float ktheat;
+                        kx=(LRL_P2[0]-LRL_P1[0])/0.5f;
+                        ky=(LRL_P2[1]-LRL_P1[1])/0.5f;
+                        ktheat=(LRL_theat2-LRL_theat1)/0.5f;
+                        LRL_position(       0,LRL_P1[0]+kx*(LRL_phase-0.5f),    LRL_P1[1]+ky*(LRL_phase-0.5f),LRL_theat1+ktheat*(LRL_phase-0.5f)  );
+                    }
+
+
+
+                    //è¿‡åº¦ç›¸01
+                    if(RLR_S==S01)
+                    {
+                        float kh;
+                        float h1,h2,h3;
+                        kh=(0-RF_DIS.OUT)/(LRL_phase10*(1-LRL_R0f));
+                        h1=RF_DIS.OUT+kh* (RLR_phase-LRL_phase0);
+                        if(h1<=0)h1=0;
+                        kh=(0-LM_DIS.OUT)/(LRL_phase10*(1-LRL_R0f));
+                        h2=LM_DIS.OUT+kh* (RLR_phase-LRL_phase0);
+                        if(h2<=0)h2=0;
+                        kh=(0-RB_DIS.OUT)/(LRL_phase10*(1-LRL_R0f));
+                        h3=RB_DIS.OUT+kh* (RLR_phase-LRL_phase0);
+                        if(h3<=0)h3=0;
+
+                        RLR_high_single(0,h1,h2,h3);
+                        //RLR_high(0,h);//è½è…¿
+                    }
+                    //æ‘†åŠ¨ç›¸0
+                    else if(RLR_S==S0)
+                    {
+                        //æ ¹æ®æœ«ç«¯åˆæœ«ä½ç½®ç”Ÿæˆç›´çº¿è½¨è¿¹
+                        float kx;
+                        float ky;
+                        float ktheat;
+                        kx=(RLR_P1[0]-RLR_P2[0])/(0.5f-2*LRL_phase10);
+                        ky=(RLR_P1[1]-RLR_P2[1])/(0.5f-2*LRL_phase10);
+                        ktheat=(RLR_theat1-RLR_theat2)/(0.5f-2*LRL_phase10);
+                        RLR_position(0, RLR_P2[0]+kx*(RLR_phase-LRL_phase10),RLR_P2[1]+ky*(RLR_phase-LRL_phase10),RLR_theat2+ktheat*(RLR_phase-LRL_phase10));
+                    }
+                    //è¿‡åº¦ç›¸10
+                    else if(RLR_S==S10)
+                    {
+                      float kh;
+                        float h1,h2,h3;
+                        kh=(RF_DIS.OUT-0)/(LRL_phase10*(1-LRL_R0f));
+                        if(RLR_phase<LRL_phase10*LRL_R0f)h1=0;
+                        else    h1=0+kh*(RLR_phase-LRL_phase10*LRL_R0f);
+
+                        kh=(LM_DIS.OUT-0)/(LRL_phase10*(1-LRL_R0f));
+                        if(RLR_phase<LRL_phase10*LRL_R0f)h2=0;
+                        else    h2=0+kh*(RLR_phase-LRL_phase10*LRL_R0f);
+
+                        kh=(RB_DIS.OUT-0)/(LRL_phase10*(1-LRL_R0f));
+                        if(RLR_phase<LRL_phase10*LRL_R0f)h3=0;
+                        else    h3=0+kh*(RLR_phase-LRL_phase10*LRL_R0f);
+
+                        RLR_high_single(0,h1,h2,h3);
+                        //RLR_high(0,h);//è½è…¿
+                    }
+                    //æ”¯æ’‘ç›¸1
+                    else if(RLR_S==S1)
+                    {
+                        //æ ¹æ®æœ«ç«¯åˆæœ«ä½ç½®ç”Ÿæˆç›´çº¿è½¨è¿¹
+                        float kx;
+                        float ky;
+                        float ktheat;
+                        kx=(RLR_P2[0]-RLR_P1[0])/0.5f;
+                        ky=(RLR_P2[1]-RLR_P1[1])/0.5f;
+                        ktheat=(RLR_theat2-RLR_theat1)/0.5f;
+                        RLR_position(       0,RLR_P1[0]+kx*(RLR_phase-0.5f),    RLR_P1[1]+ky*(RLR_phase-0.5f),RLR_theat1+ktheat*(RLR_phase-0.5f)  );
+                    }
+                }
+
+    //å¹³ç§»
 }
-				
-//actionÈÎÎñº¯Êı
+
+//actionä»»åŠ¡å‡½æ•°
 void action_task(void *pvParameters)
 {
-			while(1)
-			{
-			  T06_init();					//³õÊ¼»¯Ä©¶ËÎ»ÖÃ
+            while(1)
+            {
+              T06_init();                   //åˆå§‹åŒ–æœ«ç«¯ä½ç½®
 
-				startUpOrEnd();//Æô¶¯»òÍ£Ö¹
-				
-			  generateStepVector();//Éú³É²½³¤ÏòÁ¿
-				
-				generateInitialAndEndPosition();//Éú³É³õÄ©Î»ÖÃ
+                startUpOrEnd();//å¯åŠ¨æˆ–åœæ­¢
 
-				gainPhase();//»ñµÃµ±Ç°ÏàÎ»
+              generateStepVector();//ç”Ÿæˆæ­¥é•¿å‘é‡
 
-				wetherGoToNextCycle();//ÅĞ¶ÏÊÇ·ñ½øÈëÏÂÒ»ÖÜÆÚ
-		  
-				wetherChangeState();//¸Ä±ä×´Ì¬
+                generateInitialAndEndPosition();//ç”Ÿæˆåˆæœ«ä½ç½®
 
-				action();//Ö´ĞĞ¶¯×÷
+                gainPhase();//è·å¾—å½“å‰ç›¸ä½
 
-				vTaskDelay(10);
-			}
+                wetherGoToNextCycle();//åˆ¤æ–­æ˜¯å¦è¿›å…¥ä¸‹ä¸€å‘¨æœŸ
+
+                wetherChangeState();//æ”¹å˜çŠ¶æ€
+
+                action();//æ‰§è¡ŒåŠ¨ä½œ
+
+                vTaskDelay(10);
+            }
 }

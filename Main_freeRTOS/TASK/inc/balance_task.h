@@ -2,8 +2,8 @@
 #define __MPU6050_TASK_H
 #include "sys.h"
 
-extern double theatx,theaty;//¿É¿ØĞı×ª½Ç
-//»úÆ÷ÈË×ã¶ËÏòÁ¿
+extern double theatx,theaty;//å¯æ§æ—‹è½¬è§’
+//æœºå™¨äººè¶³ç«¯å‘é‡
 extern double T06_RF[3];
 extern double T06_RM[3];
 extern double T06_RB[3];
@@ -18,7 +18,7 @@ extern float Roll;
 extern float Pitch_use;
 extern float Roll_use;
 
-//»úÆ÷ÈË×ã¶ËÏòÁ¿³õÊ¼Öµ£¨¾²Á¢£©
+//æœºå™¨äººè¶³ç«¯å‘é‡åˆå§‹å€¼ï¼ˆé™ç«‹ï¼‰
 extern double T06_init_RF[3];
 extern double T06_init_RM[3];
 extern double T06_init_RB[3];
@@ -26,7 +26,7 @@ extern double T06_init_LF[3];
 extern double T06_init_LM[3];
 extern double T06_init_LB[3];
 
-//»úÆ÷ÈË×ã¶ËÏòÁ¿³õÊ¼Öµ£¨¾²Á¢£©(ÀíÏëÖµ£©
+//æœºå™¨äººè¶³ç«¯å‘é‡åˆå§‹å€¼ï¼ˆé™ç«‹ï¼‰(ç†æƒ³å€¼ï¼‰
 extern double T06_init_RF_ideal[3];
 extern double T06_init_RM_ideal[3];
 extern double T06_init_RB_ideal[3];
@@ -34,7 +34,7 @@ extern double T06_init_LF_ideal[3];
 extern double T06_init_LM_ideal[3];
 extern double T06_init_LB_ideal[3];
 
-//»úÆ÷ÈË»úĞµ²ÎÊı
+//æœºå™¨äººæœºæ¢°å‚æ•°
 extern double d_RF[4];
 extern double d_RM[4];
 extern double d_RB[4];
@@ -44,12 +44,12 @@ extern double d_LB[4];
 
 struct INIT_BuChang
 {
-	float rf;
-	float rm;
-	float rb;
-	float lf;
-	float lm;
-	float lb;
+    float rf;
+    float rm;
+    float rb;
+    float lf;
+    float lm;
+    float lb;
 };
 
 extern struct _lobot_servo_ servos_array[18];

@@ -1,5 +1,5 @@
 #ifndef __HL_H
-#define __HL_H	 
+#define __HL_H
 #include "sys.h"
 
 #define K_angle 11.6666
@@ -13,10 +13,10 @@
 
 #define LB1_init 1500
 #define LB2_init 1500
-#define LB3_init 1000   
+#define LB3_init 1000
 #define LM1_init 1500
 #define LM2_init 1500
-#define LM3_init 1000  
+#define LM3_init 1000
 #define LF1_init 1500
 #define LF2_init 1500
 #define LF3_init 1000
@@ -42,7 +42,7 @@
 #define RF1 1
 #define RF2 2
 #define RF3 3
-#define RM1	4
+#define RM1 4
 #define RM2 5
 #define RM3 6
 #define RB1 7
@@ -89,11 +89,11 @@
 #define L130_1 2.74226578743364
 #define L130_0 -180.162547564973
 
-#define FOOT_L_A 75.00//´óÍÈ³¤¶È
-#define FOOT_L_B 165.00//Ğ¡ÍÈ³¤¶È
-#define FOOT_L_C 60.00 //ÍÈ¸ù³¤¶È
+#define FOOT_L_A 75.00//å¤§è…¿é•¿åº¦
+#define FOOT_L_B 165.00//å°è…¿é•¿åº¦
+#define FOOT_L_C 60.00 //è…¿æ ¹é•¿åº¦
 
-void action_angle(u8 number,double angle,int time);//µ¥¹Ø½Ú¿ØÖÆ(½Ç¶ÈÖÆ)
-void action_foot(u8 foot,double angle1,double angle2,double angle3,int time);//µ¥ÍÈÈ«±äÁ¿¿ØÖÆ
-	 				    
+void action_angle(u8 number,double angle,int time);//å•å…³èŠ‚æ§åˆ¶(è§’åº¦åˆ¶)
+void action_foot(u8 foot,double angle1,double angle2,double angle3,int time);//å•è…¿å…¨å˜é‡æ§åˆ¶
+
 #endif

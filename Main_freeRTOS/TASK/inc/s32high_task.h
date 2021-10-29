@@ -9,6 +9,6 @@ PID  RB_DIS;
 PID  LF_DIS;
 PID  LM_DIS;
 PID  LB_DIS;
-void DisUpdate(void);   //¸üÐÂÊäÈë
+void DisUpdate(void);   //æ›´æ–°è¾“å…¥
 void InitPID(void);
 #endif

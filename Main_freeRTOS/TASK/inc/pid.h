@@ -3,21 +3,21 @@
 #include "sys.h"
 typedef struct
 {
- float Setvalue;   //ÓÃ»§Éè¶¨Öµ
- float Presentvale;//µ±Ç°»ñµÃÖµ
- float Kp;               
- float T;    //²ÉÑùÖÜÆÚ
- //float Ti;   //»ı·Ö³£Êı
+ float Setvalue;   //ç”¨æˆ·è®¾å®šå€¼
+ float Presentvale;//å½“å‰è·å¾—å€¼
+ float Kp;
+ float T;    //é‡‡æ ·å‘¨æœŸ
+ //float Ti;   //ç§¯åˆ†å¸¸æ•°
  float Ki;
- //float Td;   //Î¢·Ö³£Êı
+ //float Td;   //å¾®åˆ†å¸¸æ•°
  float Kd;
- float Ek;   //±¾´ÎÆ«²î
- float Ek_1; //ÉÏ´ÎÆ«²î
- float SumEk;//ÀúÊ·Æ«²îÖ®ºÍ
- float OUT_0;//¼ÆËãÖµÎª0Ê±£¬Î¬³Öµ±Ç°Êä³ö
- float OUT;  //±¾´Î¼ÆËãÊä³öµÄ¿ØÖÆÁ¿
+ float Ek;   //æœ¬æ¬¡åå·®
+ float Ek_1; //ä¸Šæ¬¡åå·®
+ float SumEk;//å†å²åå·®ä¹‹å’Œ
+ float OUT_0;//è®¡ç®—å€¼ä¸º0æ—¶ï¼Œç»´æŒå½“å‰è¾“å‡º
+ float OUT;  //æœ¬æ¬¡è®¡ç®—è¾“å‡ºçš„æ§åˆ¶é‡
 }PID;
-void PID_Calculate(PID *pid);//PID ¼ÆËã£¬µ±¼ÆËãÖÜÆÚµ½´ïÊ±¼ÆËã ²¢·µ»Ø¼ÆËãÖµ¡£
-//³õÊ¼»¯Éè¶¨ÖµÉèÖÃµ±Ç°Öµ ÉèÖÃKp Ki Kd ÉèÖÃ²ÉÑùÖÜÆÚ£¨ÓÃ²»µ½£©£¬ÉèÖÃOUT_0
-//ĞèÒª¸üĞÂÖµ Pre
+void PID_Calculate(PID *pid);//PID è®¡ç®—ï¼Œå½“è®¡ç®—å‘¨æœŸåˆ°è¾¾æ—¶è®¡ç®— å¹¶è¿”å›è®¡ç®—å€¼ã€‚
+//åˆå§‹åŒ–è®¾å®šå€¼è®¾ç½®å½“å‰å€¼ è®¾ç½®Kp Ki Kd è®¾ç½®é‡‡æ ·å‘¨æœŸï¼ˆç”¨ä¸åˆ°ï¼‰ï¼Œè®¾ç½®OUT_0
+//éœ€è¦æ›´æ–°å€¼ Pre
 #endif

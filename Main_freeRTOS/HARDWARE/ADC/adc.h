@@ -1,48 +1,48 @@
 #ifndef __ADC_H
-#define __ADC_H	
-#include "sys.h" 
-//////////////////////////////////////////////////////////////////////////////////	 
-//±¾³ÌÐòÖ»¹©Ñ§Ï°Ê¹ÓÃ£¬Î´¾­×÷ÕßÐí¿É£¬²»µÃÓÃÓÚÆäËüÈÎºÎÓÃÍ¾
-//ALIENTEK STM32F407¿ª·¢°å
-//ADC Çý¶¯´úÂë	   
-//ÕýµãÔ­×Ó@ALIENTEK
-//¼¼ÊõÂÛÌ³:www.openedv.com
-//´´½¨ÈÕÆÚ:2014/5/6
-//°æ±¾£ºV1.0
-//°æÈ¨ËùÓÐ£¬µÁ°æ±Ø¾¿¡£
-//Copyright(C) ¹ãÖÝÊÐÐÇÒíµç×Ó¿Æ¼¼ÓÐÏÞ¹«Ë¾ 2014-2024
-//All rights reserved									  
-////////////////////////////////////////////////////////////////////////////////// 	 
- 							   
-void Adc_Init(void); 				//ADCÍ¨µÀ³õÊ¼»¯
-u16  Get_Adc(u8 ch); 				//»ñµÃÄ³¸öÍ¨µÀÖµ 
-u16 Get_Adc_Average(u8 ch,u8 times);//µÃµ½Ä³¸öÍ¨µÀ¸ø¶¨´ÎÊý²ÉÑùµÄÆ½¾ùÖµ 
+#define __ADC_H
+#include "sys.h"
+//////////////////////////////////////////////////////////////////////////////////
+//æœ¬ç¨‹åºåªä¾›å­¦ä¹ ä½¿ç”¨ï¼Œæœªç»ä½œè€…è®¸å¯ï¼Œä¸å¾—ç”¨äºŽå…¶å®ƒä»»ä½•ç”¨é€”
+//ALIENTEK STM32F407å¼€å‘æ¿
+//ADC é©±åŠ¨ä»£ç 
+//æ­£ç‚¹åŽŸå­@ALIENTEK
+//æŠ€æœ¯è®ºå›:www.openedv.com
+//åˆ›å»ºæ—¥æœŸ:2014/5/6
+//ç‰ˆæœ¬ï¼šV1.0
+//ç‰ˆæƒæ‰€æœ‰ï¼Œç›—ç‰ˆå¿…ç©¶ã€‚
+//Copyright(C) å¹¿å·žå¸‚æ˜Ÿç¿¼ç”µå­ç§‘æŠ€æœ‰é™å…¬å¸ 2014-2024
+//All rights reserved
+//////////////////////////////////////////////////////////////////////////////////
+
+void Adc_Init(void);                //ADCé€šé“åˆå§‹åŒ–
+u16  Get_Adc(u8 ch);                //èŽ·å¾—æŸä¸ªé€šé“å€¼
+u16 Get_Adc_Average(u8 ch,u8 times);//å¾—åˆ°æŸä¸ªé€šé“ç»™å®šæ¬¡æ•°é‡‡æ ·çš„å¹³å‡å€¼
 #define RHEOSTAT_NOFCHANEL      1
- 
+
 extern __IO uint16_t ADC_ConvertedValue[RHEOSTAT_NOFCHANEL];
 
-// ADC ÐòºÅºê¶¨Òå
+// ADC åºå·å®å®šä¹‰
 #define RHEOSTAT_ADC              ADC1
 #define RHEOSTAT_ADC_CLK          RCC_APB2Periph_ADC1
-// ADC DR¼Ä´æÆ÷ºê¶¨Òå£¬ADC×ª»»ºóµÄÊý×ÖÖµÔò´æ·ÅÔÚÕâÀï
+// ADC DRå¯„å­˜å™¨å®å®šä¹‰ï¼ŒADCè½¬æ¢åŽçš„æ•°å­—å€¼åˆ™å­˜æ”¾åœ¨è¿™é‡Œ
 
 //ADC1
 #define RHEOSTAT_ADC_DR_ADDR    ((u32)ADC1+0x4c)
 
-// ADC DMA Í¨µÀºê¶¨Òå£¬ÕâÀïÎÒÃÇÊ¹ÓÃDMA´«Êä
+// ADC DMA é€šé“å®å®šä¹‰ï¼Œè¿™é‡Œæˆ‘ä»¬ä½¿ç”¨DMAä¼ è¾“
 #define RHEOSTAT_ADC_DMA_CLK      RCC_AHB1Periph_DMA2
 #define RHEOSTAT_ADC_DMA_CHANNEL  DMA_Channel_0
 #define RHEOSTAT_ADC_DMA_STREAM   DMA2_Stream0
 
-u16 Get_Adc3(u8 ch); 				//»ñµÃÄ³¸öÍ¨µÀÖµ 
-//u16 Get_Adc31(u8 nan); 
+u16 Get_Adc3(u8 ch);                //èŽ·å¾—æŸä¸ªé€šé“å€¼
+//u16 Get_Adc31(u8 nan);
 //u16 Get_Adc32(u8 xi);
 //u16 Get_Adc33(u8 dong);
-//u16 Get_Adc_Average(u8 ch,u8 times);//µÃµ½Ä³¸öÍ¨µÀ¸ø¶¨´ÎÊý²ÉÑùµÄÆ½¾ùÖµ  
+//u16 Get_Adc_Average(u8 ch,u8 times);//å¾—åˆ°æŸä¸ªé€šé“ç»™å®šæ¬¡æ•°é‡‡æ ·çš„å¹³å‡å€¼
 
 
 
-#endif 
+#endif
 
 
 

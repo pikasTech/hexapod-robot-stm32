@@ -10,5 +10,5 @@ extern int date_y[];
 extern u8 shiboqi_ch;
 
 
- 				    
+
 #endif

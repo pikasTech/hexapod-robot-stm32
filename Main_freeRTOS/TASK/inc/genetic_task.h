@@ -3,5 +3,5 @@
 #include "sys.h"
 extern int genetic_mode;
 extern int genetic_start;
- 				    
+
 #endif

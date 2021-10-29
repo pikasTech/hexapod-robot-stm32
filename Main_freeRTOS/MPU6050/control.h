@@ -2,13 +2,13 @@
 #define __CONTROL_H
 #include "sys.h"
   /**************************************************************************
-作者：平衡小车之家
-我的淘宝小店：http://shop114407458.taobao.com/
+浣滆�咃細骞宠　灏忚溅涔嬪
+鎴戠殑娣樺疂灏忓簵锛歨ttp://shop114407458.taobao.com/
 **************************************************************************/
 #define PI 3.14159265
 
 #define DIFFERENCE 100
-extern	int Balance_Pwm,Velocity_Pwm,Turn_Pwm;
+extern  int Balance_Pwm,Velocity_Pwm,Turn_Pwm;
 void TIM3_IRQHandler(void);
 int balance(float angle,float gyro);
 int velocity(int encoder_left,int encoder_right);

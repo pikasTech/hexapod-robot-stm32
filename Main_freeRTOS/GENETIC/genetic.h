@@ -1,26 +1,26 @@
 #ifndef __genetic_TASK_H
 #define __genetic_TASK_H
 #include "sys.h"
-#define SUM 10            //×Ü¹²µÄÈ¾É«ÌåÊıÁ¿
-#define MAXloop 12000       //×î´óÑ­»·´ÎÊı
-#define genetic_error 0.001f        //ÈôÁ½´Î×îÓÅÖµÖ®²îĞ¡ÓÚ´ËÊıÔòÈÏÎª½á¹ûÃ»ÓĞ¸Ä±ä
-#define crossp 0.7        //½»²æ¸ÅÂÊ
-#define mp 0.01           //±äÒì¸ÅÂÊ
+#define SUM 10            //æ€»å…±çš„æŸ“è‰²ä½“æ•°é‡
+#define MAXloop 12000       //æœ€å¤§å¾ªç¯æ¬¡æ•°
+#define genetic_error 0.001f        //è‹¥ä¸¤æ¬¡æœ€ä¼˜å€¼ä¹‹å·®å°äºæ­¤æ•°åˆ™è®¤ä¸ºç»“æœæ²¡æœ‰æ”¹å˜
+#define crossp 0.7        //äº¤å‰æ¦‚ç‡
+#define mp 0.01           //å˜å¼‚æ¦‚ç‡
 void gengetic_main(void);
-/**************º¯ÊıÉùÃ÷******************/ 
-void initiate(void);          	//³õÊ¼»¯º¯Êı£¬Ö÷Òª¸ºÔğ²úÉú³õÊ¼»¯ÖÖÈº 
-void evaluation(int flag,int flag_move);	//ÆÀ¹ÀÖÖÈºÖĞ¸÷È¾É«ÌåµÄÊÊÓ¦¶È£¬²¢¾İ´Ë½øĞĞÅÅĞò 
-void cross(void);				//½»²æº¯Êı 
-void selection(void);			//Ñ¡Ôñº¯Êı 
-int  record(void);				//¼ÇÂ¼Ã¿´ÎÑ­»·²úÉúµÄ×îÓÅ½â²¢ÅĞ¶ÏÊÇ·ñÖÕÖ¹Ñ­»· 
-void mutation(int flag_move);			//±äÒìº¯Êı 
-void showresult(int);		//ÏÔÊ¾½á¹û 
-int   randsign(float p);	//°´ÕÕ¸ÅÂÊp²úÉúËæ»úÊı0¡¢1£¬ÆäÖµÎª1µÄ¸ÅÂÊÎªp 
-int   randbit(int i,int j);	//²úÉúÒ»¸öÔÚi£¬jÁ½¸öÊıÖ®¼äµÄËæ»úÕûÊı 
-int   randnum(void);			//Ëæ»ú²úÉúÒ»¸öÓÉ14¸ö»ùÒò×é³ÉµÄÈ¾É«Ìå 
-int   convertionD2B(float x,float min,float max);//¶ÔÏÖÊµ½â¿Õ¼äµÄ¿ÉÄÜ½âx½øĞĞ¶ş½øÖÆ±àÂë£¨È¾É«ÌåĞÎÊ½£© 
-float convertionB2D(int x,float min,float max);	//½«¶ş½øÖÆ±àÂëx×ª»¯ÎªÏÖÊµ½â¿Õ¼äµÄÖµ 
-int   createmask(int a);	//ÓÃÓÚ½»²æ²Ù×÷ 
+/**************å‡½æ•°å£°æ˜******************/
+void initiate(void);            //åˆå§‹åŒ–å‡½æ•°ï¼Œä¸»è¦è´Ÿè´£äº§ç”Ÿåˆå§‹åŒ–ç§ç¾¤
+void evaluation(int flag,int flag_move);    //è¯„ä¼°ç§ç¾¤ä¸­å„æŸ“è‰²ä½“çš„é€‚åº”åº¦ï¼Œå¹¶æ®æ­¤è¿›è¡Œæ’åº
+void cross(void);               //äº¤å‰å‡½æ•°
+void selection(void);           //é€‰æ‹©å‡½æ•°
+int  record(void);              //è®°å½•æ¯æ¬¡å¾ªç¯äº§ç”Ÿçš„æœ€ä¼˜è§£å¹¶åˆ¤æ–­æ˜¯å¦ç»ˆæ­¢å¾ªç¯
+void mutation(int flag_move);           //å˜å¼‚å‡½æ•°
+void showresult(int);       //æ˜¾ç¤ºç»“æœ
+int   randsign(float p);    //æŒ‰ç…§æ¦‚ç‡päº§ç”Ÿéšæœºæ•°0ã€1ï¼Œå…¶å€¼ä¸º1çš„æ¦‚ç‡ä¸ºp
+int   randbit(int i,int j); //äº§ç”Ÿä¸€ä¸ªåœ¨iï¼Œjä¸¤ä¸ªæ•°ä¹‹é—´çš„éšæœºæ•´æ•°
+int   randnum(void);            //éšæœºäº§ç”Ÿä¸€ä¸ªç”±14ä¸ªåŸºå› ç»„æˆçš„æŸ“è‰²ä½“
+int   convertionD2B(float x,float min,float max);//å¯¹ç°å®è§£ç©ºé—´çš„å¯èƒ½è§£xè¿›è¡ŒäºŒè¿›åˆ¶ç¼–ç ï¼ˆæŸ“è‰²ä½“å½¢å¼ï¼‰
+float convertionB2D(int x,float min,float max); //å°†äºŒè¿›åˆ¶ç¼–ç xè½¬åŒ–ä¸ºç°å®è§£ç©ºé—´çš„å€¼
+int   createmask(int a);    //ç”¨äºäº¤å‰æ“ä½œ
 
 
 #endif

@@ -4,7 +4,7 @@
   * @author  MCD Application Team
   * @version V1.4.0
   * @date    04-August-2014
-  * @brief   This file contains all the functions prototypes for the FMC firmware 
+  * @brief   This file contains all the functions prototypes for the FMC firmware
   *          library.
   ******************************************************************************
   * @attention
@@ -17,8 +17,8 @@
   *
   *        http://www.st.com/software_license_agreement_liberty_v2
   *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   * See the License for the specific language governing permissions and
   * limitations under the License.
@@ -45,21 +45,21 @@
   * @{
   */
 
-/* Exported types ------------------------------------------------------------*/  
+/* Exported types ------------------------------------------------------------*/
 
-/** 
-  * @brief  Timing parameters For NOR/SRAM Banks  
+/**
+  * @brief  Timing parameters For NOR/SRAM Banks
   */
 typedef struct
 {
   uint32_t FMC_AddressSetupTime;       /*!< Defines the number of HCLK cycles to configure
-                                             the duration of the address setup time. 
+                                             the duration of the address setup time.
                                              This parameter can be a value between 0 and 15.
                                              @note This parameter is not used with synchronous NOR Flash memories. */
 
   uint32_t FMC_AddressHoldTime;        /*!< Defines the number of HCLK cycles to configure
                                              the duration of the address hold time.
-                                             This parameter can be a value between 1 and 15. 
+                                             This parameter can be a value between 1 and 15.
                                              @note This parameter is not used with synchronous NOR Flash memories.*/
 
   uint32_t FMC_DataSetupTime;          /*!< Defines the number of HCLK cycles to configure
@@ -84,11 +84,11 @@ typedef struct
                                               - It may assume a value between 0 and 15 in NOR Flash memories
                                                 with synchronous burst mode enable */
 
-  uint32_t FMC_AccessMode;             /*!< Specifies the asynchronous access mode. 
+  uint32_t FMC_AccessMode;             /*!< Specifies the asynchronous access mode.
                                              This parameter can be a value of @ref FMC_Access_Mode */
 }FMC_NORSRAMTimingInitTypeDef;
 
-/** 
+/**
   * @brief  FMC NOR/SRAM Init structure definition
   */
 typedef struct
@@ -97,7 +97,7 @@ typedef struct
                                           This parameter can be a value of @ref FMC_NORSRAM_Bank */
 
   uint32_t FMC_DataAddressMux;      /*!< Specifies whether the address and data values are
-                                          multiplexed on the databus or not. 
+                                          multiplexed on the databus or not.
                                           This parameter can be a value of @ref FMC_Data_Address_Bus_Multiplexing */
 
   uint32_t FMC_MemoryType;          /*!< Specifies the type of external memory attached to
@@ -109,7 +109,7 @@ typedef struct
 
   uint32_t FMC_BurstAccessMode;     /*!< Enables or disables the burst access mode for Flash memory,
                                           valid only with synchronous burst Flash memories.
-                                          This parameter can be a value of @ref FMC_Burst_Access_Mode */                                        
+                                          This parameter can be a value of @ref FMC_Burst_Access_Mode */
 
   uint32_t FMC_WaitSignalPolarity;  /*!< Specifies the wait signal polarity, valid only when accessing
                                           the Flash memory in burst mode.
@@ -121,38 +121,38 @@ typedef struct
 
   uint32_t FMC_WaitSignalActive;    /*!< Specifies if the wait signal is asserted by the memory one
                                           clock cycle before the wait state or during the wait state,
-                                          valid only when accessing memories in burst mode. 
+                                          valid only when accessing memories in burst mode.
                                           This parameter can be a value of @ref FMC_Wait_Timing */
 
-  uint32_t FMC_WriteOperation;      /*!< Enables or disables the write operation in the selected bank by the FMC. 
+  uint32_t FMC_WriteOperation;      /*!< Enables or disables the write operation in the selected bank by the FMC.
                                           This parameter can be a value of @ref FMC_Write_Operation */
 
   uint32_t FMC_WaitSignal;          /*!< Enables or disables the wait state insertion via wait
-                                          signal, valid for Flash memory access in burst mode. 
+                                          signal, valid for Flash memory access in burst mode.
                                           This parameter can be a value of @ref FMC_Wait_Signal */
 
   uint32_t FMC_ExtendedMode;        /*!< Enables or disables the extended mode.
                                           This parameter can be a value of @ref FMC_Extended_Mode */
-  
+
   uint32_t FMC_AsynchronousWait;     /*!< Enables or disables wait signal during asynchronous transfers,
                                           valid only with asynchronous Flash memories.
-                                          This parameter can be a value of @ref FMC_AsynchronousWait */  
+                                          This parameter can be a value of @ref FMC_AsynchronousWait */
 
   uint32_t FMC_WriteBurst;          /*!< Enables or disables the write burst operation.
-                                          This parameter can be a value of @ref FMC_Write_Burst */ 
+                                          This parameter can be a value of @ref FMC_Write_Burst */
 
   uint32_t FMC_ContinousClock;       /*!< Enables or disables the FMC clock output to external memory devices.
-                                          This parameter is only enabled through the FMC_BCR1 register, and don't care 
+                                          This parameter is only enabled through the FMC_BCR1 register, and don't care
                                           through FMC_BCR2..4 registers.
-                                          This parameter can be a value of @ref FMC_Continous_Clock */ 
+                                          This parameter can be a value of @ref FMC_Continous_Clock */
 
-  
-  FMC_NORSRAMTimingInitTypeDef* FMC_ReadWriteTimingStruct; /*!< Timing Parameters for write and read access if the  Extended Mode is not used*/  
 
-  FMC_NORSRAMTimingInitTypeDef* FMC_WriteTimingStruct;     /*!< Timing Parameters for write access if the  Extended Mode is used*/      
+  FMC_NORSRAMTimingInitTypeDef* FMC_ReadWriteTimingStruct; /*!< Timing Parameters for write and read access if the  Extended Mode is not used*/
+
+  FMC_NORSRAMTimingInitTypeDef* FMC_WriteTimingStruct;     /*!< Timing Parameters for write access if the  Extended Mode is used*/
 }FMC_NORSRAMInitTypeDef;
 
-/** 
+/**
   * @brief  Timing parameters For FMC NAND and PCCARD Banks
   */
 typedef struct
@@ -166,7 +166,7 @@ typedef struct
   uint32_t FMC_WaitSetupTime;  /*!< Defines the minimum number of HCLK cycles to assert the
                                      command for NAND-Flash read or write access to
                                      common/Attribute or I/O memory space (depending on the
-                                     memory space timing to be configured). 
+                                     memory space timing to be configured).
                                      This parameter can be a number between 0 and 255 */
 
   uint32_t FMC_HoldSetupTime;  /*!< Defines the number of HCLK clock cycles to hold address
@@ -183,7 +183,7 @@ typedef struct
                                      This parameter can be a number between 0 and 255 */
 }FMC_NAND_PCCARDTimingInitTypeDef;
 
-/** 
+/**
   * @brief  FMC NAND Init structure definition
   */
 typedef struct
@@ -209,14 +209,14 @@ typedef struct
 
   uint32_t FMC_TARSetupTime;     /*!< Defines the number of HCLK cycles to configure the
                                        delay between ALE low and RE low.
-                                       This parameter can be a number between 0 and 255 */ 
+                                       This parameter can be a number between 0 and 255 */
 
-  FMC_NAND_PCCARDTimingInitTypeDef*  FMC_CommonSpaceTimingStruct;   /*!< FMC Common Space Timing */ 
+  FMC_NAND_PCCARDTimingInitTypeDef*  FMC_CommonSpaceTimingStruct;   /*!< FMC Common Space Timing */
 
   FMC_NAND_PCCARDTimingInitTypeDef*  FMC_AttributeSpaceTimingStruct; /*!< FMC Attribute Space Timing */
 }FMC_NANDInitTypeDef;
 
-/** 
+/**
   * @brief  FMC PCCARD Init structure definition
   */
 
@@ -231,53 +231,53 @@ typedef struct
 
   uint32_t FMC_TARSetupTime;   /*!< Defines the number of HCLK cycles to configure the
                                      delay between ALE low and RE low.
-                                     This parameter can be a number between 0 and 255 */ 
+                                     This parameter can be a number between 0 and 255 */
 
-  
+
   FMC_NAND_PCCARDTimingInitTypeDef*  FMC_CommonSpaceTimingStruct; /*!< FMC Common Space Timing */
 
-  FMC_NAND_PCCARDTimingInitTypeDef*  FMC_AttributeSpaceTimingStruct;  /*!< FMC Attribute Space Timing */ 
-  
-  FMC_NAND_PCCARDTimingInitTypeDef*  FMC_IOSpaceTimingStruct; /*!< FMC IO Space Timing */  
+  FMC_NAND_PCCARDTimingInitTypeDef*  FMC_AttributeSpaceTimingStruct;  /*!< FMC Attribute Space Timing */
+
+  FMC_NAND_PCCARDTimingInitTypeDef*  FMC_IOSpaceTimingStruct; /*!< FMC IO Space Timing */
 }FMC_PCCARDInitTypeDef;
 
-/** 
+/**
   * @brief  Timing parameters for FMC SDRAM Banks
   */
-  
+
 typedef struct
 {
-  uint32_t FMC_LoadToActiveDelay;      /*!< Defines the delay between a Load Mode Register command and 
+  uint32_t FMC_LoadToActiveDelay;      /*!< Defines the delay between a Load Mode Register command and
                                             an active or Refresh command in number of memory clock cycles.
                                             This parameter can be a value between 1 and 16. */
-  
-  uint32_t FMC_ExitSelfRefreshDelay;   /*!< Defines the delay from releasing the self refresh command to 
+
+  uint32_t FMC_ExitSelfRefreshDelay;   /*!< Defines the delay from releasing the self refresh command to
                                             issuing the Activate command in number of memory clock cycles.
                                             This parameter can be a value between 1 and 16. */
-   
-  uint32_t FMC_SelfRefreshTime;        /*!< Defines the minimum Self Refresh period in number of memory clock 
+
+  uint32_t FMC_SelfRefreshTime;        /*!< Defines the minimum Self Refresh period in number of memory clock
                                             cycles.
                                             This parameter can be a value between 1 and 16. */
-                                            
+
   uint32_t FMC_RowCycleDelay;          /*!< Defines the delay between the Refresh command and the Activate command
-                                            and the delay between two consecutive Refresh commands in number of 
+                                            and the delay between two consecutive Refresh commands in number of
                                             memory clock cycles.
                                             This parameter can be a value between 1 and 16. */
-                                            
+
   uint32_t FMC_WriteRecoveryTime;      /*!< Defines the Write recovery Time in number of memory clock cycles.
                                             This parameter can be a value between 1 and 16. */
-                                            
-  uint32_t FMC_RPDelay;                /*!< Defines the delay between a Precharge Command and an other command 
+
+  uint32_t FMC_RPDelay;                /*!< Defines the delay between a Precharge Command and an other command
                                             in number of memory clock cycles.
                                             This parameter can be a value between 1 and 16. */
-                                            
+
   uint32_t FMC_RCDDelay;               /*!< Defines the delay between the Activate Command and a Read/Write command
                                             in number of memory clock cycles.
                                             This parameter can be a value between 1 and 16. */
-                                            
+
 }FMC_SDRAMTimingInitTypeDef;
 
-/** 
+/**
   * @brief  Command parameters for FMC SDRAM Banks
   */
 
@@ -286,19 +286,19 @@ typedef struct
 {
   uint32_t FMC_CommandMode;            /*!< Defines the command issued to the SDRAM device.
                                             This parameter can be a value of @ref FMC_Command_Mode. */
-                                            
+
   uint32_t FMC_CommandTarget;          /*!< Defines which bank (1 or 2) the command will be issued to.
                                             This parameter can be a value of @ref FMC_Command_Target. */
-                                            
+
   uint32_t FMC_AutoRefreshNumber;      /*!< Defines the number of consecutive auto refresh command issued
                                             in auto refresh mode.
-                                            This parameter can be a value between 1 and 16. */                                           
-                                                                                                             
+                                            This parameter can be a value between 1 and 16. */
+
   uint32_t FMC_ModeRegisterDefinition; /*!< Defines the SDRAM Mode register content */
-  
+
 }FMC_SDRAMCommandTypeDef;
 
-/** 
+/**
   * @brief  FMC SDRAM Init structure definition
   */
 
@@ -309,35 +309,35 @@ typedef struct
 
   uint32_t FMC_ColumnBitsNumber;       /*!< Defines the number of bits of column address.
                                             This parameter can be a value of @ref FMC_ColumnBits_Number. */
-                                            
+
   uint32_t FMC_RowBitsNumber;          /*!< Defines the number of bits of column address..
                                             This parameter can be a value of @ref FMC_RowBits_Number. */
-                                            
+
   uint32_t FMC_SDMemoryDataWidth;        /*!< Defines the memory device width.
                                             This parameter can be a value of @ref FMC_SDMemory_Data_Width. */
-                                            
+
   uint32_t FMC_InternalBankNumber;     /*!< Defines the number of bits of column address.
                                             This parameter can be of @ref FMC_InternalBank_Number. */
-                                            
+
   uint32_t FMC_CASLatency;             /*!< Defines the SDRAM CAS latency in number of memory clock cycles.
                                             This parameter can be a value of @ref FMC_CAS_Latency. */
-                                            
+
   uint32_t FMC_WriteProtection;        /*!< Enables the SDRAM bank to be accessed in write mode.
                                             This parameter can be a value of @ref FMC_Write_Protection. */
-                                            
+
   uint32_t FMC_SDClockPeriod;          /*!< Define the SDRAM Clock Period for both SDRAM Banks and they allow to disable
                                             the clock before changing frequency.
                                             This parameter can be a value of @ref FMC_SDClock_Period. */
-                                            
-  uint32_t FMC_ReadBurst;              /*!< This bit enable the SDRAM controller to anticipate the next read commands 
+
+  uint32_t FMC_ReadBurst;              /*!< This bit enable the SDRAM controller to anticipate the next read commands
                                             during the CAS latency and stores data in the Read FIFO.
                                             This parameter can be a value of @ref FMC_Read_Burst. */
-                                            
+
   uint32_t FMC_ReadPipeDelay;          /*!< Define the delay in system clock cycles on read data path.
                                             This parameter can be a value of @ref FMC_ReadPipe_Delay. */
-                                            
-  FMC_SDRAMTimingInitTypeDef* FMC_SDRAMTimingStruct;   /*!< Timing Parameters for write and read access*/                                            
-  
+
+  FMC_SDRAMTimingInitTypeDef* FMC_SDRAMTimingStruct;   /*!< Timing Parameters for write and read access*/
+
 }FMC_SDRAMInitTypeDef;
 
 
@@ -345,9 +345,9 @@ typedef struct
 
 /** @defgroup FMC_Exported_Constants
   * @{
-  */ 
+  */
 
-/** @defgroup FMC_NORSRAM_Bank 
+/** @defgroup FMC_NORSRAM_Bank
   * @{
   */
 #define FMC_Bank1_NORSRAM1                      ((uint32_t)0x00000000)
@@ -363,9 +363,9 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMC_NAND_Bank 
+/** @defgroup FMC_NAND_Bank
   * @{
-  */  
+  */
 #define FMC_Bank2_NAND                          ((uint32_t)0x00000010)
 #define FMC_Bank3_NAND                          ((uint32_t)0x00000100)
 
@@ -375,12 +375,12 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMC_PCCARD_Bank 
+/** @defgroup FMC_PCCARD_Bank
   * @{
-  */    
+  */
 #define FMC_Bank4_PCCARD                        ((uint32_t)0x00001000)
 /**
-  * @}                                                         
+  * @}
   */
 
 /** @defgroup FMC_SDRAM_Bank
@@ -390,18 +390,18 @@ typedef struct
 #define FMC_Bank2_SDRAM                    ((uint32_t)0x00000001)
 
 #define IS_FMC_SDRAM_BANK(BANK) (((BANK) == FMC_Bank1_SDRAM) || \
-                                 ((BANK) == FMC_Bank2_SDRAM)) 
+                                 ((BANK) == FMC_Bank2_SDRAM))
 
 /**
   * @}
-  */                               
+  */
 
-                              
-/** @defgroup FMC_NOR_SRAM_Controller 
+
+/** @defgroup FMC_NOR_SRAM_Controller
   * @{
   */
 
-/** @defgroup FMC_Data_Address_Bus_Multiplexing 
+/** @defgroup FMC_Data_Address_Bus_Multiplexing
   * @{
   */
 
@@ -414,7 +414,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMC_Memory_Type 
+/** @defgroup FMC_Memory_Type
   * @{
   */
 
@@ -429,7 +429,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMC_NORSRAM_Data_Width 
+/** @defgroup FMC_NORSRAM_Data_Width
   * @{
   */
 
@@ -444,11 +444,11 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMC_Burst_Access_Mode 
+/** @defgroup FMC_Burst_Access_Mode
   * @{
   */
 
-#define FMC_BurstAccessMode_Disable             ((uint32_t)0x00000000) 
+#define FMC_BurstAccessMode_Disable             ((uint32_t)0x00000000)
 #define FMC_BurstAccessMode_Enable              ((uint32_t)0x00000100)
 
 #define IS_FMC_BURSTMODE(STATE) (((STATE) == FMC_BurstAccessMode_Disable) || \
@@ -456,8 +456,8 @@ typedef struct
 /**
   * @}
   */
-    
-/** @defgroup FMC_AsynchronousWait 
+
+/** @defgroup FMC_AsynchronousWait
   * @{
   */
 #define FMC_AsynchronousWait_Disable            ((uint32_t)0x00000000)
@@ -469,7 +469,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMC_Wait_Signal_Polarity 
+/** @defgroup FMC_Wait_Signal_Polarity
   * @{
   */
 #define FMC_WaitSignalPolarity_Low              ((uint32_t)0x00000000)
@@ -481,11 +481,11 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMC_Wrap_Mode 
+/** @defgroup FMC_Wrap_Mode
   * @{
   */
 #define FMC_WrapMode_Disable                    ((uint32_t)0x00000000)
-#define FMC_WrapMode_Enable                     ((uint32_t)0x00000400) 
+#define FMC_WrapMode_Enable                     ((uint32_t)0x00000400)
 
 #define IS_FMC_WRAP_MODE(MODE) (((MODE) == FMC_WrapMode_Disable) || \
                                  ((MODE) == FMC_WrapMode_Enable))
@@ -493,11 +493,11 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMC_Wait_Timing 
+/** @defgroup FMC_Wait_Timing
   * @{
   */
 #define FMC_WaitSignalActive_BeforeWaitState    ((uint32_t)0x00000000)
-#define FMC_WaitSignalActive_DuringWaitState    ((uint32_t)0x00000800) 
+#define FMC_WaitSignalActive_DuringWaitState    ((uint32_t)0x00000800)
 
 #define IS_FMC_WAIT_SIGNAL_ACTIVE(ACTIVE) (((ACTIVE) == FMC_WaitSignalActive_BeforeWaitState) || \
                                             ((ACTIVE) == FMC_WaitSignalActive_DuringWaitState))
@@ -505,23 +505,23 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMC_Write_Operation 
+/** @defgroup FMC_Write_Operation
   * @{
   */
 #define FMC_WriteOperation_Disable                     ((uint32_t)0x00000000)
 #define FMC_WriteOperation_Enable                      ((uint32_t)0x00001000)
 
 #define IS_FMC_WRITE_OPERATION(OPERATION) (((OPERATION) == FMC_WriteOperation_Disable) || \
-                                            ((OPERATION) == FMC_WriteOperation_Enable))                         
+                                            ((OPERATION) == FMC_WriteOperation_Enable))
 /**
   * @}
   */
 
-/** @defgroup FMC_Wait_Signal 
+/** @defgroup FMC_Wait_Signal
   * @{
   */
 #define FMC_WaitSignal_Disable                  ((uint32_t)0x00000000)
-#define FMC_WaitSignal_Enable                   ((uint32_t)0x00002000) 
+#define FMC_WaitSignal_Enable                   ((uint32_t)0x00002000)
 
 #define IS_FMC_WAITE_SIGNAL(SIGNAL) (((SIGNAL) == FMC_WaitSignal_Disable) || \
                                       ((SIGNAL) == FMC_WaitSignal_Enable))
@@ -529,45 +529,45 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMC_Extended_Mode 
+/** @defgroup FMC_Extended_Mode
   * @{
   */
 #define FMC_ExtendedMode_Disable                ((uint32_t)0x00000000)
 #define FMC_ExtendedMode_Enable                 ((uint32_t)0x00004000)
 
 #define IS_FMC_EXTENDED_MODE(MODE) (((MODE) == FMC_ExtendedMode_Disable) || \
-                                     ((MODE) == FMC_ExtendedMode_Enable)) 
+                                     ((MODE) == FMC_ExtendedMode_Enable))
 /**
   * @}
   */
 
-/** @defgroup FMC_Write_Burst 
+/** @defgroup FMC_Write_Burst
   * @{
   */
 
 #define FMC_WriteBurst_Disable                  ((uint32_t)0x00000000)
-#define FMC_WriteBurst_Enable                   ((uint32_t)0x00080000) 
+#define FMC_WriteBurst_Enable                   ((uint32_t)0x00080000)
 
 #define IS_FMC_WRITE_BURST(BURST) (((BURST) == FMC_WriteBurst_Disable) || \
                                     ((BURST) == FMC_WriteBurst_Enable))
 /**
   * @}
   */
-  
-/** @defgroup FMC_Continous_Clock 
+
+/** @defgroup FMC_Continous_Clock
   * @{
   */
 
 #define FMC_CClock_SyncOnly                     ((uint32_t)0x00000000)
-#define FMC_CClock_SyncAsync                    ((uint32_t)0x00100000) 
+#define FMC_CClock_SyncAsync                    ((uint32_t)0x00100000)
 
 #define IS_FMC_CONTINOUS_CLOCK(CCLOCK) (((CCLOCK) == FMC_CClock_SyncOnly) || \
                                         ((CCLOCK) == FMC_CClock_SyncAsync))
 /**
   * @}
-  */  
+  */
 
-/** @defgroup FMC_Address_Setup_Time 
+/** @defgroup FMC_Address_Setup_Time
   * @{
   */
 #define IS_FMC_ADDRESS_SETUP_TIME(TIME) ((TIME) <= 15)
@@ -575,7 +575,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMC_Address_Hold_Time 
+/** @defgroup FMC_Address_Hold_Time
   * @{
   */
 #define IS_FMC_ADDRESS_HOLD_TIME(TIME) (((TIME) > 0) && ((TIME) <= 15))
@@ -583,7 +583,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMC_Data_Setup_Time 
+/** @defgroup FMC_Data_Setup_Time
   * @{
   */
 #define IS_FMC_DATASETUP_TIME(TIME) (((TIME) > 0) && ((TIME) <= 255))
@@ -591,7 +591,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMC_Bus_Turn_around_Duration 
+/** @defgroup FMC_Bus_Turn_around_Duration
   * @{
   */
 #define IS_FMC_TURNAROUND_TIME(TIME) ((TIME) <= 15)
@@ -599,7 +599,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMC_CLK_Division 
+/** @defgroup FMC_CLK_Division
   * @{
   */
 #define IS_FMC_CLK_DIV(DIV) (((DIV) > 0) && ((DIV) <= 15))
@@ -607,7 +607,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMC_Data_Latency 
+/** @defgroup FMC_Data_Latency
   * @{
   */
 #define IS_FMC_DATA_LATENCY(LATENCY) ((LATENCY) <= 15)
@@ -615,11 +615,11 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMC_Access_Mode 
+/** @defgroup FMC_Access_Mode
   * @{
   */
 #define FMC_AccessMode_A                        ((uint32_t)0x00000000)
-#define FMC_AccessMode_B                        ((uint32_t)0x10000000) 
+#define FMC_AccessMode_B                        ((uint32_t)0x10000000)
 #define FMC_AccessMode_C                        ((uint32_t)0x20000000)
 #define FMC_AccessMode_D                        ((uint32_t)0x30000000)
 
@@ -634,12 +634,12 @@ typedef struct
 /**
   * @}
   */
-  
-/** @defgroup FMC_NAND_PCCARD_Controller 
+
+/** @defgroup FMC_NAND_PCCARD_Controller
   * @{
   */
 
-/** @defgroup FMC_Wait_feature 
+/** @defgroup FMC_Wait_feature
   * @{
   */
 #define FMC_Waitfeature_Disable                 ((uint32_t)0x00000000)
@@ -651,7 +651,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMC_NAND_Data_Width 
+/** @defgroup FMC_NAND_Data_Width
   * @{
   */
 #define FMC_NAND_MemoryDataWidth_8b             ((uint32_t)0x00000000)
@@ -663,7 +663,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMC_ECC 
+/** @defgroup FMC_ECC
   * @{
   */
 #define FMC_ECC_Disable                         ((uint32_t)0x00000000)
@@ -675,7 +675,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMC_ECC_Page_Size 
+/** @defgroup FMC_ECC_Page_Size
   * @{
   */
 #define FMC_ECCPageSize_256Bytes                ((uint32_t)0x00000000)
@@ -695,7 +695,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMC_TCLR_Setup_Time 
+/** @defgroup FMC_TCLR_Setup_Time
   * @{
   */
 #define IS_FMC_TCLR_TIME(TIME) ((TIME) <= 255)
@@ -703,7 +703,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMC_TAR_Setup_Time 
+/** @defgroup FMC_TAR_Setup_Time
   * @{
   */
 #define IS_FMC_TAR_TIME(TIME) ((TIME) <= 255)
@@ -711,7 +711,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMC_Setup_Time 
+/** @defgroup FMC_Setup_Time
   * @{
   */
 #define IS_FMC_SETUP_TIME(TIME) ((TIME) <= 255)
@@ -719,7 +719,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMC_Wait_Setup_Time 
+/** @defgroup FMC_Wait_Setup_Time
   * @{
   */
 #define IS_FMC_WAIT_TIME(TIME) ((TIME) <= 255)
@@ -727,7 +727,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMC_Hold_Setup_Time 
+/** @defgroup FMC_Hold_Setup_Time
   * @{
   */
 #define IS_FMC_HOLD_TIME(TIME) ((TIME) <= 255)
@@ -735,7 +735,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMC_HiZ_Setup_Time 
+/** @defgroup FMC_HiZ_Setup_Time
   * @{
   */
 #define IS_FMC_HIZ_TIME(TIME) ((TIME) <= 255)
@@ -745,14 +745,14 @@ typedef struct
 
 /**
   * @}
-  */  
+  */
 
 
-/** @defgroup FMC_NOR_SRAM_Controller 
+/** @defgroup FMC_NOR_SRAM_Controller
   * @{
   */
-        
-/** @defgroup FMC_ColumnBits_Number 
+
+/** @defgroup FMC_ColumnBits_Number
   * @{
   */
 #define FMC_ColumnBits_Number_8b           ((uint32_t)0x00000000)
@@ -768,8 +768,8 @@ typedef struct
 /**
   * @}
   */
-  
-/** @defgroup FMC_RowBits_Number 
+
+/** @defgroup FMC_RowBits_Number
   * @{
   */
 #define FMC_RowBits_Number_11b             ((uint32_t)0x00000000)
@@ -782,9 +782,9 @@ typedef struct
 
 /**
   * @}
-  */  
+  */
 
-/** @defgroup FMC_SDMemory_Data_Width 
+/** @defgroup FMC_SDMemory_Data_Width
   * @{
   */
 #define FMC_SDMemory_Width_8b                ((uint32_t)0x00000000)
@@ -798,7 +798,7 @@ typedef struct
 /**
   * @}
   */
-  
+
 /** @defgroup FMC_InternalBank_Number
   * @{
   */
@@ -806,14 +806,14 @@ typedef struct
 #define FMC_InternalBank_Number_4          ((uint32_t)0x00000040)
 
 #define IS_FMC_INTERNALBANK_NUMBER(NUMBER) (((NUMBER) == FMC_InternalBank_Number_2) || \
-                                            ((NUMBER) == FMC_InternalBank_Number_4)) 
+                                            ((NUMBER) == FMC_InternalBank_Number_4))
 
 /**
   * @}
-  */  
-  
-  
-/** @defgroup FMC_CAS_Latency 
+  */
+
+
+/** @defgroup FMC_CAS_Latency
   * @{
   */
 #define FMC_CAS_Latency_1                  ((uint32_t)0x00000080)
@@ -826,7 +826,7 @@ typedef struct
 
 /**
   * @}
-  */  
+  */
 
 /** @defgroup FMC_Write_Protection
   * @{
@@ -839,8 +839,8 @@ typedef struct
 
 /**
   * @}
-  */  
-  
+  */
+
 
 /** @defgroup FMC_SDClock_Period
   * @{
@@ -855,8 +855,8 @@ typedef struct
 
 /**
   * @}
-  */ 
-  
+  */
+
 /** @defgroup FMC_Read_Burst
   * @{
   */
@@ -884,7 +884,7 @@ typedef struct
 /**
   * @}
   */
-  
+
 /** @defgroup FMC_LoadToActive_Delay
   * @{
   */
@@ -892,56 +892,56 @@ typedef struct
 /**
   * @}
   */
-  
+
 /** @defgroup FMC_ExitSelfRefresh_Delay
   * @{
   */
 #define IS_FMC_EXITSELFREFRESH_DELAY(DELAY) (((DELAY) > 0) && ((DELAY) <= 16))
 /**
   * @}
-  */ 
-     
+  */
+
 /** @defgroup FMC_SelfRefresh_Time
   * @{
-  */  
+  */
 #define IS_FMC_SELFREFRESH_TIME(TIME) (((TIME) > 0) && ((TIME) <= 16))
 /**
   * @}
   */
-  
+
 /** @defgroup FMC_RowCycle_Delay
   * @{
-  */  
+  */
 #define IS_FMC_ROWCYCLE_DELAY(DELAY) (((DELAY) > 0) && ((DELAY) <= 16))
 /**
   * @}
-  */  
-  
+  */
+
 /** @defgroup FMC_Write_Recovery_Time
   * @{
-  */  
+  */
 #define IS_FMC_WRITE_RECOVERY_TIME(TIME) (((TIME) > 0) && ((TIME) <= 16))
 /**
   * @}
-  */         
-  
+  */
+
 /** @defgroup FMC_RP_Delay
   * @{
-  */  
+  */
 #define IS_FMC_RP_DELAY(DELAY) (((DELAY) > 0) && ((DELAY) <= 16))
 /**
   * @}
-  */ 
-  
-/** @defgroup FMC_RCD_Delay 
+  */
+
+/** @defgroup FMC_RCD_Delay
   * @{
-  */  
+  */
 #define IS_FMC_RCD_DELAY(DELAY) (((DELAY) > 0) && ((DELAY) <= 16))
 
 /**
   * @}
-  */  
-  
+  */
+
 /** @defgroup FMC_Command_Mode
   * @{
   */
@@ -978,11 +978,11 @@ typedef struct
 
 /**
   * @}
-  */   
-  
+  */
+
 /** @defgroup FMC_AutoRefresh_Number
   * @{
-  */  
+  */
 #define IS_FMC_AUTOREFRESH_NUMBER(NUMBER) (((NUMBER) > 0) && ((NUMBER) <= 16))
 
 /**
@@ -997,9 +997,9 @@ typedef struct
 /**
   * @}
   */
-  
 
-/** @defgroup FMC_Mode_Status 
+
+/** @defgroup FMC_Mode_Status
   * @{
   */
 #define FMC_NormalMode_Status                     ((uint32_t)0x00000000)
@@ -1013,13 +1013,13 @@ typedef struct
 
 /**
   * @}
-  */      
+  */
 
 /**
   * @}
-  */  
+  */
 
-/** @defgroup FMC_Interrupt_sources 
+/** @defgroup FMC_Interrupt_sources
   * @{
   */
 #define FMC_IT_RisingEdge                       ((uint32_t)0x00000008)
@@ -1031,18 +1031,18 @@ typedef struct
 #define IS_FMC_GET_IT(IT) (((IT) == FMC_IT_RisingEdge)  || \
                            ((IT) == FMC_IT_Level)       || \
                            ((IT) == FMC_IT_FallingEdge) || \
-                           ((IT) == FMC_IT_Refresh)) 
-                           
+                           ((IT) == FMC_IT_Refresh))
+
 #define IS_FMC_IT_BANK(BANK) (((BANK) == FMC_Bank2_NAND)   || \
                               ((BANK) == FMC_Bank3_NAND)   || \
                               ((BANK) == FMC_Bank4_PCCARD) || \
                               ((BANK) == FMC_Bank1_SDRAM)  || \
-                              ((BANK) == FMC_Bank2_SDRAM))                           
+                              ((BANK) == FMC_Bank2_SDRAM))
 /**
   * @}
   */
 
-/** @defgroup FMC_Flags 
+/** @defgroup FMC_Flags
   * @{
   */
 #define FMC_FLAG_RisingEdge                     ((uint32_t)0x00000001)
@@ -1065,7 +1065,7 @@ typedef struct
                                    ((BANK) == FMC_Bank1_SDRAM)   || \
                                    ((BANK) == FMC_Bank2_SDRAM)   || \
                                    ((BANK) == (FMC_Bank1_SDRAM | FMC_Bank2_SDRAM)))
-                                   
+
 #define IS_FMC_CLEAR_FLAG(FLAG) ((((FLAG) & (uint32_t)0xFFFFFFF8) == 0x00000000) && ((FLAG) != 0x00000000))
 
 
@@ -1088,7 +1088,7 @@ typedef struct
 
 
 /* Exported macro ------------------------------------------------------------*/
-/* Exported functions --------------------------------------------------------*/ 
+/* Exported functions --------------------------------------------------------*/
 
 /* NOR/SRAM Controller functions **********************************************/
 void FMC_NORSRAMDeInit(uint32_t FMC_Bank);
@@ -1138,6 +1138,6 @@ void       FMC_ClearITPendingBit(uint32_t FMC_Bank, uint32_t FMC_IT);
 
 /**
   * @}
-  */ 
+  */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

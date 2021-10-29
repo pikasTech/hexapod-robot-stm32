@@ -1,55 +1,55 @@
 #ifndef __OTT2001A_H
-#define __OTT2001A_H	
-#include "sys.h"	
-//////////////////////////////////////////////////////////////////////////////////	 
-//±¾³ÌÐòÖ»¹©Ñ§Ï°Ê¹ÓÃ£¬Î´¾­×÷ÕßÐí¿É£¬²»µÃÓÃÓÚÆäËüÈÎºÎÓÃÍ¾
-//ALIENTEK STM32F407¿ª·¢°å
-//4.3´çµçÈÝ´¥ÃþÆÁ-OTT2001A Çý¶¯´úÂë	   
-//ÕýµãÔ­×Ó@ALIENTEK
-//¼¼ÊõÂÛÌ³:www.openedv.com
-//´´½¨ÈÕÆÚ:2014/5/7
-//°æ±¾£ºV1.0
-//°æÈ¨ËùÓÐ£¬µÁ°æ±Ø¾¿¡£
-//Copyright(C) ¹ãÖÝÊÐÐÇÒíµç×Ó¿Æ¼¼ÓÐÏÞ¹«Ë¾ 2014-2024
-//All rights reserved									  
-////////////////////////////////////////////////////////////////////////////////// 
+#define __OTT2001A_H
+#include "sys.h"
+//////////////////////////////////////////////////////////////////////////////////
+//æœ¬ç¨‹åºåªä¾›å­¦ä¹ ä½¿ç”¨ï¼Œæœªç»ä½œè€…è®¸å¯ï¼Œä¸å¾—ç”¨äºŽå…¶å®ƒä»»ä½•ç”¨é€”
+//ALIENTEK STM32F407å¼€å‘æ¿
+//4.3å¯¸ç”µå®¹è§¦æ‘¸å±-OTT2001A é©±åŠ¨ä»£ç 
+//æ­£ç‚¹åŽŸå­@ALIENTEK
+//æŠ€æœ¯è®ºå›:www.openedv.com
+//åˆ›å»ºæ—¥æœŸ:2014/5/7
+//ç‰ˆæœ¬ï¼šV1.0
+//ç‰ˆæƒæ‰€æœ‰ï¼Œç›—ç‰ˆå¿…ç©¶ã€‚
+//Copyright(C) å¹¿å·žå¸‚æ˜Ÿç¿¼ç”µå­ç§‘æŠ€æœ‰é™å…¬å¸ 2014-2024
+//All rights reserved
+//////////////////////////////////////////////////////////////////////////////////
 
 
-//IO²Ù×÷º¯Êý	 
-#define OTT_RST    		PCout(13)	//OTT2001A¸´Î»Òý½Å
-#define OTT_INT    		PBin(1)		//OTT2001AÖÐ¶ÏÒý½Å	
-  
-//Í¨¹ýOTT_SET_REGÖ¸Áî,¿ÉÒÔ²éÑ¯µ½Õâ¸öÐÅÏ¢ 
-//×¢Òâ,ÕâÀïµÄX,YºÍÆÁÄ»µÄ×ø±êÏµ¸ÕºÃÊÇ·´µÄ.
-#define OTT_MAX_X 		2700	 	//TP X·½ÏòµÄ×î´óÖµ(Êú·½Ïò)
-#define OTT_MAX_Y 		1500    	//TP Y·½ÏòµÄ×î´óÖµ(ºá·½Ïò)
+//IOæ“ä½œå‡½æ•°
+#define OTT_RST         PCout(13)   //OTT2001Aå¤ä½å¼•è„š
+#define OTT_INT         PBin(1)     //OTT2001Aä¸­æ–­å¼•è„š
 
-//Ëõ·ÅÒò×Ó
-#define OTT_SCAL_X		0.2963		//ÆÁÄ»µÄ ×Ý×ø±ê/OTT_MAX_X		
-#define OTT_SCAL_Y		0.32		//ÆÁÄ»µÄ ºá×ø±ê/OTT_MAX_Y		
- 
-//I2C¶ÁÐ´ÃüÁî	
-#define OTT_CMD_WR 		0XB2     	//Ð´ÃüÁî
-#define OTT_CMD_RD 		0XB3		//¶ÁÃüÁî
- 
-//¼Ä´æÆ÷µØÖ·
-#define OTT_GSTID_REG 	0X0000   	//OTT2001Aµ±Ç°¼ì²âµ½µÄ´¥ÃþÇé¿ö
-#define OTT_TP1_REG 	0X0100  	//µÚÒ»¸ö´¥ÃþµãÊý¾ÝµØÖ·
-#define OTT_TP2_REG 	0X0500		//µÚ¶þ¸ö´¥ÃþµãÊý¾ÝµØÖ·
-#define OTT_TP3_REG 	0X1000		//µÚÈý¸ö´¥ÃþµãÊý¾ÝµØÖ·
-#define OTT_TP4_REG 	0X1400		//µÚËÄ¸ö´¥ÃþµãÊý¾ÝµØÖ·
-#define OTT_TP5_REG 	0X1800		//µÚÎå¸ö´¥ÃþµãÊý¾ÝµØÖ·  
-#define OTT_SET_REG   	0X0900   	//·Ö±æÂÊÉèÖÃ¼Ä´æÆ÷µØÖ·
-#define OTT_CTRL_REG  	0X0D00   	//´«¸ÐÆ÷¿ØÖÆ(¿ª/¹Ø)  
+//é€šè¿‡OTT_SET_REGæŒ‡ä»¤,å¯ä»¥æŸ¥è¯¢åˆ°è¿™ä¸ªä¿¡æ¯
+//æ³¨æ„,è¿™é‡Œçš„X,Yå’Œå±å¹•çš„åæ ‡ç³»åˆšå¥½æ˜¯åçš„.
+#define OTT_MAX_X       2700        //TP Xæ–¹å‘çš„æœ€å¤§å€¼(ç«–æ–¹å‘)
+#define OTT_MAX_Y       1500        //TP Yæ–¹å‘çš„æœ€å¤§å€¼(æ¨ªæ–¹å‘)
 
-#define OTT_MAX_TOUCH  5    		//µçÈÝÆÁÖ§³ÖµÄµãÊý,¹Ì¶¨Îª5µã
- 	
+//ç¼©æ”¾å› å­
+#define OTT_SCAL_X      0.2963      //å±å¹•çš„ çºµåæ ‡/OTT_MAX_X
+#define OTT_SCAL_Y      0.32        //å±å¹•çš„ æ¨ªåæ ‡/OTT_MAX_Y
 
-u8 OTT2001A_WR_Reg(u16 reg,u8 *buf,u8 len);		//Ð´¼Ä´æÆ÷(Êµ¼ÊÎÞÓÃ)
-void OTT2001A_RD_Reg(u16 reg,u8 *buf,u8 len);	//¶Á¼Ä´æÆ÷
-void OTT2001A_SensorControl(u8 cmd);//´«¸ÐÆ÷´ò¿ª/¹Ø±Õ²Ù×÷
-u8 OTT2001A_Init(void); 			//4.3µçÈÝ´¥ÃþÆÁÊ¼»¯º¯Êý
-u8 OTT2001A_Scan(u8 mode);			//µçÈÝ´¥ÃþÆÁÉ¨Ãèº¯Êý
+//I2Cè¯»å†™å‘½ä»¤
+#define OTT_CMD_WR      0XB2        //å†™å‘½ä»¤
+#define OTT_CMD_RD      0XB3        //è¯»å‘½ä»¤
+
+//å¯„å­˜å™¨åœ°å€
+#define OTT_GSTID_REG   0X0000      //OTT2001Aå½“å‰æ£€æµ‹åˆ°çš„è§¦æ‘¸æƒ…å†µ
+#define OTT_TP1_REG     0X0100      //ç¬¬ä¸€ä¸ªè§¦æ‘¸ç‚¹æ•°æ®åœ°å€
+#define OTT_TP2_REG     0X0500      //ç¬¬äºŒä¸ªè§¦æ‘¸ç‚¹æ•°æ®åœ°å€
+#define OTT_TP3_REG     0X1000      //ç¬¬ä¸‰ä¸ªè§¦æ‘¸ç‚¹æ•°æ®åœ°å€
+#define OTT_TP4_REG     0X1400      //ç¬¬å››ä¸ªè§¦æ‘¸ç‚¹æ•°æ®åœ°å€
+#define OTT_TP5_REG     0X1800      //ç¬¬äº”ä¸ªè§¦æ‘¸ç‚¹æ•°æ®åœ°å€
+#define OTT_SET_REG     0X0900      //åˆ†è¾¨çŽ‡è®¾ç½®å¯„å­˜å™¨åœ°å€
+#define OTT_CTRL_REG    0X0D00      //ä¼ æ„Ÿå™¨æŽ§åˆ¶(å¼€/å…³)
+
+#define OTT_MAX_TOUCH  5            //ç”µå®¹å±æ”¯æŒçš„ç‚¹æ•°,å›ºå®šä¸º5ç‚¹
+
+
+u8 OTT2001A_WR_Reg(u16 reg,u8 *buf,u8 len);     //å†™å¯„å­˜å™¨(å®žé™…æ— ç”¨)
+void OTT2001A_RD_Reg(u16 reg,u8 *buf,u8 len);   //è¯»å¯„å­˜å™¨
+void OTT2001A_SensorControl(u8 cmd);//ä¼ æ„Ÿå™¨æ‰“å¼€/å…³é—­æ“ä½œ
+u8 OTT2001A_Init(void);             //4.3ç”µå®¹è§¦æ‘¸å±å§‹åŒ–å‡½æ•°
+u8 OTT2001A_Scan(u8 mode);          //ç”µå®¹è§¦æ‘¸å±æ‰«æå‡½æ•°
 
 #endif
 

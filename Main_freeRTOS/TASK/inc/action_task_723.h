@@ -13,27 +13,27 @@
 
 struct GROUP_PRA
 {
-	u8 group;
-	float x;
-	float y;
-	float theta;
-	float h;
+    u8 group;
+    float x;
+    float y;
+    float theta;
+    float h;
 };
 
 extern int action_temp[6][3];
-extern int action_n; 
+extern int action_n;
 extern int action_t;
 extern float ChaBu_hNow;
 extern float LRL_hNow;
 extern float RLR_hNow;
-//Ç°Éê±ÈÀı
+//å‰ç”³æ¯”ä¾‹
 extern float Rf;
 extern u8 STA_STAND;
-//Ç°×ª±ÈÀı
+//å‰è½¬æ¯”ä¾‹
 extern float Rz;
 
-//ÒÆ¶¯ÃüÁîÏòÁ¿ [Vx,Vy,w]
-extern float Order[3]; 
+//ç§»åŠ¨å‘½ä»¤å‘é‡ [Vx,Vy,w]
+extern float Order[3];
 extern float LRL_phase;
 extern float RLR_phase;
 extern int STEP_number;
@@ -41,13 +41,13 @@ extern float Action_T;
 extern float Action_T_per_V;
 extern float speed;
 extern u8 STA_STOP;
-extern u8 STA_TIME_STOP;//µ¥²½Í£Ö¹Î»
-extern u8 STA_TEST_TaiJiao;//Ì§½Å²âÊÔ±êÖ¾Î»
-extern u8 STA_ACTION;//ÔËĞĞÄ£Ê½
-//ÉìÕ¹ÏµÊı
+extern u8 STA_TIME_STOP;//å•æ­¥åœæ­¢ä½
+extern u8 STA_TEST_TaiJiao;//æŠ¬è„šæµ‹è¯•æ ‡å¿—ä½
+extern u8 STA_ACTION;//è¿è¡Œæ¨¡å¼
+//ä¼¸å±•ç³»æ•°
 extern double L_init,L_init_best;
 
-//»úÉí¸ß¶È
+//æœºèº«é«˜åº¦
 extern double H_init,H_init_best;
 
 void action_init(void);

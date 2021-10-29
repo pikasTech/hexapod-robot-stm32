@@ -1,96 +1,96 @@
-#include "control.h"	
-#include "filter.h"	
+#include "control.h"
+#include "filter.h"
 #include "MPU6050.h"
 #include "inv_mpu.h"
 #include "sys.h"
 #include "math.h"
   /**************************************************************************
-×÷Õß£ºÆ½ºâĞ¡³µÖ®¼Ò
-ÎÒµÄÌÔ±¦Ğ¡µê£ºhttp://shop114407458.taobao.com/
+ä½œè€…ï¼šå¹³è¡¡å°è½¦ä¹‹å®¶
+æˆ‘çš„æ·˜å®å°åº—ï¼šhttp://shop114407458.taobao.com/
 **************************************************************************/
 int Balance_Pwm,Velocity_Pwm,Turn_Pwm;
 u8 Flag_Target;
 u32 Flash_R_Count;
 int Voltage_Temp,Voltage_Count,Voltage_All;
 /**************************************************************************
-º¯Êı¹¦ÄÜ£ºËùÓĞµÄ¿ØÖÆ´úÂë¶¼ÔÚÕâÀïÃæ
-         5ms¶¨Ê±ÖĞ¶ÏÓÉMPU6050µÄINTÒı½Å´¥·¢
-         ÑÏ¸ñ±£Ö¤²ÉÑùºÍÊı¾İ´¦ÀíµÄÊ±¼äÍ¬²½				 
+å‡½æ•°åŠŸèƒ½ï¼šæ‰€æœ‰çš„æ§åˆ¶ä»£ç éƒ½åœ¨è¿™é‡Œé¢
+         5mså®šæ—¶ä¸­æ–­ç”±MPU6050çš„INTå¼•è„šè§¦å‘
+         ä¸¥æ ¼ä¿è¯é‡‡æ ·å’Œæ•°æ®å¤„ç†çš„æ—¶é—´åŒæ­¥
 **************************************************************************/
 //void TIM3_IRQHandler(void)
-//{    
-//	if(TIM_GetITStatus(TIM3,TIM_IT_Update)==SET) //Òç³öÖĞ¶Ï
-//	{   
-//		   TIM_ClearITPendingBit(TIM3,TIM_IT_Update);  //Çå³ıÖĞ¶Ï±êÖ¾Î»
+//{
+//  if(TIM_GetITStatus(TIM3,TIM_IT_Update)==SET) //æº¢å‡ºä¸­æ–­
+//  {
+//         TIM_ClearITPendingBit(TIM3,TIM_IT_Update);  //æ¸…é™¤ä¸­æ–­æ ‡å¿—ä½
 
-//} 
+//}
 //}
 
 void Get_Angle(u8 way)
-{ 
-	    float Accel_Y,Accel_Angle_X,Accel_Angle_Y,Accel_X,Accel_Z,Gyro_X,Gyro_Y,Gyro_Z;
-//	   	Temperature=Read_Temperature();      //===¶ÁÈ¡MPU6050ÄÚÖÃÎÂ¶È´«¸ĞÆ÷Êı¾İ£¬½üËÆ±íÊ¾Ö÷°åÎÂ¶È¡£
-	    if(way==1)                           //===DMPµÄ¶ÁÈ¡ÔÚÊı¾İ²É¼¯ÖĞ¶Ï¶ÁÈ¡£¬ÑÏ¸ñ×ñÑ­Ê±ĞòÒªÇó
-			{		
-					Read_DMP();                      //===¶ÁÈ¡¼ÓËÙ¶È¡¢½ÇËÙ¶È¡¢Çã½Ç
-					Angle_Balance=-Roll;             //===¸üĞÂÆ½ºâÇã½Ç
-					Gyro_Balance=-gyro[0];            //===¸üĞÂÆ½ºâ½ÇËÙ¶È
-					Gyro_Turn=gyro[2];               //===¸üĞÂ×ªÏò½ÇËÙ¶È
-					Gyro_Pitch=gyro[1]/100.0;  
-					Gyro_Roll=gyro[0]/100.0; 
-//				  Acceleration_Z=accel[2];         //===¸üĞÂZÖá¼ÓËÙ¶È¼Æ
-			}			
+{
+        float Accel_Y,Accel_Angle_X,Accel_Angle_Y,Accel_X,Accel_Z,Gyro_X,Gyro_Y,Gyro_Z;
+//      Temperature=Read_Temperature();      //===è¯»å–MPU6050å†…ç½®æ¸©åº¦ä¼ æ„Ÿå™¨æ•°æ®ï¼Œè¿‘ä¼¼è¡¨ç¤ºä¸»æ¿æ¸©åº¦ã€‚
+        if(way==1)                           //===DMPçš„è¯»å–åœ¨æ•°æ®é‡‡é›†ä¸­æ–­è¯»å–ï¼Œä¸¥æ ¼éµå¾ªæ—¶åºè¦æ±‚
+            {
+                    Read_DMP();                      //===è¯»å–åŠ é€Ÿåº¦ã€è§’é€Ÿåº¦ã€å€¾è§’
+                    Angle_Balance=-Roll;             //===æ›´æ–°å¹³è¡¡å€¾è§’
+                    Gyro_Balance=-gyro[0];            //===æ›´æ–°å¹³è¡¡è§’é€Ÿåº¦
+                    Gyro_Turn=gyro[2];               //===æ›´æ–°è½¬å‘è§’é€Ÿåº¦
+                    Gyro_Pitch=gyro[1]/100.0;
+                    Gyro_Roll=gyro[0]/100.0;
+//                Acceleration_Z=accel[2];         //===æ›´æ–°Zè½´åŠ é€Ÿåº¦è®¡
+            }
       else
       {
-			Gyro_X=(I2C_ReadOneByte(devAddr,MPU6050_RA_GYRO_XOUT_H)<<8)+I2C_ReadOneByte(devAddr,MPU6050_RA_GYRO_XOUT_L);    //¶ÁÈ¡YÖáÍÓÂİÒÇ
-			Gyro_Y=(I2C_ReadOneByte(devAddr,MPU6050_RA_GYRO_YOUT_H)<<8)+I2C_ReadOneByte(devAddr,MPU6050_RA_GYRO_YOUT_L);    //¶ÁÈ¡YÖáÍÓÂİÒÇ
-			Gyro_Z=(I2C_ReadOneByte(devAddr,MPU6050_RA_GYRO_ZOUT_H)<<8)+I2C_ReadOneByte(devAddr,MPU6050_RA_GYRO_ZOUT_L);    //¶ÁÈ¡ZÖáÍÓÂİÒÇ
-			
-		  Accel_X=(I2C_ReadOneByte(devAddr,MPU6050_RA_ACCEL_XOUT_H)<<8)+I2C_ReadOneByte(devAddr,MPU6050_RA_ACCEL_XOUT_L); //¶ÁÈ¡XÖá¼ÓËÙ¶È¼Æ				
-		  Accel_Y=(I2C_ReadOneByte(devAddr,MPU6050_RA_ACCEL_YOUT_H)<<8)+I2C_ReadOneByte(devAddr,MPU6050_RA_ACCEL_YOUT_L); //¶ÁÈ¡XÖá¼ÓËÙ¶È¼Æ
-			Accel_Z=(I2C_ReadOneByte(devAddr,MPU6050_RA_ACCEL_ZOUT_H)<<8)+I2C_ReadOneByte(devAddr,MPU6050_RA_ACCEL_ZOUT_L); //¶ÁÈ¡ZÖá¼ÓËÙ¶È¼Æ
+            Gyro_X=(I2C_ReadOneByte(devAddr,MPU6050_RA_GYRO_XOUT_H)<<8)+I2C_ReadOneByte(devAddr,MPU6050_RA_GYRO_XOUT_L);    //è¯»å–Yè½´é™€èºä»ª
+            Gyro_Y=(I2C_ReadOneByte(devAddr,MPU6050_RA_GYRO_YOUT_H)<<8)+I2C_ReadOneByte(devAddr,MPU6050_RA_GYRO_YOUT_L);    //è¯»å–Yè½´é™€èºä»ª
+            Gyro_Z=(I2C_ReadOneByte(devAddr,MPU6050_RA_GYRO_ZOUT_H)<<8)+I2C_ReadOneByte(devAddr,MPU6050_RA_GYRO_ZOUT_L);    //è¯»å–Zè½´é™€èºä»ª
 
-			if(Gyro_X>32768)  Gyro_X-=65536;                       //Êı¾İÀàĞÍ×ª»»  Ò²¿ÉÍ¨¹ıshortÇ¿ÖÆÀàĞÍ×ª»»
-			if(Gyro_Y>32768)  Gyro_Y-=65536;                       //Êı¾İÀàĞÍ×ª»»				
-			if(Gyro_Z>32768)  Gyro_Z-=65536;                       //Êı¾İÀàĞÍ×ª»»
-				
-	  	if(Accel_X>32768) Accel_X-=65536;                      //Êı¾İÀàĞÍ×ª»»
-			if(Accel_Y>32768) Accel_Y-=65536;                      //Êı¾İÀàĞÍ×ª»»
-		  if(Accel_Z>32768) Accel_Z-=65536;                      //Êı¾İÀàĞÍ×ª»»
-				
-			Gyro_Balance=Gyro_X;                                  //¸üĞÂÆ½ºâ½ÇËÙ¶È
-	   	Accel_Angle_X=atan2(Accel_Y,Accel_Z)*180/PI;                 //¼ÆËãÇã½Ç	
-	   	Accel_Angle_Y=-atan2(Accel_X,Accel_Z)*180/PI;                 //¼ÆËãÇã½Ç	
-				
-			Gyro_X=Gyro_X/16.4f;                                    //ÍÓÂİÒÇÁ¿³Ì×ª»»	
-			Gyro_Y=Gyro_Y/16.4f;
+          Accel_X=(I2C_ReadOneByte(devAddr,MPU6050_RA_ACCEL_XOUT_H)<<8)+I2C_ReadOneByte(devAddr,MPU6050_RA_ACCEL_XOUT_L); //è¯»å–Xè½´åŠ é€Ÿåº¦è®¡
+          Accel_Y=(I2C_ReadOneByte(devAddr,MPU6050_RA_ACCEL_YOUT_H)<<8)+I2C_ReadOneByte(devAddr,MPU6050_RA_ACCEL_YOUT_L); //è¯»å–Xè½´åŠ é€Ÿåº¦è®¡
+            Accel_Z=(I2C_ReadOneByte(devAddr,MPU6050_RA_ACCEL_ZOUT_H)<<8)+I2C_ReadOneByte(devAddr,MPU6050_RA_ACCEL_ZOUT_L); //è¯»å–Zè½´åŠ é€Ÿåº¦è®¡
+
+            if(Gyro_X>32768)  Gyro_X-=65536;                       //æ•°æ®ç±»å‹è½¬æ¢  ä¹Ÿå¯é€šè¿‡shortå¼ºåˆ¶ç±»å‹è½¬æ¢
+            if(Gyro_Y>32768)  Gyro_Y-=65536;                       //æ•°æ®ç±»å‹è½¬æ¢
+            if(Gyro_Z>32768)  Gyro_Z-=65536;                       //æ•°æ®ç±»å‹è½¬æ¢
+
+        if(Accel_X>32768) Accel_X-=65536;                      //æ•°æ®ç±»å‹è½¬æ¢
+            if(Accel_Y>32768) Accel_Y-=65536;                      //æ•°æ®ç±»å‹è½¬æ¢
+          if(Accel_Z>32768) Accel_Z-=65536;                      //æ•°æ®ç±»å‹è½¬æ¢
+
+            Gyro_Balance=Gyro_X;                                  //æ›´æ–°å¹³è¡¡è§’é€Ÿåº¦
+        Accel_Angle_X=atan2(Accel_Y,Accel_Z)*180/PI;                 //è®¡ç®—å€¾è§’
+        Accel_Angle_Y=-atan2(Accel_X,Accel_Z)*180/PI;                 //è®¡ç®—å€¾è§’
+
+            Gyro_X=Gyro_X/16.4f;                                    //é™€èºä»ªé‡ç¨‹è½¬æ¢
+            Gyro_Y=Gyro_Y/16.4f;
       if(Way_Angle==2)
-			{
-//				Kalman_Filter_x(Accel_Angle_X,Gyro_X);//¿¨¶ûÂüÂË²¨	
-				Roll=angle_x;
-//				Kalman_Filter_y(Accel_Angle_Y,Gyro_Y);//¿¨¶ûÂüÂË²¨	
-				Pitch=angle_y;
-			}
-			else if(Way_Angle==3)
-			{	
-				Yijielvbo_x(Accel_Angle_X,Gyro_X);    //»¥²¹ÂË²¨
-				Roll=angle_x;
-				Yijielvbo_y(Accel_Angle_Y,Gyro_Y);    //»¥²¹ÂË²¨
-				Pitch=angle_y;				
-			}
-		}
+            {
+//              Kalman_Filter_x(Accel_Angle_X,Gyro_X);//å¡å°”æ›¼æ»¤æ³¢
+                Roll=angle_x;
+//              Kalman_Filter_y(Accel_Angle_Y,Gyro_Y);//å¡å°”æ›¼æ»¤æ³¢
+                Pitch=angle_y;
+            }
+            else if(Way_Angle==3)
+            {
+                Yijielvbo_x(Accel_Angle_X,Gyro_X);    //äº’è¡¥æ»¤æ³¢
+                Roll=angle_x;
+                Yijielvbo_y(Accel_Angle_Y,Gyro_Y);    //äº’è¡¥æ»¤æ³¢
+                Pitch=angle_y;
+            }
+        }
 }
 /**************************************************************************
-º¯Êı¹¦ÄÜ£º¾ø¶ÔÖµº¯Êı
-Èë¿Ú²ÎÊı£ºint
-·µ»Ø  Öµ£ºunsigned int
+å‡½æ•°åŠŸèƒ½ï¼šç»å¯¹å€¼å‡½æ•°
+å…¥å£å‚æ•°ï¼šint
+è¿”å›  å€¼ï¼šunsigned int
 **************************************************************************/
 int myabs(int a)
-{ 		   
-	  int temp;
-		if(a<0)  temp=-a;  
-	  else temp=a;
-	  return temp;
+{
+      int temp;
+        if(a<0)  temp=-a;
+      else temp=a;
+      return temp;
 
 }
 

@@ -2,166 +2,166 @@
 #include "touch.h"
 #include "ctiic.h"
 #include "usart.h"
-#include "delay.h" 
-#include "string.h" 
-//////////////////////////////////////////////////////////////////////////////////	 
-//±¾³ÌĞòÖ»¹©Ñ§Ï°Ê¹ÓÃ£¬Î´¾­×÷ÕßĞí¿É£¬²»µÃÓÃÓÚÆäËüÈÎºÎÓÃÍ¾
-//ALIENTEK STM32¿ª·¢°å
-//7´çµçÈİ´¥ÃşÆÁ-FT5206 Çı¶¯´úÂë	   
-//ÕıµãÔ­×Ó@ALIENTEK
-//¼¼ÊõÂÛÌ³:www.openedv.com
-//´´½¨ÈÕÆÚ:2014/11/30
-//°æ±¾£ºV1.0
-//°æÈ¨ËùÓĞ£¬µÁ°æ±Ø¾¿¡£
-//Copyright(C) ¹ãÖİÊĞĞÇÒíµç×Ó¿Æ¼¼ÓĞÏŞ¹«Ë¾ 2014-2024
-//All rights reserved									  
-////////////////////////////////////////////////////////////////////////////////// 
- 
- 
-//ÏòFT5206Ğ´ÈëÒ»´ÎÊı¾İ
-//reg:ÆğÊ¼¼Ä´æÆ÷µØÖ·
-//buf:Êı¾İ»º»º´æÇø
-//len:Ğ´Êı¾İ³¤¶È
-//·µ»ØÖµ:0,³É¹¦;1,Ê§°Ü.
+#include "delay.h"
+#include "string.h"
+//////////////////////////////////////////////////////////////////////////////////
+//æœ¬ç¨‹åºåªä¾›å­¦ä¹ ä½¿ç”¨ï¼Œæœªç»ä½œè€…è®¸å¯ï¼Œä¸å¾—ç”¨äºå…¶å®ƒä»»ä½•ç”¨é€”
+//ALIENTEK STM32å¼€å‘æ¿
+//7å¯¸ç”µå®¹è§¦æ‘¸å±-FT5206 é©±åŠ¨ä»£ç 
+//æ­£ç‚¹åŸå­@ALIENTEK
+//æŠ€æœ¯è®ºå›:www.openedv.com
+//åˆ›å»ºæ—¥æœŸ:2014/11/30
+//ç‰ˆæœ¬ï¼šV1.0
+//ç‰ˆæƒæ‰€æœ‰ï¼Œç›—ç‰ˆå¿…ç©¶ã€‚
+//Copyright(C) å¹¿å·å¸‚æ˜Ÿç¿¼ç”µå­ç§‘æŠ€æœ‰é™å…¬å¸ 2014-2024
+//All rights reserved
+//////////////////////////////////////////////////////////////////////////////////
+
+
+//å‘FT5206å†™å…¥ä¸€æ¬¡æ•°æ®
+//reg:èµ·å§‹å¯„å­˜å™¨åœ°å€
+//buf:æ•°æ®ç¼“ç¼“å­˜åŒº
+//len:å†™æ•°æ®é•¿åº¦
+//è¿”å›å€¼:0,æˆåŠŸ;1,å¤±è´¥.
 u8 FT5206_WR_Reg(u16 reg,u8 *buf,u8 len)
 {
-	u8 i;
-	u8 ret=0;
-	CT_IIC_Start();	 
-	CT_IIC_Send_Byte(FT_CMD_WR);	//·¢ËÍĞ´ÃüÁî 	 
-	CT_IIC_Wait_Ack(); 	 										  		   
-	CT_IIC_Send_Byte(reg&0XFF);   	//·¢ËÍµÍ8Î»µØÖ·
-	CT_IIC_Wait_Ack();  
-	for(i=0;i<len;i++)
-	{	   
-    	CT_IIC_Send_Byte(buf[i]);  	//·¢Êı¾İ
-		ret=CT_IIC_Wait_Ack();
-		if(ret)break;  
-	}
-    CT_IIC_Stop();					//²úÉúÒ»¸öÍ£Ö¹Ìõ¼ş	    
-	return ret; 
+    u8 i;
+    u8 ret=0;
+    CT_IIC_Start();
+    CT_IIC_Send_Byte(FT_CMD_WR);    //å‘é€å†™å‘½ä»¤
+    CT_IIC_Wait_Ack();
+    CT_IIC_Send_Byte(reg&0XFF);     //å‘é€ä½8ä½åœ°å€
+    CT_IIC_Wait_Ack();
+    for(i=0;i<len;i++)
+    {
+        CT_IIC_Send_Byte(buf[i]);   //å‘æ•°æ®
+        ret=CT_IIC_Wait_Ack();
+        if(ret)break;
+    }
+    CT_IIC_Stop();                  //äº§ç”Ÿä¸€ä¸ªåœæ­¢æ¡ä»¶
+    return ret;
 }
-//´ÓFT5206¶Á³öÒ»´ÎÊı¾İ
-//reg:ÆğÊ¼¼Ä´æÆ÷µØÖ·
-//buf:Êı¾İ»º»º´æÇø
-//len:¶ÁÊı¾İ³¤¶È			  
+//ä»FT5206è¯»å‡ºä¸€æ¬¡æ•°æ®
+//reg:èµ·å§‹å¯„å­˜å™¨åœ°å€
+//buf:æ•°æ®ç¼“ç¼“å­˜åŒº
+//len:è¯»æ•°æ®é•¿åº¦
 void FT5206_RD_Reg(u16 reg,u8 *buf,u8 len)
 {
-	u8 i; 
- 	CT_IIC_Start();	
- 	CT_IIC_Send_Byte(FT_CMD_WR);   	//·¢ËÍĞ´ÃüÁî 	 
-	CT_IIC_Wait_Ack(); 	 										  		   
- 	CT_IIC_Send_Byte(reg&0XFF);   	//·¢ËÍµÍ8Î»µØÖ·
-	CT_IIC_Wait_Ack();  
- 	CT_IIC_Start();  	 	   
-	CT_IIC_Send_Byte(FT_CMD_RD);   	//·¢ËÍ¶ÁÃüÁî		   
-	CT_IIC_Wait_Ack();	   
-	for(i=0;i<len;i++)
-	{	   
-    	buf[i]=CT_IIC_Read_Byte(i==(len-1)?0:1); //·¢Êı¾İ	  
-	} 
-    CT_IIC_Stop();//²úÉúÒ»¸öÍ£Ö¹Ìõ¼ş     
-} 
-//³õÊ¼»¯FT5206´¥ÃşÆÁ
-//·µ»ØÖµ:0,³õÊ¼»¯³É¹¦;1,³õÊ¼»¯Ê§°Ü 
+    u8 i;
+    CT_IIC_Start();
+    CT_IIC_Send_Byte(FT_CMD_WR);    //å‘é€å†™å‘½ä»¤
+    CT_IIC_Wait_Ack();
+    CT_IIC_Send_Byte(reg&0XFF);     //å‘é€ä½8ä½åœ°å€
+    CT_IIC_Wait_Ack();
+    CT_IIC_Start();
+    CT_IIC_Send_Byte(FT_CMD_RD);    //å‘é€è¯»å‘½ä»¤
+    CT_IIC_Wait_Ack();
+    for(i=0;i<len;i++)
+    {
+        buf[i]=CT_IIC_Read_Byte(i==(len-1)?0:1); //å‘æ•°æ®
+    }
+    CT_IIC_Stop();//äº§ç”Ÿä¸€ä¸ªåœæ­¢æ¡ä»¶
+}
+//åˆå§‹åŒ–FT5206è§¦æ‘¸å±
+//è¿”å›å€¼:0,åˆå§‹åŒ–æˆåŠŸ;1,åˆå§‹åŒ–å¤±è´¥
 u8 FT5206_Init(void)
 {
-	u8 temp[2]; 
+    u8 temp[2];
   GPIO_InitTypeDef  GPIO_InitStructure;
-	
-  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB|RCC_AHB1Periph_GPIOC, ENABLE);//Ê¹ÄÜGPIOB,CÊ±ÖÓ
 
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1 ;//PB1ÉèÖÃÎªÉÏÀ­ÊäÈë
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;//ÊäÈëÄ£Ê½
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;//ÍÆÍìÊä³ö
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB|RCC_AHB1Periph_GPIOC, ENABLE);//ä½¿èƒ½GPIOB,Cæ—¶é’Ÿ
+
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1 ;//PB1è®¾ç½®ä¸ºä¸Šæ‹‰è¾“å…¥
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;//è¾“å…¥æ¨¡å¼
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;//æ¨æŒ½è¾“å‡º
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//ÉÏÀ­
-  GPIO_Init(GPIOB, &GPIO_InitStructure);//³õÊ¼»¯
-		
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;//PC13ÉèÖÃÎªÍÆÍìÊä³ö
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;//Êä³öÄ£Ê½
-	GPIO_Init(GPIOC, &GPIO_InitStructure);//³õÊ¼»¯	
-	
-	CT_IIC_Init();      	//³õÊ¼»¯µçÈİÆÁµÄI2C×ÜÏß  
-	FT_RST=0;				//¸´Î»
-	delay_ms(20);
- 	FT_RST=1;				//ÊÍ·Å¸´Î»		    
-	delay_ms(50);  	
-	temp[0]=0;
-	FT5206_WR_Reg(FT_DEVIDE_MODE,temp,1);	//½øÈëÕı³£²Ù×÷Ä£Ê½ 
-	FT5206_WR_Reg(FT_ID_G_MODE,temp,1);		//²éÑ¯Ä£Ê½ 
-	temp[0]=22;								//´¥ÃşÓĞĞ§Öµ£¬22£¬Ô½Ğ¡Ô½ÁéÃô	
-	FT5206_WR_Reg(FT_ID_G_THGROUP,temp,1);	//ÉèÖÃ´¥ÃşÓĞĞ§Öµ
-	temp[0]=12;								//¼¤»îÖÜÆÚ£¬²»ÄÜĞ¡ÓÚ12£¬×î´ó14
-	FT5206_WR_Reg(FT_ID_G_PERIODACTIVE,temp,1); 
-	//¶ÁÈ¡°æ±¾ºÅ£¬²Î¿¼Öµ£º0x3003
-	FT5206_RD_Reg(FT_ID_G_LIB_VERSION,&temp[0],2);  
-	if(temp[0]==0X30&&temp[1]==0X03)//°æ±¾:0X3003
-	{
-		////printf("CTP ID:%x\r\n",((u16)temp[0]<<8)+temp[1]);
-		return 0;
-	} 
-	return 1;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//ä¸Šæ‹‰
+  GPIO_Init(GPIOB, &GPIO_InitStructure);//åˆå§‹åŒ–
+
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;//PC13è®¾ç½®ä¸ºæ¨æŒ½è¾“å‡º
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;//è¾“å‡ºæ¨¡å¼
+    GPIO_Init(GPIOC, &GPIO_InitStructure);//åˆå§‹åŒ–
+
+    CT_IIC_Init();          //åˆå§‹åŒ–ç”µå®¹å±çš„I2Cæ€»çº¿
+    FT_RST=0;               //å¤ä½
+    delay_ms(20);
+    FT_RST=1;               //é‡Šæ”¾å¤ä½
+    delay_ms(50);
+    temp[0]=0;
+    FT5206_WR_Reg(FT_DEVIDE_MODE,temp,1);   //è¿›å…¥æ­£å¸¸æ“ä½œæ¨¡å¼
+    FT5206_WR_Reg(FT_ID_G_MODE,temp,1);     //æŸ¥è¯¢æ¨¡å¼
+    temp[0]=22;                             //è§¦æ‘¸æœ‰æ•ˆå€¼ï¼Œ22ï¼Œè¶Šå°è¶Šçµæ•
+    FT5206_WR_Reg(FT_ID_G_THGROUP,temp,1);  //è®¾ç½®è§¦æ‘¸æœ‰æ•ˆå€¼
+    temp[0]=12;                             //æ¿€æ´»å‘¨æœŸï¼Œä¸èƒ½å°äº12ï¼Œæœ€å¤§14
+    FT5206_WR_Reg(FT_ID_G_PERIODACTIVE,temp,1);
+    //è¯»å–ç‰ˆæœ¬å·ï¼Œå‚è€ƒå€¼ï¼š0x3003
+    FT5206_RD_Reg(FT_ID_G_LIB_VERSION,&temp[0],2);
+    if(temp[0]==0X30&&temp[1]==0X03)//ç‰ˆæœ¬:0X3003
+    {
+        ////printf("CTP ID:%x\r\n",((u16)temp[0]<<8)+temp[1]);
+        return 0;
+    }
+    return 1;
 }
 const u16 FT5206_TPX_TBL[5]={FT_TP1_REG,FT_TP2_REG,FT_TP3_REG,FT_TP4_REG,FT_TP5_REG};
-//É¨Ãè´¥ÃşÆÁ(²ÉÓÃ²éÑ¯·½Ê½)
-//mode:0,Õı³£É¨Ãè.
-//·µ»ØÖµ:µ±Ç°´¥ÆÁ×´Ì¬.
-//0,´¥ÆÁÎŞ´¥Ãş;1,´¥ÆÁÓĞ´¥Ãş
+//æ‰«æè§¦æ‘¸å±(é‡‡ç”¨æŸ¥è¯¢æ–¹å¼)
+//mode:0,æ­£å¸¸æ‰«æ.
+//è¿”å›å€¼:å½“å‰è§¦å±çŠ¶æ€.
+//0,è§¦å±æ— è§¦æ‘¸;1,è§¦å±æœ‰è§¦æ‘¸
 u8 FT5206_Scan(u8 mode)
 {
-	u8 buf[4];
-	u8 i=0;
-	u8 res=0;
-	u8 temp;
-	static u8 t=0;//¿ØÖÆ²éÑ¯¼ä¸ô,´Ó¶ø½µµÍCPUÕ¼ÓÃÂÊ   
-	t++;
-	if((t%10)==0||t<10)//¿ÕÏĞÊ±,Ã¿½øÈë10´ÎCTP_Scanº¯Êı²Å¼ì²â1´Î,´Ó¶ø½ÚÊ¡CPUÊ¹ÓÃÂÊ
-	{
-		FT5206_RD_Reg(FT_REG_NUM_FINGER,&mode,1);//¶ÁÈ¡´¥ÃşµãµÄ×´Ì¬  
-		if((mode&0XF)&&((mode&0XF)<6))
-		{
-			temp=0XFF<<(mode&0XF);//½«µãµÄ¸öÊı×ª»»Îª1µÄÎ»Êı,Æ¥Åätp_dev.sta¶¨Òå 
-			tp_dev.sta=(~temp)|TP_PRES_DOWN|TP_CATH_PRES; 
-			for(i=0;i<5;i++)
-			{
-				if(tp_dev.sta&(1<<i))	//´¥ÃşÓĞĞ§?
-				{
-					FT5206_RD_Reg(FT5206_TPX_TBL[i],buf,4);	//¶ÁÈ¡XY×ø±êÖµ 
-					if(tp_dev.touchtype&0X01)//ºáÆÁ
-					{
-						tp_dev.y[i]=((u16)(buf[0]&0X0F)<<8)+buf[1];
-						tp_dev.x[i]=((u16)(buf[2]&0X0F)<<8)+buf[3];
-					}else
-					{
-						tp_dev.x[i]=480-(((u16)(buf[0]&0X0F)<<8)+buf[1]);
-						tp_dev.y[i]=((u16)(buf[2]&0X0F)<<8)+buf[3];
-					}  
-					if((buf[0]&0XF0)!=0X80)tp_dev.x[i]=tp_dev.y[i]=0;//±ØĞëÊÇcontactÊÂ¼ş£¬²ÅÈÏÎªÓĞĞ§
-					////printf("x[%d]:%d,y[%d]:%d\r\n",i,tp_dev.x[i],i,tp_dev.y[i]);
-				}			
-			} 
-			res=1;
-			if(tp_dev.x[0]==0 && tp_dev.y[0]==0)mode=0;	//¶Áµ½µÄÊı¾İ¶¼ÊÇ0,ÔòºöÂÔ´Ë´ÎÊı¾İ
-			t=0;		//´¥·¢Ò»´Î,Ôò»á×îÉÙÁ¬Ğø¼à²â10´Î,´Ó¶øÌá¸ßÃüÖĞÂÊ
-		}
-	}
-	if((mode&0X1F)==0)//ÎŞ´¥Ãşµã°´ÏÂ
-	{ 
-		if(tp_dev.sta&TP_PRES_DOWN)	//Ö®Ç°ÊÇ±»°´ÏÂµÄ
-		{
-			tp_dev.sta&=~(1<<7);	//±ê¼Ç°´¼üËÉ¿ª
-		}else						//Ö®Ç°¾ÍÃ»ÓĞ±»°´ÏÂ
-		{ 
-			tp_dev.x[0]=0xffff;
-			tp_dev.y[0]=0xffff;
-			tp_dev.sta&=0XE0;	//Çå³ıµãÓĞĞ§±ê¼Ç	
-		}	 
-	} 	
-	if(t>240)t=10;//ÖØĞÂ´Ó10¿ªÊ¼¼ÆÊı
-	return res;
+    u8 buf[4];
+    u8 i=0;
+    u8 res=0;
+    u8 temp;
+    static u8 t=0;//æ§åˆ¶æŸ¥è¯¢é—´éš”,ä»è€Œé™ä½CPUå ç”¨ç‡
+    t++;
+    if((t%10)==0||t<10)//ç©ºé—²æ—¶,æ¯è¿›å…¥10æ¬¡CTP_Scanå‡½æ•°æ‰æ£€æµ‹1æ¬¡,ä»è€ŒèŠ‚çœCPUä½¿ç”¨ç‡
+    {
+        FT5206_RD_Reg(FT_REG_NUM_FINGER,&mode,1);//è¯»å–è§¦æ‘¸ç‚¹çš„çŠ¶æ€
+        if((mode&0XF)&&((mode&0XF)<6))
+        {
+            temp=0XFF<<(mode&0XF);//å°†ç‚¹çš„ä¸ªæ•°è½¬æ¢ä¸º1çš„ä½æ•°,åŒ¹é…tp_dev.staå®šä¹‰
+            tp_dev.sta=(~temp)|TP_PRES_DOWN|TP_CATH_PRES;
+            for(i=0;i<5;i++)
+            {
+                if(tp_dev.sta&(1<<i))   //è§¦æ‘¸æœ‰æ•ˆ?
+                {
+                    FT5206_RD_Reg(FT5206_TPX_TBL[i],buf,4); //è¯»å–XYåæ ‡å€¼
+                    if(tp_dev.touchtype&0X01)//æ¨ªå±
+                    {
+                        tp_dev.y[i]=((u16)(buf[0]&0X0F)<<8)+buf[1];
+                        tp_dev.x[i]=((u16)(buf[2]&0X0F)<<8)+buf[3];
+                    }else
+                    {
+                        tp_dev.x[i]=480-(((u16)(buf[0]&0X0F)<<8)+buf[1]);
+                        tp_dev.y[i]=((u16)(buf[2]&0X0F)<<8)+buf[3];
+                    }
+                    if((buf[0]&0XF0)!=0X80)tp_dev.x[i]=tp_dev.y[i]=0;//å¿…é¡»æ˜¯contactäº‹ä»¶ï¼Œæ‰è®¤ä¸ºæœ‰æ•ˆ
+                    ////printf("x[%d]:%d,y[%d]:%d\r\n",i,tp_dev.x[i],i,tp_dev.y[i]);
+                }
+            }
+            res=1;
+            if(tp_dev.x[0]==0 && tp_dev.y[0]==0)mode=0; //è¯»åˆ°çš„æ•°æ®éƒ½æ˜¯0,åˆ™å¿½ç•¥æ­¤æ¬¡æ•°æ®
+            t=0;        //è§¦å‘ä¸€æ¬¡,åˆ™ä¼šæœ€å°‘è¿ç»­ç›‘æµ‹10æ¬¡,ä»è€Œæé«˜å‘½ä¸­ç‡
+        }
+    }
+    if((mode&0X1F)==0)//æ— è§¦æ‘¸ç‚¹æŒ‰ä¸‹
+    {
+        if(tp_dev.sta&TP_PRES_DOWN) //ä¹‹å‰æ˜¯è¢«æŒ‰ä¸‹çš„
+        {
+            tp_dev.sta&=~(1<<7);    //æ ‡è®°æŒ‰é”®æ¾å¼€
+        }else                       //ä¹‹å‰å°±æ²¡æœ‰è¢«æŒ‰ä¸‹
+        {
+            tp_dev.x[0]=0xffff;
+            tp_dev.y[0]=0xffff;
+            tp_dev.sta&=0XE0;   //æ¸…é™¤ç‚¹æœ‰æ•ˆæ ‡è®°
+        }
+    }
+    if(t>240)t=10;//é‡æ–°ä»10å¼€å§‹è®¡æ•°
+    return res;
 }
- 
+
 
 
 

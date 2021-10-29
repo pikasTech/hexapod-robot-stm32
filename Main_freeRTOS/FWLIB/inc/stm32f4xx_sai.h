@@ -4,8 +4,8 @@
   * @author  MCD Application Team
   * @version V1.4.0
   * @date    04-August-2014
-  * @brief   This file contains all the functions prototypes for the SAI 
-  *          firmware library.  
+  * @brief   This file contains all the functions prototypes for the SAI
+  *          firmware library.
   ******************************************************************************
   * @attention
   *
@@ -17,14 +17,14 @@
   *
   *        http://www.st.com/software_license_agreement_liberty_v2
   *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   * See the License for the specific language governing permissions and
   * limitations under the License.
   *
   ******************************************************************************
-  */ 
+  */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __STM32F4xx_SAI_H
@@ -43,12 +43,12 @@
 
 /** @addtogroup SAI
   * @{
-  */ 
+  */
 
 /* Exported types ------------------------------------------------------------*/
 
-/** 
-  * @brief  SAI Block Init structure definition  
+/**
+  * @brief  SAI Block Init structure definition
   */
 
 typedef struct
@@ -60,11 +60,11 @@ typedef struct
                                          This parameter can be a value of @ref SAI_Block_Protocol */
 
   uint32_t SAI_DataSize;            /*!< Specifies the SAI Block data size.
-                                         This parameter can be a value of @ref SAI_Block_Data_Size 
+                                         This parameter can be a value of @ref SAI_Block_Data_Size
                                          @note this value is ignored when AC'97 or SPDIF protocols are selected.*/
 
   uint32_t SAI_FirstBit;            /*!< Specifies whether data transfers start from MSB or LSB bit.
-                                         This parameter can be a value of @ref SAI_Block_MSB_LSB_transmission 
+                                         This parameter can be a value of @ref SAI_Block_MSB_LSB_transmission
                                          @note this value has no meaning when AC'97 or SPDIF protocols are selected.*/
 
   uint32_t SAI_ClockStrobing;       /*!< Specifies the SAI Block clock strobing edge sensitivity.
@@ -72,79 +72,79 @@ typedef struct
 
   uint32_t SAI_Synchro;             /*!< Specifies SAI Block synchronization
                                          This parameter can be a value of @ref SAI_Block_Synchronization */
- 
+
   uint32_t SAI_OUTDRIV;             /*!< Specifies when SAI Block outputs are driven.
                                          This parameter can be a value of @ref SAI_Block_Output_Drive
-                                         @note this value has to be set before enabling the audio block  
+                                         @note this value has to be set before enabling the audio block
                                                but after the audio block configuration. */
 
   uint32_t SAI_NoDivider;            /*!< Specifies whether Master Clock will be divided or not.
                                          This parameter can be a value of @ref SAI_Block_NoDivider */
 
-  uint32_t SAI_MasterDivider;       /*!< Specifies SAI Block Master Clock Divider. 
-                                         @note the Master Clock Frequency is calculated accordingly to the  
+  uint32_t SAI_MasterDivider;       /*!< Specifies SAI Block Master Clock Divider.
+                                         @note the Master Clock Frequency is calculated accordingly to the
                                                following formula : MCLK_x = SAI_CK_x/(MCKDIV[3:0]*2)*/
-                                               
+
   uint32_t SAI_FIFOThreshold;      /*!< Specifies SAI Block FIFO Threshold.
-                                         This parameter can be a value of @ref SAI_Block_Fifo_Threshold */                                                                                             
+                                         This parameter can be a value of @ref SAI_Block_Fifo_Threshold */
 }SAI_InitTypeDef;
 
-/** 
-  * @brief  SAI Block Frame Init structure definition  
+/**
+  * @brief  SAI Block Frame Init structure definition
   */
 
 typedef struct
 {
 
-  uint32_t SAI_FrameLength;         /*!< Specifies the Frame Length, the number of SCK clocks 
+  uint32_t SAI_FrameLength;         /*!< Specifies the Frame Length, the number of SCK clocks
                                          for each audio frame.
                                          This parameter must be a number between 8 and 256.
                                          @note If master Clock MCLK_x pin is declared as an output, the frame length
-                                               should be Aligned to a number equal to power of 2 in order to keep 
-                                              in an audio frame, an integer number of MCLK pulses by bit Clock.                                                 
+                                               should be Aligned to a number equal to power of 2 in order to keep
+                                              in an audio frame, an integer number of MCLK pulses by bit Clock.
                                          @note this value is ignored when AC'97 or SPDIF protocols are selected.*/
-                                   
+
   uint32_t SAI_ActiveFrameLength;   /*!< Specifies the Frame synchronization active level length.
-                                         This Parameter specifies the length in number of bit clock (SCK + 1)  
+                                         This Parameter specifies the length in number of bit clock (SCK + 1)
                                          of the active level of FS signal in audio frame.
-                                         This parameter must be a number between 1 and 128. 
+                                         This parameter must be a number between 1 and 128.
                                          @note this value is ignored when AC'97 or SPDIF protocols are selected.*/
 
   uint32_t SAI_FSDefinition;        /*!< Specifies the Frame Synchronization definition.
-                                         This parameter can be a value of @ref SAI_Block_FS_Definition 
+                                         This parameter can be a value of @ref SAI_Block_FS_Definition
                                          @note this value is ignored when AC'97 or SPDIF protocols are selected.*/
 
   uint32_t SAI_FSPolarity;          /*!< Specifies the Frame Synchronization Polarity.
-                                         This parameter can be a value of @ref SAI_Block_FS_Polarity 
+                                         This parameter can be a value of @ref SAI_Block_FS_Polarity
                                          @note this value is ignored when AC'97 or SPDIF protocols are selected.*/
 
   uint32_t SAI_FSOffset;            /*!< Specifies the Frame Synchronization Offset.
-                                         This parameter can be a value of @ref SAI_Block_FS_Offset 
+                                         This parameter can be a value of @ref SAI_Block_FS_Offset
                                          @note this value is ignored when AC'97 or SPDIF protocols are selected.*/
 
 }SAI_FrameInitTypeDef;
 
 /**
   * @brief   SAI Block Slot Init Structure definition
-  */    
+  */
 
 typedef struct
 {
   uint32_t SAI_FirstBitOffset;      /*!< Specifies the position of first data transfer bit in the slot.
-                                         This parameter must be a number between 0 and 24. 
+                                         This parameter must be a number between 0 and 24.
                                          @note this value is ignored when AC'97 or SPDIF protocols are selected.*/
 
   uint32_t SAI_SlotSize;            /*!< Specifies the Slot Size.
-                                         This parameter can be a value of @ref SAI_Block_Slot_Size 
+                                         This parameter can be a value of @ref SAI_Block_Slot_Size
                                          @note this value is ignored when AC'97 or SPDIF protocols are selected.*/
 
   uint32_t SAI_SlotNumber;          /*!< Specifies the number of slot in the audio frame.
-                                         This parameter must be a number between 1 and 16. 
+                                         This parameter must be a number between 1 and 16.
                                          @note this value is ignored when AC'97 or SPDIF protocols are selected.*/
 
   uint32_t SAI_SlotActive;          /*!< Specifies the slots in audio frame that will be activated.
-                                         This parameter can be a value of @ ref SAI_Block_Slot_Active 
-                                         @note this value is ignored when AC'97 or SPDIF protocols are selected.*/ 
+                                         This parameter can be a value of @ ref SAI_Block_Slot_Active
+                                         @note this value is ignored when AC'97 or SPDIF protocols are selected.*/
 }SAI_SlotInitTypeDef;
 
 /* Exported constants --------------------------------------------------------*/
@@ -159,11 +159,11 @@ typedef struct
                                      ((PERIPH) == SAI1_Block_B))
 
 
-/** @defgroup SAI_Block_Mode 
+/** @defgroup SAI_Block_Mode
   * @{
   */
 #define SAI_Mode_MasterTx               ((uint32_t)0x00000000)
-#define SAI_Mode_MasterRx               ((uint32_t)0x00000001)  
+#define SAI_Mode_MasterRx               ((uint32_t)0x00000001)
 #define SAI_Mode_SlaveTx                ((uint32_t)0x00000002)
 #define SAI_Mode_SlaveRx                ((uint32_t)0x00000003)
 #define IS_SAI_BLOCK_MODE(MODE) (((MODE) == SAI_Mode_MasterTx) || \
@@ -174,7 +174,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup SAI_Block_Protocol 
+/** @defgroup SAI_Block_Protocol
   * @{
   */
 
@@ -188,7 +188,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup SAI_Block_Data_Size 
+/** @defgroup SAI_Block_Data_Size
   * @{
   */
 
@@ -206,9 +206,9 @@ typedef struct
                                          ((DATASIZE) == SAI_DataSize_32b))
 /**
   * @}
-  */ 
+  */
 
-/** @defgroup SAI_Block_MSB_LSB_transmission 
+/** @defgroup SAI_Block_MSB_LSB_transmission
   * @{
   */
 
@@ -220,7 +220,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup SAI_Block_Clock_Strobing 
+/** @defgroup SAI_Block_Clock_Strobing
   * @{
   */
 
@@ -232,7 +232,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup SAI_Block_Synchronization 
+/** @defgroup SAI_Block_Synchronization
   * @{
   */
 
@@ -242,9 +242,9 @@ typedef struct
                                        ((SYNCHRO) == SAI_Asynchronous))
 /**
   * @}
-  */ 
+  */
 
-/** @defgroup SAI_Block_Output_Drive 
+/** @defgroup SAI_Block_Output_Drive
   * @{
   */
 
@@ -254,11 +254,11 @@ typedef struct
                                           ((DRIVE) == SAI_OutputDrive_Enabled))
 /**
   * @}
-  */ 
+  */
 
 
 
-/** @defgroup SAI_Block_NoDivider 
+/** @defgroup SAI_Block_NoDivider
   * @{
   */
 
@@ -269,9 +269,9 @@ typedef struct
 /**
   * @}
   */
-  
 
-/** @defgroup SAI_Block_Master_Divider 
+
+/** @defgroup SAI_Block_Master_Divider
   * @{
   */
 #define IS_SAI_BLOCK_MASTER_DIVIDER(DIVIDER) ((DIVIDER) <= 15)
@@ -279,8 +279,8 @@ typedef struct
 /**
   * @}
   */
-  
-/** @defgroup SAI_Block_Frame_Length 
+
+/** @defgroup SAI_Block_Frame_Length
   * @{
   */
 #define IS_SAI_BLOCK_FRAME_LENGTH(LENGTH) ((8 <= (LENGTH)) && ((LENGTH) <= 256))
@@ -288,8 +288,8 @@ typedef struct
 /**
   * @}
   */
-    
-/** @defgroup SAI_Block_Active_FrameLength 
+
+/** @defgroup SAI_Block_Active_FrameLength
   * @{
   */
 #define IS_SAI_BLOCK_ACTIVE_FRAME(LENGTH) ((1 <= (LENGTH)) && ((LENGTH) <= 128))
@@ -298,7 +298,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup SAI_Block_FS_Definition 
+/** @defgroup SAI_Block_FS_Definition
   * @{
   */
 
@@ -310,7 +310,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup SAI_Block_FS_Polarity 
+/** @defgroup SAI_Block_FS_Polarity
   * @{
   */
 
@@ -321,11 +321,11 @@ typedef struct
 /**
   * @}
   */
-            
-/** @defgroup SAI_Block_FS_Offset 
+
+/** @defgroup SAI_Block_FS_Offset
   * @{
   */
-  
+
 #define SAI_FS_FirstBit                   ((uint32_t)0x00000000)
 #define SAI_FS_BeforeFirstBit             ((uint32_t)SAI_xFRCR_FSOFF)
 #define IS_SAI_BLOCK_FS_OFFSET(OFFSET) (((OFFSET) == SAI_FS_FirstBit) || \
@@ -333,7 +333,7 @@ typedef struct
 /**
   * @}
   */
-  
+
 /** @defgroup SAI_Block_Slot_FirstBit_Offset
   * @{
   */
@@ -346,7 +346,7 @@ typedef struct
   /** @defgroup SAI_Block_Slot_Size
   * @{
   */
-#define SAI_SlotSize_DataSize             ((uint32_t)0x00000000)  
+#define SAI_SlotSize_DataSize             ((uint32_t)0x00000000)
 #define SAI_SlotSize_16b                  ((uint32_t)SAI_xSLOTR_SLOTSZ_0)
 #define SAI_SlotSize_32b                  ((uint32_t)SAI_xSLOTR_SLOTSZ_1)
 #define IS_SAI_BLOCK_SLOT_SIZE(SIZE) (((SIZE) == SAI_SlotSize_DataSize) || \
@@ -365,12 +365,12 @@ typedef struct
 /**
   * @}
   */
-  
+
 /** @defgroup SAI_Block_Slot_Active
   * @{
   */
-#define SAI_Slot_NotActive           ((uint32_t)0x00000000)  
-#define SAI_SlotActive_0             ((uint32_t)0x00010000)  
+#define SAI_Slot_NotActive           ((uint32_t)0x00000000)
+#define SAI_SlotActive_0             ((uint32_t)0x00010000)
 #define SAI_SlotActive_1             ((uint32_t)0x00020000)
 #define SAI_SlotActive_2             ((uint32_t)0x00040000)
 #define SAI_SlotActive_3             ((uint32_t)0x00080000)
@@ -418,13 +418,13 @@ typedef struct
   * @}
   */
 
-/** @defgroup SAI_Block_Fifo_Threshold 
+/** @defgroup SAI_Block_Fifo_Threshold
   * @{
   */
 
 #define SAI_Threshold_FIFOEmpty           ((uint32_t)0x00000000)
 #define SAI_FIFOThreshold_1QuarterFull    ((uint32_t)0x00000001)
-#define SAI_FIFOThreshold_HalfFull        ((uint32_t)0x00000002) 
+#define SAI_FIFOThreshold_HalfFull        ((uint32_t)0x00000002)
 #define SAI_FIFOThreshold_3QuartersFull   ((uint32_t)0x00000003)
 #define SAI_FIFOThreshold_Full            ((uint32_t)0x00000004)
 #define IS_SAI_BLOCK_FIFO_THRESHOLD(THRESHOLD) (((THRESHOLD) == SAI_Threshold_FIFOEmpty)         || \
@@ -435,11 +435,11 @@ typedef struct
 /**
   * @}
   */
-  
+
 /** @defgroup SAI_Block_Companding_Mode
   * @{
   */
-  
+
 #define SAI_NoCompanding                  ((uint32_t)0x00000000)
 #define SAI_ULaw_1CPL_Companding          ((uint32_t)0x00008000)
 #define SAI_ALaw_1CPL_Companding          ((uint32_t)0x0000C000)
@@ -457,7 +457,7 @@ typedef struct
 /** @defgroup SAI_Block_Mute_Value
   * @{
   */
-  
+
 #define SAI_ZeroValue                     ((uint32_t)0x00000000)
 #define SAI_LastSentValue                 ((uint32_t)SAI_xCR2_MUTEVAL)
 #define IS_SAI_BLOCK_MUTE_VALUE(VALUE)    (((VALUE) == SAI_ZeroValue)     || \
@@ -469,14 +469,14 @@ typedef struct
 /** @defgroup SAI_Block_Mute_Frame_Counter
   * @{
   */
-  
+
 #define IS_SAI_BLOCK_MUTE_COUNTER(COUNTER) ((COUNTER) <= 63)
 
 /**
   * @}
   */
 
-/** @defgroup SAI_Block_Interrupts_Definition 
+/** @defgroup SAI_Block_Interrupts_Definition
   * @{
   */
 
@@ -499,7 +499,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup SAI_Block_Flags_Definition 
+/** @defgroup SAI_Block_Flags_Definition
   * @{
   */
 
@@ -518,7 +518,7 @@ typedef struct
                                     ((FLAG) == SAI_FLAG_CNRDY)   || \
                                     ((FLAG) == SAI_FLAG_AFSDET)  || \
                                     ((FLAG) == SAI_FLAG_LFSDET))
-                                   
+
 #define IS_SAI_BLOCK_CLEAR_FLAG(FLAG) (((FLAG) == SAI_FLAG_OVRUDR)  || \
                                        ((FLAG) == SAI_FLAG_MUTEDET) || \
                                        ((FLAG) == SAI_FLAG_WCKCFG)  || \
@@ -529,14 +529,14 @@ typedef struct
 /**
   * @}
   */
-  
-/** @defgroup SAI_Block_Fifo_Status_Level 
+
+/** @defgroup SAI_Block_Fifo_Status_Level
   * @{
   */
 #define SAI_FIFOStatus_Empty              ((uint32_t)0x00000000)
 #define SAI_FIFOStatus_Less1QuarterFull   ((uint32_t)0x00010000)
 #define SAI_FIFOStatus_1QuarterFull       ((uint32_t)0x00020000)
-#define SAI_FIFOStatus_HalfFull           ((uint32_t)0x00030000) 
+#define SAI_FIFOStatus_HalfFull           ((uint32_t)0x00030000)
 #define SAI_FIFOStatus_3QuartersFull      ((uint32_t)0x00040000)
 #define SAI_FIFOStatus_Full               ((uint32_t)0x00050000)
 
@@ -545,20 +545,20 @@ typedef struct
                                           ((STATUS) == SAI_FIFOStatus_1QuarterFull)      || \
                                           ((STATUS) == SAI_FIFOStatus_3QuartersFull)     || \
                                           ((STATUS) == SAI_FIFOStatus_Full)              || \
-                                          ((STATUS) == SAI_FIFOStatus_Empty)) 
+                                          ((STATUS) == SAI_FIFOStatus_Empty))
 /**
   * @}
   */
 
-  
+
 /**
   * @}
   */
 
 /* Exported macro ------------------------------------------------------------*/
-/* Exported functions --------------------------------------------------------*/ 
+/* Exported functions --------------------------------------------------------*/
 
-/*  Function used to set the SAI configuration to the default reset state *****/ 
+/*  Function used to set the SAI configuration to the default reset state *****/
 void SAI_DeInit(SAI_TypeDef* SAIx);
 
 /* Initialization and Configuration functions *********************************/
@@ -578,7 +578,7 @@ void SAI_MuteValueConfig(SAI_Block_TypeDef* SAI_Block_x, uint32_t SAI_MuteValue)
 void SAI_MuteFrameCounterConfig(SAI_Block_TypeDef* SAI_Block_x, uint32_t SAI_MuteCounter);
 void SAI_FlushFIFO(SAI_Block_TypeDef* SAI_Block_x);
 
-/* Data transfers functions ***************************************************/ 
+/* Data transfers functions ***************************************************/
 void SAI_SendData(SAI_Block_TypeDef* SAI_Block_x, uint32_t Data);
 uint32_t SAI_ReceiveData(SAI_Block_TypeDef* SAI_Block_x);
 

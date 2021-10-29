@@ -2,47 +2,47 @@
 #define __MPUIIC_H
 #include "stm32f4xx.h"
   /**************************************************************************
-×÷Õß£ºÆ½ºâĞ¡³µÖ®¼Ò
-ÎÒµÄÌÔ±¦Ğ¡µê£ºhttp://shop114407458.taobao.com/
+ä½œè€…ï¼šå¹³è¡¡å°è½¦ä¹‹å®¶
+æˆ‘çš„æ·˜å®å°åº—ï¼šhttp://shop114407458.taobao.com/
 **************************************************************************/
-//IO¿Ú²Ù×÷ºê¶¨Òå
-#define BITBAND(addr, bitnum) ((addr & 0xF0000000)+0x2000000+((addr &0xFFFFF)<<5)+(bitnum<<2)) 
-#define MEM_ADDR(addr)  *((volatile unsigned long  *)(addr)) 
-#define BIT_ADDR(addr, bitnum)   MEM_ADDR(BITBAND(addr, bitnum))  
+//IOå£æ“ä½œå®å®šä¹‰
+#define BITBAND(addr, bitnum) ((addr & 0xF0000000)+0x2000000+((addr &0xFFFFF)<<5)+(bitnum<<2))
+#define MEM_ADDR(addr)  *((volatile unsigned long  *)(addr))
+#define BIT_ADDR(addr, bitnum)   MEM_ADDR(BITBAND(addr, bitnum))
 
 
 
-#define PCout(n)   BIT_ADDR(GPIOC_ODR_Addr,n)  //Êä³ö 
-#define PCin(n)    BIT_ADDR(GPIOC_IDR_Addr,n)  //ÊäÈë 
+#define PCout(n)   BIT_ADDR(GPIOC_ODR_Addr,n)  //è¾“å‡º
+#define PCin(n)    BIT_ADDR(GPIOC_IDR_Addr,n)  //è¾“å…¥
 
-#define PBout(n)   BIT_ADDR(GPIOB_ODR_Addr,n)  //Êä³ö 
-#define PBin(n)    BIT_ADDR(GPIOB_IDR_Addr,n)  //ÊäÈë 
+#define PBout(n)   BIT_ADDR(GPIOB_ODR_Addr,n)  //è¾“å‡º
+#define PBin(n)    BIT_ADDR(GPIOB_IDR_Addr,n)  //è¾“å…¥
 
-#define PEout(n)   BIT_ADDR(GPIOE_ODR_Addr,n)  //Êä³ö 
-#define PEin(n)    BIT_ADDR(GPIOE_IDR_Addr,n)  //ÊäÈë 
+#define PEout(n)   BIT_ADDR(GPIOE_ODR_Addr,n)  //è¾“å‡º
+#define PEin(n)    BIT_ADDR(GPIOE_IDR_Addr,n)  //è¾“å…¥
 
 
-   	   		   
-//IO·½ÏòÉèÖÃ
-#define MPU_SDA_IN()  {GPIOB->MODER&=~(3<<(11*2));GPIOB->MODER|=0<<11*2;}	//PB9ÊäÈëÄ£Ê½
-#define MPU_SDA_OUT() {GPIOB->MODER&=~(3<<(11*2));GPIOB->MODER|=1<<11*2;} //PB9Êä³öÄ£Ê½
-//IO²Ù×÷º¯Êı	 
+
+//IOæ–¹å‘è®¾ç½®
+#define MPU_SDA_IN()  {GPIOB->MODER&=~(3<<(11*2));GPIOB->MODER|=0<<11*2;}   //PB9è¾“å…¥æ¨¡å¼
+#define MPU_SDA_OUT() {GPIOB->MODER&=~(3<<(11*2));GPIOB->MODER|=1<<11*2;} //PB9è¾“å‡ºæ¨¡å¼
+//IOæ“ä½œå‡½æ•°
 #define MPU_IIC_SCL    PBout(10) //SCL
-#define MPU_IIC_SDA    PBout(11) //SDA	 
-#define MPU_READ_SDA   PBin(11)  //ÊäÈëSDA 
+#define MPU_IIC_SDA    PBout(11) //SDA
+#define MPU_READ_SDA   PBin(11)  //è¾“å…¥SDA
 
-//MPU_IICËùÓĞ²Ù×÷º¯Êı
-void MPU_IIC_Init(void);                //³õÊ¼»¯MPU_IICµÄIO¿Ú				 
-int MPU_IIC_Start(void);				//·¢ËÍMPU_IIC¿ªÊ¼ĞÅºÅ
-void MPU_IIC_Stop(void);	  			//·¢ËÍMPU_IICÍ£Ö¹ĞÅºÅ
-void MPU_IIC_Send_Byte(u8 txd);			//MPU_IIC·¢ËÍÒ»¸ö×Ö½Ú
-u8 MPU_IIC_Read_Byte(unsigned char ack);//MPU_IIC¶ÁÈ¡Ò»¸ö×Ö½Ú
-int MPU_IIC_Wait_Ack(void); 				//MPU_IICµÈ´ıACKĞÅºÅ
-void MPU_IIC_Ack(void);					//MPU_IIC·¢ËÍACKĞÅºÅ
-void MPU_IIC_NAck(void);				//MPU_IIC²»·¢ËÍACKĞÅºÅ
+//MPU_IICæ‰€æœ‰æ“ä½œå‡½æ•°
+void MPU_IIC_Init(void);                //åˆå§‹åŒ–MPU_IICçš„IOå£
+int MPU_IIC_Start(void);                //å‘é€MPU_IICå¼€å§‹ä¿¡å·
+void MPU_IIC_Stop(void);                //å‘é€MPU_IICåœæ­¢ä¿¡å·
+void MPU_IIC_Send_Byte(u8 txd);         //MPU_IICå‘é€ä¸€ä¸ªå­—èŠ‚
+u8 MPU_IIC_Read_Byte(unsigned char ack);//MPU_IICè¯»å–ä¸€ä¸ªå­—èŠ‚
+int MPU_IIC_Wait_Ack(void);                 //MPU_IICç­‰å¾…ACKä¿¡å·
+void MPU_IIC_Ack(void);                 //MPU_IICå‘é€ACKä¿¡å·
+void MPU_IIC_NAck(void);                //MPU_IICä¸å‘é€ACKä¿¡å·
 
 void MPU_IIC_Write_One_Byte(u8 daddr,u8 addr,u8 data);
-u8 MPU_IIC_Read_One_Byte(u8 daddr,u8 addr);	 
+u8 MPU_IIC_Read_One_Byte(u8 daddr,u8 addr);
 unsigned char I2C_Readkey(unsigned char I2C_Addr);
 
 unsigned char I2C_ReadOneByte(unsigned char I2C_Addr,unsigned char addr);
