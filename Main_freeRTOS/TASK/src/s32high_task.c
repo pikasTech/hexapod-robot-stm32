@@ -1,69 +1,73 @@
-#include "s32high_task.h"
+#include "s32high_task.h" 
 #include "FreeRTOS.h"
-#include "pid.h"
 #include "task.h"
-/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½start_task*/
-/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½PIDï¿½ï¿½ï¿½ï¿½*/
+#include "pid.h"
+/*¸ÃÈÎÎñÎªÁù×ã¾àÀëµØÃæ¾àÀëÅÐ¶ÏÈÎÎñ£¬ÔÝÎ´Ìí¼ÓÖÁstart_task*/
+/*¸ÃÈÎÎñ°üÀ¨PID¼ÆËã*/
 /*
-RF RM RB :dis1 dis2 dis3
+RF RM RB :dis1 dis2 dis3 
 LF LM LB: disa diab disc
-dis ï¿½ï¿½Ê½ u16
+dis ¸ñÊ½ u16
 */
-#define MaxDis 5       //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ«ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
-#define BacisDis 1000  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Åµï¿½Ê± ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø¾ï¿½ï¿½ï¿½
-void InitPID(void);  //ï¿½Ïµï¿½ï¿½Ê¼ï¿½ï¿½ï¿½è¶¨Öµ
+#define MaxDis    5          //¶¨ÒåÔÊÐíÆ«²î×î´óÖµ 
+#define BacisDis  1000       //¼´Áù×ã×ÅµØÊ± Õý³£¾àµØ¾àÀë
+void InitPID(void);         //ÉÏµç³õÊ¼»¯Éè¶¨Öµ
 
-void s32high_task(void* pvParameters) {
-    InitPID();
-    while (1) {
-        DisUpdate();  //ï¿½ï¿½ï¿½ï¿½ï¿½è¶¨Öµ
-        PID_Calculate(&RF_DIS);
-        PID_Calculate(&RM_DIS);
-        PID_Calculate(&RB_DIS);
-        PID_Calculate(&LF_DIS);
-        PID_Calculate(&LM_DIS);
-        PID_Calculate(&LB_DIS);
-        vTaskDelay(200);  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ä½ï¿½
-    }
+void s32high_task(void *pvParameters)
+{  
+	InitPID();
+  while(1)
+	{
+	  DisUpdate();      //¸üÐÂÉè¶¨Öµ
+		PID_Calculate(&RF_DIS);
+		PID_Calculate(&RM_DIS);
+		PID_Calculate(&RB_DIS);
+		PID_Calculate(&LF_DIS);
+		PID_Calculate(&LM_DIS);
+		PID_Calculate(&LB_DIS);
+		vTaskDelay(200); //¼ÆËãÖÜÆÚ ´ý¸Ä½ø 
+	}
 }
-void DisUpdate(void)  //ï¿½è¶¨Öµï¿½ï¿½ï¿½ï¿½
+void DisUpdate(void)   //Éè¶¨Öµ¸üÐÂ
 {
-    RF_DIS.Presentvale = RF_s32.dist / 10;  //×ªmmÎªcmï¿½Æ¶ï¿½
-    RM_DIS.Presentvale = RM_s32.dist / 10;
-    RB_DIS.Presentvale = RB_s32.dist / 10;
-    LF_DIS.Presentvale = LF_s32.dist / 10;
-    LM_DIS.Presentvale = LM_s32.dist / 10;
-    LB_DIS.Presentvale = LB_s32.dist / 10;
-    // pidï¿½ï¿½ï¿½ï¿½ï¿½ÖµÎªï¿½Â´Îµï¿½ï¿½ï¿½ï¿½ß¶ï¿½Êµï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ /10ï¿½ï¿½Ãµï¿½cm
+  RF_DIS.Presentvale=RF_s32.dist/10;        //×ªmmÎªcmÖÆ¶È
+	RM_DIS.Presentvale=RM_s32.dist/10;
+	RB_DIS.Presentvale=RB_s32.dist/10;
+  LF_DIS.Presentvale=LF_s32.dist/10;
+	LM_DIS.Presentvale=LM_s32.dist/10;
+	LB_DIS.Presentvale=LB_s32.dist/10; 
+	//pidµÄÊä³öÖµÎªÏÂ´Îµ÷Õû¸ß¶ÈÊµ¼ÊÎªºÁÃ×ÖÆ /10ºóµÃµ½cm
 }
-void InitPID(void) {
-    RF_DIS.Setvalue = 7.5;  //ï¿½è¶¨Öµï¿½ï¿½Îªï¿½ï¿½Ö¹Ê±ï¿½ÔµØµÄ¾ï¿½ï¿½ë£»
-    RF_DIS.Kp = 1;
-    RF_DIS.Kd = 0;
-    RF_DIS.OUT_0 = 0;
-
-    RM_DIS.Setvalue = 7.5;  //ï¿½è¶¨Öµï¿½ï¿½Îªï¿½ï¿½Ö¹Ê±ï¿½ÔµØµÄ¾ï¿½ï¿½ë£»
-    RM_DIS.Kp = 1;
-    RM_DIS.Kd = 0;
-    RM_DIS.OUT_0 = 0;
-
-    RB_DIS.Setvalue = 7.5;  //ï¿½è¶¨Öµï¿½ï¿½Îªï¿½ï¿½Ö¹Ê±ï¿½ÔµØµÄ¾ï¿½ï¿½ë£»
-    RB_DIS.Kp = 1;
-    RB_DIS.Kd = 0;
-    RB_DIS.OUT_0 = 0;
-
-    LF_DIS.Setvalue = 7.5;  //ï¿½è¶¨Öµï¿½ï¿½Îªï¿½ï¿½Ö¹Ê±ï¿½ÔµØµÄ¾ï¿½ï¿½ë£»
-    LF_DIS.Kp = 1;
-    LF_DIS.Kd = 0;
-    LF_DIS.OUT_0 = 0;
-
-    LM_DIS.Setvalue = 7.5;  //ï¿½è¶¨Öµï¿½ï¿½Îªï¿½ï¿½Ö¹Ê±ï¿½ÔµØµÄ¾ï¿½ï¿½ë£»
-    LM_DIS.Kp = 1;
-    LM_DIS.Kd = 0;
-    LM_DIS.OUT_0 = 0;
-
-    LB_DIS.Setvalue = 7.5;  //ï¿½è¶¨Öµï¿½ï¿½Îªï¿½ï¿½Ö¹Ê±ï¿½ÔµØµÄ¾ï¿½ï¿½ë£»
-    LB_DIS.Kp = 1;
-    LB_DIS.Kd = 0;
-    LB_DIS.OUT_0 = 0;
+void InitPID(void)
+{
+	RF_DIS.Setvalue=7.5;   //Éè¶¨ÖµºãÎª¾²Ö¹Ê±¶ÔµØµÄ¾àÀë£»
+	RF_DIS.Kp=1;
+	RF_DIS.Kd=0;
+	RF_DIS.OUT_0=0;
+	
+	RM_DIS.Setvalue=7.5;   //Éè¶¨ÖµºãÎª¾²Ö¹Ê±¶ÔµØµÄ¾àÀë£»
+	RM_DIS.Kp=1;
+	RM_DIS.Kd=0;
+	RM_DIS.OUT_0=0;
+	
+	RB_DIS.Setvalue=7.5;   //Éè¶¨ÖµºãÎª¾²Ö¹Ê±¶ÔµØµÄ¾àÀë£»
+	RB_DIS.Kp=1;
+	RB_DIS.Kd=0;
+	RB_DIS.OUT_0=0;
+	
+	LF_DIS.Setvalue=7.5;   //Éè¶¨ÖµºãÎª¾²Ö¹Ê±¶ÔµØµÄ¾àÀë£»
+	LF_DIS.Kp=1;
+	LF_DIS.Kd=0;
+	LF_DIS.OUT_0=0;
+	
+	LM_DIS.Setvalue=7.5;   //Éè¶¨ÖµºãÎª¾²Ö¹Ê±¶ÔµØµÄ¾àÀë£»
+	LM_DIS.Kp=1;
+	LM_DIS.Kd=0;
+	LM_DIS.OUT_0=0;
+	
+	LB_DIS.Setvalue=7.5;   //Éè¶¨ÖµºãÎª¾²Ö¹Ê±¶ÔµØµÄ¾àÀë£»
+	LB_DIS.Kp=1;
+	LB_DIS.Kd=0;
+	LB_DIS.OUT_0=0;
+	
 }

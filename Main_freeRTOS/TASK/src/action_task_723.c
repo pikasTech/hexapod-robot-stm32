@@ -1,48 +1,47 @@
-#include "action_task_723.h"
+#include "action_task_723.h" 
 #include "FreeRTOS.h"
+#include "task.h"
+#include "usart.h"
+#include "rtp_test_task.h"
 #include "adc_task.h"
+#include "sys.h"
 #include "balance_task.h"
 #include "pid.h"
-#include "rtp_test_task.h"
-#include "sys.h"
-#include "task.h"
 #include "touch_task.h"
-#include "usart.h"
-/*ï¿½ï¿½ï¿½Ä¼ï¿½Îª10.20ï¿½ï¿½21ï¿½ï¿½Ö®Ç°ï¿½Ä¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½â²¿PIDï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½ï¿½È¸ï¿½ï¿½ï¿½ï¿½Ãºï¿½ï¿½ï¿½ï¿½ï¿½action()ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î´ï¿½ï¿½ï¿½ï¿½ï¿½Þ¸ï¿½*/
-/*ï¿½ï¿½ï¿½ï¿½ï¿½â²¿PIDï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ¸Ä¹Ì¶ï¿½ï¿½Ä°Ú¶ï¿½Ì¬ï¿½Âµï¿½3
- * ï¿½ï¿½XXÌ¬ï¿½Âµï¿½5*/
-extern PID RF_DIS;
-extern PID RM_DIS;
-extern PID RB_DIS;
-extern PID LF_DIS;
-extern PID LM_DIS;
-extern PID LB_DIS;
+/*¸ÃÎÄ¼þÎª10.20Íí21µãÖ®Ç°µÄ¸±±¾£¬½öÉùÃ÷ÁËÍâ²¿PID±äÁ¿ÒÔ¼°Á½¸öÐÂµÄÍÈ¸ßÉèÖÃº¯Êý£¬action()º¯ÊýÖÐÎ´½øÐÐÐÞ¸Ä*/
+/*ÉùÃ÷Íâ²¿PID±äÁ¿À´ÐÞ¸Ä¹Ì¶¨µÄ°Ú¶¯Ì¬ÏÂµÄ3 ºÍXXÌ¬ÏÂµÄ5*/
+extern PID  RF_DIS;
+extern PID  RM_DIS;
+extern PID  RB_DIS;
+extern PID  LF_DIS;
+extern PID  LM_DIS;
+extern PID  LB_DIS;
 
 extern struct TOUCH touch_use;
 
-/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½LRL ï¿½ï¿½RLRï¿½È¸ß·Ö±ï¿½ï¿½ï¿½ï¿½ï¿½*/
-void LRL_high_single(int time, float h1, float h2, float h3);  // LRLË³ï¿½ï¿½ÎªLF RM
-                                                               // LB
-void RLR_high_single(int time, float h1, float h2, float h3);  // RLRË³ï¿½ï¿½ÎªRF LM
-                                                               // RB
+/*ÉùÃ÷²¿·ÖLRL ºÍRLRÍÈ¸ß·Ö±ðÉèÖÃ*/
+void LRL_high_single(int time,float h1,float h2,float h3); //LRLË³ÐòÎªLF RM LB
+void RLR_high_single(int time,float h1,float h2,float h3); //RLRË³ÐòÎªRF LM RB
 
-/*ï¿½ï¿½ï¿½ï¿½10.20ï¿½Õ¶ï¿½ï¿½ï¿½*/
+/*½áÊø10.20ÈÕ¶¨Òå*/
 int action_t;
-int action_n = 0;
+int action_n=0;
 float angle_test[6];
 
 #define S10 0
-#define S0 1
+#define S0 	1
 #define S01 2
-#define S1 3
+#define S1 	3
 
-//ï¿½ï¿½Õ¹Ïµï¿½ï¿½
-double L_init = 7, L_init_best;
+//ÉìÕ¹ÏµÊý
+double L_init=7,L_init_best;
 
-//ï¿½ï¿½ï¿½ï¿½ï¿½ß¶ï¿½
-double H_init = -13, H_init_best;
+//»úÉí¸ß¶È
+double H_init=-13,H_init_best;
 
-//ï¿½ï¿½×ªï¿½ï¿½Ä©ï¿½Ë³ï¿½Ä©Î»ï¿½ï¿½
+
+
+//Ðý×ªºóÄ©¶Ë³õÄ©Î»ÖÃ
 double RF_P1z[3];
 double RM_P1z[3];
 double RB_P1z[3];
@@ -50,465 +49,449 @@ double LF_P1z[3];
 double LM_P1z[3];
 double LB_P1z[3];
 
-//Ê±ï¿½ï¿½ï¿½ï¿½ï¿½
+
+//Ê±¼äÆðµã
 long int LRL_t0;
 long int RLR_t0;
 
-//ï¿½ï¿½ï¿½ï¿½Õ¼ï¿½Õ±ï¿½
-float R0 = 0.8f;
+//¹ý¶ÉÕ¼¿Õ±È
+float R0=0.8f;
 
-//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°Õ¼ï¿½Õ±ï¿½
+//¹ý¶ÉÌáÇ°Õ¼¿Õ±È
 
-float R0f = 0.5f;
+float R0f=0.5f;
 
-//Ç°ï¿½ï¿½ï¿½ï¿½ï¿½
-float Rf = 0.5f;
+//Ç°Éê±ÈÀý
+float Rf=0.5f;
 
-//Ç°×ªï¿½ï¿½ï¿½ï¿½
-float Rz = 0.5f;
+//Ç°×ª±ÈÀý
+float Rz=0.5f;
 
-//Ç°ï¿½ï¿½ï¿½ï¿½ï¿½
-float Rf_use = 0.5f;
+//Ç°Éê±ÈÀý
+float Rf_use=0.5f;
 
-//Ç°×ªï¿½ï¿½ï¿½ï¿½
-float Rz_use = 0.5f;
+//Ç°×ª±ÈÀý
+float Rz_use=0.5f;
 
-int STEP_number;  //ï¿½ß¹ï¿½ï¿½Ä²ï¿½ï¿½ï¿½
 
-//Ê±ï¿½ï¿½
+int STEP_number;//×ß¹ýµÄ²½Êý
+
+//Ê±¼ä
 long int LRL_t;
 long int RLR_t;
 
-//ï¿½ï¿½
+//Ïà
 int LRL_S;
 int RLR_S;
-//ï¿½ï¿½Î»
+//ÏàÎ»
 float LRL_phase;
 float RLR_phase;
 
-float speed = 3;
+float speed=3;
 
-//ï¿½ï¿½ï¿½ï¿½
-float Action_T = 2000;
+//ÖÜÆÚ
+float Action_T=2000;
 
-float Action_T_per_V = 8400;
-// float Action_T_per_V=20000;
-//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½10ï¿½Ù½ï¿½
+float Action_T_per_V=8400;
+//float Action_T_per_V=20000;
+//¹ý¶ÈÏà10ÁÙ½ç
 float phase10;
 float RLR_phase10;
-//ï¿½Ú¶ï¿½ï¿½ï¿½0ï¿½Ù½ï¿½
+//°Ú¶¯Ïà0ÁÙ½ç
 float phase0;
 float RLR_phase0;
-//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½01ï¿½Ù½ï¿½
-float LRL_phase01 = 0.5f;
-float RLR_phase01 = 0.5f;
+//¹ý¶ÈÏà01ÁÙ½ç
+float LRL_phase01=0.5f;
+float RLR_phase01=0.5f;
 
-//ï¿½ï¿½ï¿½ï¿½
+//²½³¤
 float LRL_step;
 float RLR_step;
-//ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ [Vx,Vy,w]
-float Order[3];
-float Order_use[3];
-//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ [x,y]
+//ÒÆ¶¯ÃüÁîÏòÁ¿ [Vx,Vy,w]
+float Order[3]; 
+float Order_use[3]; 
+//²½³¤ÏòÁ¿ [x,y]
 float LRL_L[2];
 float RLR_L[2];
-//ï¿½ï¿½×ªï¿½Ç²ï¿½ï¿½ï¿½
+//Ðý×ª½Ç²½³¤
 float LRL_theat;
 float RLR_theat;
-//Æ½ï¿½Æ¹ì¼£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ [x1,y1]
+//Æ½ÒÆ¹ì¼£ÆðµãÏòÁ¿ [x1,y1]
 float LRL_P1[2];
 float RLR_P1[2];
-//Æ½ï¿½Æ¹ì¼£ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½ [x2,y2]
+//Æ½ÒÆ¹ì¼£ÖÕµãÏòÁ¿ [x2,y2]
 float LRL_P2[2];
 float RLR_P2[2];
-//ï¿½ï¿½×ªï¿½ì¼£ï¿½ï¿½ï¿½Ç¶ï¿½ [theat1]
+//Ðý×ª¹ì¼£Æðµã½Ç¶È [theat1]
 float LRL_theat1;
 float RLR_theat1;
-//ï¿½ï¿½×ªï¿½ì¼£ï¿½Õµï¿½Ç¶ï¿½ [theat2]
+//Ðý×ª¹ì¼£ÖÕµã½Ç¶È [theat2]
 float LRL_theat2;
 float RLR_theat2;
 
-u8 STA_START;          //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾
-u8 STA_STAND = 1;      //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾
-u8 STA_STOP = 1;       //Í£Ö¹ï¿½ï¿½Ö¾
-u8 STA_TIME_STOP = 0;  //Í£Ê±
+u8 STA_START;//Æô¶¯±êÖ¾
+u8 STA_STAND=1;//¾²Á¢±êÖ¾
+u8 STA_STOP=1;//Í£Ö¹±êÖ¾
+u8 STA_TIME_STOP=0;//Í£Ê±
 
-//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Zï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½ó·¨£ï¿½
-void rotate_z(double input[3], double output[3], double theta) {
-    double matrix2[3][1];
-    double matrix[3][1];
-    double matrix1[3][3];
-    int i, j, k;
+//ÏòÁ¿ÑØZÖáÐý×ª£¨Ðý×ª¾ØÕó·¨£©
+void rotate_z(double input[3],double output[3],double theta)
+{
+	
+	double matrix2[3][1];
+	double matrix[3][1];
+	double matrix1[3][3];
+    int i,j,k;   
 
-    matrix2[0][0] = input[0];
-    matrix2[1][0] = input[1];
-    matrix2[2][0] = input[2];
-
-    matrix1[0][0] = cos(theta);
-    matrix1[0][1] = -sin(theta);
-    matrix1[0][2] = 0;
-    matrix1[1][0] = sin(theta);
-    matrix1[1][1] = cos(theta);
-    matrix1[1][2] = 0;
-    matrix1[2][0] = 0;
-    matrix1[2][1] = 0;
-    matrix1[2][2] = 1;
+	
+	matrix2[0][0]=input[0];
+  matrix2[1][0]=input[1];
+  matrix2[2][0]=input[2];
+	
+	matrix1[0][0]=cos(theta);
+	matrix1[0][1]=-sin(theta);
+	matrix1[0][2]=0;
+	matrix1[1][0]=sin(theta);
+	matrix1[1][1]=cos(theta);
+	matrix1[1][2]=0;
+	matrix1[2][0]=0;
+	matrix1[2][1]=0;
+	matrix1[2][2]=1;
 
     /*???matrix:*/
-    for (i = 0; i < 3; i++) {
-        for (j = 0; j < 1; j++) {
-            matrix[i][j] = 0;
-        }
+    for(i=0;i<3;i++){
+        for(j=0;j<1;j++){
+            matrix[i][j]=0; 
+        } 
+    } 
+
+    for(i=0;i<3;i++){
+        for(j=0;j<1;j++){
+            for(k=0;k<3;k++){
+                matrix[i][j]=matrix[i][j]+matrix1[i][k]*matrix2[k][j]; 
+            } 
+        } 
     }
 
-    for (i = 0; i < 3; i++) {
-        for (j = 0; j < 1; j++) {
-            for (k = 0; k < 3; k++) {
-                matrix[i][j] = matrix[i][j] + matrix1[i][k] * matrix2[k][j];
-            }
-        }
-    }
-
-    output[0] = matrix[0][0];
-    output[1] = matrix[1][0];
-    output[2] = matrix[2][0];
+	output[0]=matrix[0][0];
+	output[1]=matrix[1][0];
+	output[2]=matrix[2][0];		
+		
+		
 }
 
-//ï¿½ï¿½ï¿½ï¿½ï¿½ß¶È¡ï¿½ï¿½ï¿½Õ¹ï¿½Ì¶È¿ï¿½ï¿½ï¿½
-void LH_to_xyz_init(double T03[3][1],
-                    double d[4],
-                    double L,
-                    double H,
-                    double xyz_init[3]) {
-    double t1, t2, t3, t4, t5;
-    double c4, s4;
-    double d3, d4, d5, d6;
-    double x03, y03, z03;
-    double x, y, z;
+//»úÉí¸ß¶È¡¢ÉìÕ¹³Ì¶È¿ØÖÆ
+void LH_to_xyz_init(double T03[3][1],double d[4],double L,double H,double xyz_init[3])
+{
+	
+	double t1,t2,t3,t4,t5;
+	double c4,s4;
+	double d3,d4,d5,d6;
+  double x03,y03,z03;
+	double x,y,z;
+	
+	d3=d[0];
+	d4=d[1];
+	d5=d[2];
+	d6=d[3];
+	
+	x03=T03[0][0];
+	y03=T03[1][0];
+	z03=T03[2][0];
+	//¼ÆËã T1 T2
+	t1=atan2(y03,x03);
+	t2=asin(z03/d3);
+	//¼ÆËã T3
+	t3=0;//³õÊ¼Î»ÖÃÎª0		
+	//¼ÆËã T5
+	t5=-acos((L*L+H*H-d5*d5-d6*d6)/(d5*d6*2.0f));
+	//¼ÆËã T4
+	c4=	\
 
-    d3 = d[0];
-    d4 = d[1];
-    d5 = d[2];
-    d6 = d[3];
+	(d5*L + d6*L*cos(t5) + d6*H*sin(t5))																										\
+	/(d6*d6+ d5*d5 + 2.0f*d5*d6*cos(t5));
 
-    x03 = T03[0][0];
-    y03 = T03[1][0];
-    z03 = T03[2][0];
-    //ï¿½ï¿½ï¿½ï¿½ T1 T2
-    t1 = atan2(y03, x03);
-    t2 = asin(z03 / d3);
-    //ï¿½ï¿½ï¿½ï¿½ T3
-    t3 = 0;  //ï¿½ï¿½Ê¼Î»ï¿½ï¿½Îª0
-    //ï¿½ï¿½ï¿½ï¿½ T5
-    t5 = -acos((L * L + H * H - d5 * d5 - d6 * d6) / (d5 * d6 * 2.0f));
-    //ï¿½ï¿½ï¿½ï¿½ T4
-    c4 =
+	s4=	\
+	
+	(d5*H - d6*L*sin(t5) + d6*H*cos(t5))																										\
+	/(d6*d6	+ d5*d5 + 2.0f*d5*d6*cos(t5));
+	t4=atan2(s4,c4);
+	
+	x =		\
+	 
+	d3*cos(t1)*cos(t2) - d6*(cos(t5)*(cos(t4)*(sin(t1)*sin(t3) - cos(t1)*cos(t2)*cos(t3))				\
+	+ cos(t1)*sin(t2)*sin(t4)) - sin(t5)*(sin(t4)*(sin(t1)*sin(t3) - cos(t1)*cos(t2)*cos(t3))		\
+	- cos(t1)*cos(t4)*sin(t2))) - d5*(cos(t4)*(sin(t1)*sin(t3) - cos(t1)*cos(t2)*cos(t3))				\
+	+ cos(t1)*sin(t2)*sin(t4)) - d4*(sin(t1)*sin(t3) - cos(t1)*cos(t2)*cos(t3))									;
+	 
+	y =		\
+	 
+	d4*(cos(t1)*sin(t3) + cos(t2)*cos(t3)*sin(t1)) + d6*(cos(t5)*(cos(t4)*(cos(t1)*sin(t3)			\
+	+ cos(t2)*cos(t3)*sin(t1)) - sin(t1)*sin(t2)*sin(t4)) - sin(t5)*(sin(t4)*(cos(t1)*sin(t3)		\
+	+ cos(t2)*cos(t3)*sin(t1)) + cos(t4)*sin(t1)*sin(t2))) + d5*(cos(t4)*(cos(t1)*sin(t3)				\
+	+ cos(t2)*cos(t3)*sin(t1)) - sin(t1)*sin(t2)*sin(t4)) + d3*cos(t2)*sin(t1)									;
+	 
+	
+	z =		\
+	 
+	d5*(cos(t2)*sin(t4) + cos(t3)*cos(t4)*sin(t2)) + d6*(cos(t5)*(cos(t2)*sin(t4)								\
+	+ cos(t3)*cos(t4)*sin(t2)) + sin(t5)*(cos(t2)*cos(t4) - cos(t3)*sin(t2)*sin(t4)))						\
+	+ d3*sin(t2) + d4*cos(t3)*sin(t2)																														;
 
-        (d5 * L + d6 * L * cos(t5) + d6 * H * sin(t5)) /
-        (d6 * d6 + d5 * d5 + 2.0f * d5 * d6 * cos(t5));
-
-    s4 =
-
-        (d5 * H - d6 * L * sin(t5) + d6 * H * cos(t5)) /
-        (d6 * d6 + d5 * d5 + 2.0f * d5 * d6 * cos(t5));
-    t4 = atan2(s4, c4);
-
-    x =
-
-        d3 * cos(t1) * cos(t2) -
-        d6 * (cos(t5) *
-                  (cos(t4) * (sin(t1) * sin(t3) - cos(t1) * cos(t2) * cos(t3)) +
-                   cos(t1) * sin(t2) * sin(t4)) -
-              sin(t5) *
-                  (sin(t4) * (sin(t1) * sin(t3) - cos(t1) * cos(t2) * cos(t3)) -
-                   cos(t1) * cos(t4) * sin(t2))) -
-        d5 * (cos(t4) * (sin(t1) * sin(t3) - cos(t1) * cos(t2) * cos(t3)) +
-              cos(t1) * sin(t2) * sin(t4)) -
-        d4 * (sin(t1) * sin(t3) - cos(t1) * cos(t2) * cos(t3));
-
-    y =
-
-        d4 * (cos(t1) * sin(t3) + cos(t2) * cos(t3) * sin(t1)) +
-        d6 * (cos(t5) *
-                  (cos(t4) * (cos(t1) * sin(t3) + cos(t2) * cos(t3) * sin(t1)) -
-                   sin(t1) * sin(t2) * sin(t4)) -
-              sin(t5) *
-                  (sin(t4) * (cos(t1) * sin(t3) + cos(t2) * cos(t3) * sin(t1)) +
-                   cos(t4) * sin(t1) * sin(t2))) +
-        d5 * (cos(t4) * (cos(t1) * sin(t3) + cos(t2) * cos(t3) * sin(t1)) -
-              sin(t1) * sin(t2) * sin(t4)) +
-        d3 * cos(t2) * sin(t1);
-
-    z =
-
-        d5 * (cos(t2) * sin(t4) + cos(t3) * cos(t4) * sin(t2)) +
-        d6 * (cos(t5) * (cos(t2) * sin(t4) + cos(t3) * cos(t4) * sin(t2)) +
-              sin(t5) * (cos(t2) * cos(t4) - cos(t3) * sin(t2) * sin(t4))) +
-        d3 * sin(t2) + d4 * cos(t3) * sin(t2);
-
-    xyz_init[0] = x;
-    xyz_init[1] = y;
-    xyz_init[2] = z;
+	
+	xyz_init[0]=x;
+	xyz_init[1]=y;
+	xyz_init[2]=z;
+	
 }
 
-void position_single(double input[3], float x, float y, float theta, float h) {
-    rotate_z(input, LF_P1z, theta);  //ï¿½ï¿½×ªï¿½ä»»
-    T06_LF[0] = LF_P1z[0] + x;
-    T06_LF[1] = LF_P1z[1] + y;
-    T06_LF[2] = LF_P1z[2] + h;
+
+void position_single(double input[3],float x,float y ,float theta,float h)
+{
+	 rotate_z(input,LF_P1z,theta);//Ðý×ª±ä»»
+	 T06_LF[0]=LF_P1z[0]+x;
+	 T06_LF[1]=LF_P1z[1]+y;
+	 T06_LF[2]=LF_P1z[2]+h;
 }
 
-void position_group(struct GROUP_PRA* group_pra) {
-    int i;
-    double* input;
-    for (i = 1; i < 3; i++) {
-        switch ((*group_pra).group) {
-            case LRL:
-                switch (i) {
-                    case 0:
-                        input = T06_init_LF;
-                        break;
-                    case 1:
-                        input = T06_init_RM;
-                        break;
-                    case 2:
-                        input = T06_init_LB;
-                        break;
-                }
-                break;
-
-            case RLR:
-                switch (i) {
-                    case 0:
-                        input = T06_init_RF;
-                        break;
-                    case 1:
-                        input = T06_init_LM;
-                        break;
-                    case 2:
-                        input = T06_init_RB;
-                        break;
-                }
-                break;
-        }
-        position_single(input, (*group_pra).x, (*group_pra).y,
-                        (*group_pra).theta, (*group_pra).h);
-    }
+void position_group(struct GROUP_PRA *group_pra)
+{
+		int i;
+		double *input;
+		for(i = 1;i < 3;i ++)
+		{
+		 switch((*group_pra).group)
+		 {
+			case LRL:
+				switch(i)
+				{
+					case 0 : input = T06_init_LF;
+					break;
+					case 1 : input = T06_init_RM;
+					break;
+					case 2 : input = T06_init_LB;
+					break;
+				}
+			break;
+			
+			case RLR:
+				switch(i)
+				{
+					case 0 : input = T06_init_RF;
+					break;
+					case 1 : input = T06_init_LM;
+					break;
+					case 2 : input = T06_init_RB;
+					break;
+				}
+			break;
+			}
+			position_single(input,(*group_pra).x,(*group_pra).y,(*group_pra).theta,(*group_pra).h);	
+		}	
 }
+
 
 float high_from_action_task;
 float x_from_action_task;
 float y_from_action_task;
 
-void wether_Clear_Order(void) {
-    int i;
-    if (STA_STOP == 1)
-        for (i = 0; i < 3; i++)
-            Order_use[i] = 0;
-    else
-        for (i = 0; i < 3; i++)
-            Order_use[i] = Order[i];
+void wether_Clear_Order(void)
+{
+			int i;
+			if(STA_STOP==1)for(i=0;i<3;i++)Order_use[i]=0;
+			else for(i=0;i<3;i++)Order_use[i]=Order[i];
 
-    for (i = 0; i < 3; i++)
-        Order_use[i] = Order_use[i];
+			for(i=0;i<3;i++)Order_use[i]=Order_use[i];
+}
+				
+void generate_Step_Vector(void)
+{
+				Action_T=Action_T_per_V/speed;
+				//¼ÆËãÆ½ÒÆ²½³¤ÏòÁ¿
+				LRL_L[0]=Order_use[0]*Action_T/1000.0f;
+				LRL_L[1]=Order_use[1]*Action_T/1000.0f;
+
+				RLR_L[0]=Order_use[0]*Action_T/1000.0f;
+				RLR_L[1]=Order_use[1]*Action_T/1000.0f;
+
+				//¼ÆËãÐý×ª½Ç²½³¤
+				
+				LRL_theat=Order_use[2]*Action_T/1000.0f;
+	
+				RLR_theat=Order_use[2]*Action_T/1000.0f;				
+}
+				
+void generate_Initial_And_End_Position(void)	
+{
+				if(STA_START==1)Rf_use=0,Rz_use=0;//Æô¶¯Ê±Ç°Éì±ÈºÍÇ°×ª±ÈÖÃ1
+				else Rf_use=Rf,Rz_use=Rz;
+				
+				//¼ÆËãÆ½ÒÆ±ä»»³õÄ©Î»ÖÃ
+				LRL_P1[0]=LRL_L[0]*Rf_use;
+				LRL_P1[1]=LRL_L[1]*Rf_use;
+
+				LRL_P2[0]=-LRL_L[0]*(1-Rf_use);
+				LRL_P2[1]=-LRL_L[1]*(1-Rf_use);
+				
+				RLR_P1[0]=RLR_L[0]*Rf_use;
+				RLR_P1[1]=RLR_L[1]*Rf_use;
+
+				RLR_P2[0]=-RLR_L[0]*(1-Rf_use);
+				RLR_P2[1]=-RLR_L[1]*(1-Rf_use);
+
+				//¼ÆËãÐý×ª±ä»»³õÄ©Î»ÖÃ
+				LRL_theat1=LRL_theat*Rz_use;
+				LRL_theat2=-LRL_theat*(1-Rz_use);
+				
+				RLR_theat1=RLR_theat*Rz_use;
+				RLR_theat2=-RLR_theat*(1-Rz_use);
+}				
+
+void wether_Go_To_Next_Cycle()
+			{
+								//½øÈëÏÂÒ»ÖÜÆÚ
+				if(STA_STAND==0&&LRL_phase>=1)
+				{
+						LRL_phase=0,LRL_t0=systime,STA_START=0;//½áÊøÆô¶¯ÖÜÆÚ£¬½øÈëÕý³£ÔËÐÐÖÜÆÚ
+						STEP_number++;
+				}
+				//½øÈëÏÂÒ»ÖÜÆÚ
+				if(STA_STAND==0&&RLR_phase>=1)
+				{
+					RLR_phase-=1;
+				}
+			}
+	
+void get_phase(void)
+{
+					//»ñÈ¡µ±Ç°Ê±¼ä
+				LRL_t=systime-LRL_t0;
+				printf("C %ld\r\n",systime);
+				//»ñÈ¡µ±Ç°ÏàÎ»
+				LRL_phase=LRL_t/Action_T;
+				RLR_phase=LRL_phase+0.5f;
+				wether_Go_To_Next_Cycle();//ÅÐ¶ÏÊÇ·ñ½øÈëÏÂÒ»ÖÜÆÚ
+				printf("D %f\r\n",LRL_phase);				
+				printf("E %f\r\n",RLR_phase);
+
 }
 
-void generate_Step_Vector(void) {
-    Action_T = Action_T_per_V / speed;
-    //ï¿½ï¿½ï¿½ï¿½Æ½ï¿½Æ²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-    LRL_L[0] = Order_use[0] * Action_T / 1000.0f;
-    LRL_L[1] = Order_use[1] * Action_T / 1000.0f;
+void get_order_and_isSTART(void)
+{
+				if(	(LRL_phase>=0.5f&&LRL_phase<=0.53f)			\
+					||(RLR_phase>=0.5f&&RLR_phase<=0.53f)	)
+				{
+					//ÅÐ¶ÏÊÇ·ñÐèÒªÇÐ»»ÖÁ¾²Á¢×´Ì¬
+					if(	(Order_use[0]>-0.2f&&Order_use[0]<0.2f)			\
+						&&(Order_use[1]>-0.2f&&Order_use[1]<0.2f)			\
+						&&(Order_use[2]>-0.01f&&Order_use[2]<0.01f)			\
+						&&(Order_use[0]>-0.2f&&Order_use[0]<0.2f)			\
+						&&(Order_use[1]>-0.2f&&Order_use[1]<0.2f)			\
+						&&(Order_use[2]>-0.01f&&Order_use[2]<0.01f)			\
+						)STA_STAND=1;//ÇÐ»»ÖÁ¾²Á¢×´Ì¬					
+				}
+				
+				if(STA_STAND==1)//¾²Á¢Ê±¼ì²âÊÇ·ñÐèÒªÆô¶¯
+				{
+					LRL_t0=systime;//¾²Á¢;
+						if(	(Order_use[0]>-0.2f&&Order_use[0]<0.2f)			\
+							&&(Order_use[1]>-0.2f&&Order_use[1]<0.2f)			\
+							&&(Order_use[2]>-0.01f&&Order_use[2]<0.01f)			\
+							&&(Order_use[0]>-0.2f&&Order_use[0]<0.2f)			\
+							&&(Order_use[1]>-0.2f&&Order_use[1]<0.2f)			\
+							&&(Order_use[2]>-0.01f&&Order_use[2]<0.01f)			\
+						);
+					else STA_STAND=0,STA_START=1;//ÐèÒªÒÆ¶¯Ê±Æô¶¯
+				}
+				
+								wether_Clear_Order();	//ÅÐ¶ÏÊÇ·ñÍ£Ö¹
+}					
+float get_S(float phase)
+{
+				float S_fun;
+				//¼ÆËãÏàÎ»ÁÙ½çÖµ
+				phase10=R0/4.0f;
+				phase0=0.5f-phase10;
 
-    RLR_L[0] = Order_use[0] * Action_T / 1000.0f;
-    RLR_L[1] = Order_use[1] * Action_T / 1000.0f;
-
-    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×ªï¿½Ç²ï¿½ï¿½ï¿½
-
-    LRL_theat = Order_use[2] * Action_T / 1000.0f;
-
-    RLR_theat = Order_use[2] * Action_T / 1000.0f;
+//				RLR_phase10=R0/4.0f;
+//				RLR_phase0=0.5f-phase10;	
+				//ÏàÇÐ»»
+				if(phase>=0&&phase<phase10)S_fun=S10;
+				if(phase>=phase10&&phase<phase0)S_fun=S0;
+				if(phase>=phase0&&phase<LRL_phase01)S_fun=S01;
+				if(phase>=LRL_phase01&&phase<1)S_fun=S1;			
+				return S_fun;
 }
 
-void generate_Initial_And_End_Position(void) {
-    if (STA_START == 1)
-        Rf_use = 0, Rz_use = 0;  //ï¿½ï¿½ï¿½ï¿½Ê±Ç°ï¿½ï¿½Èºï¿½Ç°×ªï¿½ï¿½ï¿½ï¿½1
-    else
-        Rf_use = Rf, Rz_use = Rz;
-
-    //ï¿½ï¿½ï¿½ï¿½Æ½ï¿½Æ±ä»»ï¿½ï¿½Ä©Î»ï¿½ï¿½
-    LRL_P1[0] = LRL_L[0] * Rf_use;
-    LRL_P1[1] = LRL_L[1] * Rf_use;
-
-    LRL_P2[0] = -LRL_L[0] * (1 - Rf_use);
-    LRL_P2[1] = -LRL_L[1] * (1 - Rf_use);
-
-    RLR_P1[0] = RLR_L[0] * Rf_use;
-    RLR_P1[1] = RLR_L[1] * Rf_use;
-
-    RLR_P2[0] = -RLR_L[0] * (1 - Rf_use);
-    RLR_P2[1] = -RLR_L[1] * (1 - Rf_use);
-
-    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×ªï¿½ä»»ï¿½ï¿½Ä©Î»ï¿½ï¿½
-    LRL_theat1 = LRL_theat * Rz_use;
-    LRL_theat2 = -LRL_theat * (1 - Rz_use);
-
-    RLR_theat1 = RLR_theat * Rz_use;
-    RLR_theat2 = -RLR_theat * (1 - Rz_use);
+float ZhiXianGuiJi(float x_Start, float x_End ,float y_Start,float y_End,float x)
+{
+	float k;
+	float y;
+	k=(y_End-y_Start)/(x_End-x_Start);
+	y = y_Start+k*(x-x_Start);
+	return y;
 }
 
-void wether_Go_To_Next_Cycle() {
-    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½
-    if (STA_STAND == 0 && LRL_phase >= 1) {
-        LRL_phase = 0, LRL_t0 = systime,
-        STA_START = 0;  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-        STEP_number++;
-    }
-    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½
-    if (STA_STAND == 0 && RLR_phase >= 1) {
-        RLR_phase -= 1;
-    }
-}
+struct GROUP_PRA LRL_group,RLR_group;
 
-void get_phase(void) {
-    //ï¿½ï¿½È¡ï¿½ï¿½Ç°Ê±ï¿½ï¿½
-    LRL_t = systime - LRL_t0;
-    printf("C %ld\r\n", systime);
-    //ï¿½ï¿½È¡ï¿½ï¿½Ç°ï¿½ï¿½Î»
-    LRL_phase = LRL_t / Action_T;
-    RLR_phase = LRL_phase + 0.5f;
-    wether_Go_To_Next_Cycle();  //ï¿½Ð¶ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½
-    printf("D %f\r\n", LRL_phase);
-    printf("E %f\r\n", RLR_phase);
-}
-
-void get_order_and_isSTART(void) {
-    if ((LRL_phase >= 0.5f && LRL_phase <= 0.53f) ||
-        (RLR_phase >= 0.5f && RLR_phase <= 0.53f)) {
-        //ï¿½Ð¶ï¿½ï¿½Ç·ï¿½ï¿½ï¿½Òªï¿½Ð»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬
-        if ((Order_use[0] > -0.2f && Order_use[0] < 0.2f) &&
-            (Order_use[1] > -0.2f && Order_use[1] < 0.2f) &&
-            (Order_use[2] > -0.01f && Order_use[2] < 0.01f) &&
-            (Order_use[0] > -0.2f && Order_use[0] < 0.2f) &&
-            (Order_use[1] > -0.2f && Order_use[1] < 0.2f) &&
-            (Order_use[2] > -0.01f && Order_use[2] < 0.01f))
-            STA_STAND = 1;  //ï¿½Ð»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬
-    }
-
-    if (STA_STAND == 1)  //ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½
-    {
-        LRL_t0 = systime;  //ï¿½ï¿½ï¿½ï¿½;
-        if ((Order_use[0] > -0.2f && Order_use[0] < 0.2f) &&
-            (Order_use[1] > -0.2f && Order_use[1] < 0.2f) &&
-            (Order_use[2] > -0.01f && Order_use[2] < 0.01f) &&
-            (Order_use[0] > -0.2f && Order_use[0] < 0.2f) &&
-            (Order_use[1] > -0.2f && Order_use[1] < 0.2f) &&
-            (Order_use[2] > -0.01f && Order_use[2] < 0.01f))
-            ;
-        else
-            STA_STAND = 0, STA_START = 1;  //ï¿½ï¿½Òªï¿½Æ¶ï¿½Ê±ï¿½ï¿½ï¿½ï¿½
-    }
-
-    wether_Clear_Order();  //ï¿½Ð¶ï¿½ï¿½Ç·ï¿½Í£Ö¹
-}
-float get_S(float phase) {
-    float S_fun;
-    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½Ù½ï¿½Öµ
-    phase10 = R0 / 4.0f;
-    phase0 = 0.5f - phase10;
-
-    //				RLR_phase10=R0/4.0f;
-    //				RLR_phase0=0.5f-phase10;
-    //ï¿½ï¿½ï¿½Ð»ï¿½
-    if (phase >= 0 && phase < phase10)
-        S_fun = S10;
-    if (phase >= phase10 && phase < phase0)
-        S_fun = S0;
-    if (phase >= phase0 && phase < LRL_phase01)
-        S_fun = S01;
-    if (phase >= LRL_phase01 && phase < 1)
-        S_fun = S1;
-    return S_fun;
-}
-
-float ZhiXianGuiJi(float x_Start,
-                   float x_End,
-                   float y_Start,
-                   float y_End,
-                   float x) {
-    float k;
-    float y;
-    k = (y_End - y_Start) / (x_End - x_Start);
-    y = y_Start + k * (x - x_Start);
-    return y;
-}
-
-struct GROUP_PRA LRL_group, RLR_group;
-
-float h_up = 5;
+float h_up=5;
 float LRL_hNow;
 float RLR_hNow;
-float h_EWai = 5;
+float h_EWai = 5;	
 
-float XianFu_min(float input, float min) {
-    float output;
-    if (input <= min)
-        output = min;
-    else
-        output = input;
-    return output;
+float XianFu_min(float input,float min)
+{
+	float output;
+	if(input<=min) output = min;
+	else output = input;
+	return output;
 }
 
-void action_init(void) {
-    LRL_group.group = LRL;
-    RLR_group.group = RLR;
+void action_init(void)
+{
+	LRL_group.group = LRL;
+	RLR_group.group = RLR;
 }
 
-void get_group_pra(struct GROUP_PRA* group_pra,
-                   float phase,
-                   u8 STA_STAND_fun,
-                   u8 S_fun) {
-    if (STA_STAND_fun == 1) {
-        (*group_pra).x = 0;
-        (*group_pra).y = 0;
-        (*group_pra).theta = 0;
-        (*group_pra).h = 0;
-    }
+void get_group_pra(struct GROUP_PRA * group_pra , float phase ,u8 STA_STAND_fun, u8 S_fun)
+{
+	if(STA_STAND_fun==1)
+	{
+		(*group_pra).x = 0;
+		(*group_pra).y = 0;
+		(*group_pra).theta = 0;
+		(*group_pra).h = 0;
+	}
 
-    if (STA_STAND_fun == 0) {
-        switch (S_fun) {
-            case S01:
-                (*group_pra).h = ZhiXianGuiJi(
-                    phase0, phase0 + phase10 * (1 - R0f), h_up, 0, phase);
-                break;
-            case S0:
-                (*group_pra).x =
-                    ZhiXianGuiJi(phase10, phase10 + 0.5f - 2 * phase10,
-                                 LRL_P2[0], LRL_P1[0], phase);
-                (*group_pra).y =
-                    ZhiXianGuiJi(phase10, phase10 + 0.5f - 2 * phase10,
-                                 LRL_P2[1], LRL_P1[1], phase);
-                (*group_pra).theta =
-                    ZhiXianGuiJi(phase10, phase10 + 0.5f - 2 * phase10,
-                                 LRL_theat2, LRL_theat1, phase);
-                break;
-            case S10:
-                (*group_pra).h = ZhiXianGuiJi(
-                    phase10 * R0f, phase10 * R0f + phase10 * (1 - R0f), 0, h_up,
-                    phase);
-                break;
-            case S1:
-                (*group_pra).x = ZhiXianGuiJi(0.5f, 0.5f + 0.5f, LRL_P1[0],
-                                              LRL_P2[0], phase);
-                (*group_pra).y = ZhiXianGuiJi(0.5f, 0.5f + 0.5f, LRL_P1[1],
-                                              LRL_P2[1], phase);
-                (*group_pra).theta = ZhiXianGuiJi(0.5f, 0.5f + 0.5f, LRL_theat1,
-                                                  LRL_theat2, phase);
-                break;
-        }
-        //		(*group_pra).h = XianFu_min((*group_pra).h,0);
-    }
+	if(STA_STAND_fun==0)
+	{
+		switch(S_fun)
+		{
+			case S01:
+				(*group_pra).h = ZhiXianGuiJi(phase0,phase0 + phase10*(1-R0f) ,h_up,0,phase);
+			break;
+			case S0:
+				(*group_pra).x = ZhiXianGuiJi(phase10, phase10 + 0.5f-2*phase10 ,LRL_P2[0],LRL_P1[0],phase);
+				(*group_pra).y = ZhiXianGuiJi(phase10, phase10 + 0.5f-2*phase10 ,LRL_P2[1],LRL_P1[1],phase);
+				(*group_pra).theta = ZhiXianGuiJi(phase10, phase10 + 0.5f-2*phase10 ,LRL_theat2,LRL_theat1,phase);		
+			break;
+			case S10:
+				(*group_pra).h = ZhiXianGuiJi(phase10*R0f, phase10*R0f + phase10*(1-R0f),0, h_up,phase);
+			break;
+			case S1:
+				(*group_pra).x = ZhiXianGuiJi(0.5f, 0.5f + 0.5f,LRL_P1[0],LRL_P2[0],phase);
+				(*group_pra).y = ZhiXianGuiJi(0.5f, 0.5f + 0.5f,LRL_P1[1],LRL_P2[1],phase);
+				(*group_pra).theta = ZhiXianGuiJi(0.5f, 0.5f + 0.5f,LRL_theat1,LRL_theat2,phase);
+			break;
+		}
+//		(*group_pra).h = XianFu_min((*group_pra).h,0);
+
+	}
 }
-void get_position(void) {}
+void get_position(void)
+{
+
+}
 #define NORMAL 0
 #define TEST 1
 
@@ -523,62 +506,81 @@ float ChaBu_dt;
 float ChaBu_hNow;
 float ChaBu_hChuDi;
 
-// actionï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-void action_task(void* pvParameters) {
-    int i;
-    struct GROUP_PRA* group_pra;
-    float phase;
-    float S_fun;
-    while (1) {
-        if (flag_action_run_single == 1 ||
-            flag_action_run_continiue == 1)  //ï¿½ï¿½ï¿½Ö£ï¿½ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½ï¿½Åºï¿½
-        {
-            T06_init();  //ï¿½ï¿½Ê¼ï¿½ï¿½Ä©ï¿½ï¿½Î»ï¿½ï¿½
+//actionÈÎÎñº¯Êý
+void action_task(void *pvParameters)
+{
+	int i;
+	struct GROUP_PRA *group_pra;
+	float phase;
+	float S_fun;
+	while(1)
+	{
+		if(flag_action_run_single==1||flag_action_run_continiue==1)//³öÏÖ£¨µ¥´Î/Á¬Ðø£©ÔËÐÐ´¥·¢ÐÅºÅ
+		{
+				T06_init();//³õÊ¼»¯Ä©¶ËÎ»ÖÃ
 
-            get_order_and_isSTART();  //ï¿½ï¿½È¡Ö¸ï¿½ï¿½
+				get_order_and_isSTART();//»ñÈ¡Ö¸Áî			
 
-            generate_Step_Vector();  //ï¿½ï¿½ï¿½ï¿½Æ½ï¿½æ²½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+				generate_Step_Vector();//Éú³ÉÆ½Ãæ²½³¤ÏòÁ¿
+				
+				generate_Initial_And_End_Position();//Éú³ÉÆ½Ãæ³õÄ©Î»ÖÃ
 
-            generate_Initial_And_End_Position();  //ï¿½ï¿½ï¿½ï¿½Æ½ï¿½ï¿½ï¿½Ä©Î»ï¿½ï¿½
+				get_phase();//»ñµÃµ±Ç°ÏàÎ»
 
-            get_phase();  //ï¿½ï¿½Ãµï¿½Ç°ï¿½ï¿½Î»
+				for (i = 0;i<2;i++)//µ÷ÓÃÁ½×éÍÈµÄÔË¶¯²ÎÊý£¬¼ÆËãÁ½×éÍÈµÄÄ©¶ËÎ»ÖÃ
+				{
+					switch(i)
+					{
+						case 0 : 
+							group_pra = &LRL_group;
+							phase = LRL_phase;
+							LRL_S = get_S(phase);//»ñµÃµ±Ç°×´Ì¬	
+							printf("F %d\r\n",LRL_S);
+							S_fun = LRL_S;
+						break;
+						case 1 : 
+							group_pra = &RLR_group;
+							phase = RLR_phase;				
+							RLR_S = get_S(phase);//»ñµÃµ±Ç°×´Ì¬	
+							printf("G %d\r\n",RLR_S);
+							S_fun = RLR_S;
+						break;
+					}
+					get_group_pra(group_pra,phase,STA_STAND,S_fun);	 //µ÷ÓÃÒ»×éÍÈµÄÔË¶¯²ÎÊý
+					position_group(group_pra); //¼ÆËãÒ»×éÍÈµÄÄ©¶ËÎ»ÖÃ
+				}
+				printf("H %f\r\n",LRL_group.h);
+				printf("I %f\r\n",LRL_group.x);
+				printf("J %f\r\n",LRL_group.y);
+				printf("K %f\r\n",LRL_group.theta);
 
-            for (i = 0; i < 2; i++)  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Èµï¿½ï¿½Ë¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Èµï¿½Ä©ï¿½ï¿½Î»ï¿½ï¿½
-            {
-                switch (i) {
-                    case 0:
-                        group_pra = &LRL_group;
-                        phase = LRL_phase;
-                        LRL_S = get_S(phase);  //ï¿½ï¿½Ãµï¿½Ç°×´Ì¬
-                        printf("F %d\r\n", LRL_S);
-                        S_fun = LRL_S;
-                        break;
-                    case 1:
-                        group_pra = &RLR_group;
-                        phase = RLR_phase;
-                        RLR_S = get_S(phase);  //ï¿½ï¿½Ãµï¿½Ç°×´Ì¬
-                        printf("G %d\r\n", RLR_S);
-                        S_fun = RLR_S;
-                        break;
-                }
-                get_group_pra(group_pra, phase, STA_STAND,
-                              S_fun);  //ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Èµï¿½ï¿½Ë¶ï¿½ï¿½ï¿½ï¿½ï¿½
-                position_group(group_pra);  //ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Èµï¿½Ä©ï¿½ï¿½Î»ï¿½ï¿½
-            }
-            printf("H %f\r\n", LRL_group.h);
-            printf("I %f\r\n", LRL_group.x);
-            printf("J %f\r\n", LRL_group.y);
-            printf("K %f\r\n", LRL_group.theta);
+				printf("L %f\r\n",RLR_group.h);
+				printf("M %f\r\n",RLR_group.x);
+				printf("N %f\r\n",RLR_group.y);
+				printf("O %f\r\n",RLR_group.theta);
 
-            printf("L %f\r\n", RLR_group.h);
-            printf("M %f\r\n", RLR_group.x);
-            printf("N %f\r\n", RLR_group.y);
-            printf("O %f\r\n", RLR_group.theta);
+				
+				flag_action_run_single=2;	
+				
+				vTaskDelay(1);
 
-            flag_action_run_single = 2;
-
-            vTaskDelay(1);
-        }
-        vTaskDelay(10);
-    }
+		}
+			vTaskDelay(10);
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,156 +1,167 @@
 
+#include "sys.h"
+#include "delay.h"
+#include "usart.h"
+#include "led.h"
+#include "timer.h"
+#include "lcd.h"
 #include "FreeRTOS.h"
-#include "LobotServoController.h"
+#include "task.h"
+#include "key.h" 
+#include "touch.h" 
 #include "adc.h"
 #include "current.h"
-#include "delay.h"
-#include "key.h"
-#include "lcd.h"
-#include "led.h"
 #include "mpuiic.h"
-#include "sys.h"
-#include "task.h"
-#include "timer.h"
-#include "touch.h"
-#include "usart.h"
-// task
+#include "LobotServoController.h"
+//task
 #include "adc_task.h"
-#include "balance_task.h"
 #include "rtp_test_task.h"
 #include "sanjiaobo_task.h"
 #include "shiboqi_task.h"
 #include "start_task.h"
+#include "balance_task.h"
 // #include "mpu6050.h"
-#include "action_task_723.h"
-#include "ps2_task.h"
 #include "pstwo.h"
-
-//È«ï¿½Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-int flag_hanshu1, flag_hanshu2 = 0;
-int point_x, point_y, point_y_old;
-int hanshu = 0;
-int test_x, test_y;
-int date_y[241];
-int test_point[18] = {88, 88, 88, 88, 88, 88, 88, 88, 88,
-                      88, 88, 88, 88, 88, 88, 88, 88, 88};
-int test_ch;
-int n;
-int i_date_y;
-int num_x;
-int num_y;
-int tp_test_x;
-int tp_test_y;
-u8 shiboqi_ch;
-u16 adcx;
-u8 Way_Angle = 1;
-float Angle_Balance, Gyro_Balance, Gyro_Turn, Gyro_Pitch,
-    Gyro_Roll;  //Æ½ï¿½ï¿½ï¿½ï¿½ï¿½ Æ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ×ªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-
-//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-float current[18];
-float current_single;
-
-//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½
-#define START_TASK_PRIO 1
-//ï¿½ï¿½ï¿½ï¿½ï¿½Õ»ï¿½ï¿½Ğ¡
-#define START_STK_SIZE 512
-//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-TaskHandle_t StartTask_Handler;
-//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-void start_task(void* pvParameters);
-
-int main(void) {
-    /*	ï¿½ï¿½ï¿½ß±ï¿½ï¿½ï¿½
-            PA0		ï¿½ï¿½ï¿½ï¿½	LED1
-            PA1		ï¿½ï¿½ï¿½ï¿½
-            PA2		ï¿½ï¿½ï¿½ï¿½	RX_ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-            PA3		ï¿½ï¿½ï¿½ï¿½	TX_ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-            PA4		ï¿½ï¿½ï¿½ï¿½
-            PA5		ï¿½ï¿½ï¿½ï¿½
-            PA6		ï¿½ï¿½ï¿½ï¿½
-            PA7		ï¿½ï¿½ï¿½ï¿½
-            PA8		ï¿½ï¿½ï¿½ï¿½
-            PA9		ï¿½ï¿½ï¿½ï¿½	RX_ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-            PA10	ï¿½ï¿½ï¿½ï¿½	TX_ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-            PA11	ï¿½ï¿½ï¿½ï¿½
-            PA12	ï¿½ï¿½ï¿½ï¿½
-            PA13	ï¿½ï¿½ï¿½ï¿½	CLK_SWD
-            PA14	ï¿½ï¿½ï¿½ï¿½	DIO_SWD
-            PA15	ï¿½ï¿½ï¿½ï¿½
-
-            PB0		ï¿½ï¿½ï¿½ï¿½
-            PB1		ï¿½ï¿½ï¿½ï¿½
-            PB2		ï¿½ï¿½ï¿½ï¿½
-            PB3		ï¿½ï¿½ï¿½ï¿½
-            PB4		ï¿½ï¿½ï¿½ï¿½
-            PB5		ï¿½ï¿½ï¿½ï¿½
-            PB6		ï¿½ï¿½ï¿½ï¿½
-            PB7		ï¿½ï¿½ï¿½ï¿½
-            PB8		ï¿½ï¿½ï¿½ï¿½
-            PB9		ï¿½ï¿½ï¿½ï¿½
-            PB10	ï¿½ï¿½ï¿½ï¿½	RX_ï¿½ï¿½ï¿½ï¿½Í·
-            PB11	ï¿½ï¿½ï¿½ï¿½	TX_ï¿½ï¿½ï¿½ï¿½Í·
-            PB12	ï¿½ï¿½ï¿½ï¿½	CLK_PS2ï¿½Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-            PB13	ï¿½ï¿½ï¿½ï¿½	CS_PS2ï¿½Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-            PB14	ï¿½ï¿½ï¿½ï¿½	DO_PS2ï¿½Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-            PB15	ï¿½ï¿½ï¿½ï¿½	DI_PS2ï¿½Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+#include "ps2_task.h"
+#include "action_task_723.h"
 
 
-            PC10	ï¿½ï¿½ï¿½ï¿½	RX_Ğ¡32ï¿½Ó»ï¿½
-            PC11	ï¿½ï¿½ï¿½ï¿½	TX_Ğ¡32ï¿½Ó»ï¿½
 
-            PC6		ï¿½ï¿½ï¿½ï¿½	RX_PC
-            PC7		ï¿½ï¿½ï¿½ï¿½	TX_PC
+//È«¾Ö±äÁ¿¶¨Òå
+		int flag_hanshu1,flag_hanshu2=0;
+	  int point_x,point_y,point_y_old;
+		int hanshu=0;
+		int test_x,test_y;
+		int date_y[241];
+		int test_point[18]={88,88,88,88,88,88,88,88,88,88,88,88,88,88,88,88,88,88};
+		int test_ch;
+		int n;
+		int i_date_y;
+		int num_x;
+		int num_y;
+		int tp_test_x;
+		int tp_test_y;
+		u8 shiboqi_ch;
+		u16 adcx;
+		u8 Way_Angle=1;
+		float Angle_Balance,Gyro_Balance,Gyro_Turn,Gyro_Pitch,Gyro_Roll; //Æ½ºâÇã½Ç Æ½ºâÍÓÂİÒÇ ×ªÏòÍÓÂİÒÇ
+		
+		//µçÁ÷Êı×é
+		float current[18];
+		float current_single;
 
-    */
+//ÈÎÎñÓÅÏÈ¼¶
+		#define START_TASK_PRIO		1
+		//ÈÎÎñ¶ÑÕ»´óĞ¡	
+		#define START_STK_SIZE 		512  
+		//ÈÎÎñ¾ä±ú
+		TaskHandle_t StartTask_Handler;
+		//ÈÎÎñº¯Êı
+		void start_task(void *pvParameters);
 
-    /*
 
-            ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½						ï¿½Ò¼ï¿½ï¿½ï¿½>Go To Defination of
-       ï¿½ï¿½XXXXXï¿½ï¿½ start_task					ï¿½ï¿½ï¿½ñ´´½ï¿½
-                    task_enable_flag		ï¿½ï¿½ï¿½ñ¿ª¹ï¿½
-                    action_task					ï¿½ï¿½ï¿½ï¿½Ğ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-                    banlance_task				ï¿½Ë¶ï¿½Ñ§ï¿½ï¿½ï¿½ï¿½ï¿½
-                    angle_task					ï¿½ï¿½Ì¬ï¿½Õ»ï¿½ï¿½ï¿½ï¿½ï¿½
-                    systime_task				ÏµÍ³Ê±ï¿½ï¿½
-                    ps2_task						ï¿½Ö±ï¿½
-                    s32_task
-       ï¿½ï¿½ï¿½ï¿½Ğ¡stm32ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ genetic_task				ï¿½Å´ï¿½ï¿½ã·¨
-                    touch_task ï¿½ï¿½ï¿½×·ï¿½ï¿½ï¿½ Í¨Ñ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ CopeSerial2Data
-       ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¨Ñ¶ï¿½ï¿½ï¿½ï¿½ï¿½Å·ï¿½ï¿½ï¿½ÇºÍ½ï¿½ï¿½Ù¶ï¿½ CopeSerial3Data
-       ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·Í¨Ñ¶ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ CopeSerial4Data
-       ï¿½ï¿½Ğ¡stm32ï¿½ï¿½Í¨Ñ¶ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ë¡¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ USART1_IRQHandler ï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½
-                    CopeSerial6Data			ï¿½ï¿½ï¿½ï¿½ï¿½×´ï¿½
-    */
+int main(void)
+{ 
 
-    //ï¿½ï¿½Ê¼ï¿½ï¿½
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);  //ï¿½ï¿½ï¿½ï¿½ÏµÍ³ï¿½Ğ¶ï¿½ï¿½ï¿½ï¿½È¼ï¿½ï¿½ï¿½ï¿½ï¿½4
-    delay_init(168);   //ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½
-    uart1_init(9600);  //ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-    uart2_init(115200);
-    uart3_init(115200);
-    uart4_init(9600);
-    uart6_init(115200);
-    LED_Init();     //ï¿½ï¿½Ê¼ï¿½ï¿½LEDï¿½Ë¿ï¿½
-    PS2_Init();     // PS2ï¿½Ö±ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½
-    PS2_SetInit();  //ï¿½ï¿½ï¿½ï¿½ï¿½Ã³ï¿½Ê¼ï¿½ï¿½,ï¿½ï¿½ï¿½Ã¡ï¿½ï¿½ï¿½ï¿½Ìµï¿½Ä£Ê½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½Ş¸ï¿½
-    T06_init();     //ï¿½ï¿½Ê¼ï¿½ï¿½Ä©ï¿½ï¿½Î»ï¿½ï¿½
-    T06_init_ideal();  //ï¿½ï¿½Ê¼ï¿½ï¿½Ä©ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
-    KEY_EXTI_Init();
-    action_init();
+/*	½ÓÏß±í£º
+	PA0		¡ª¡ª	LED1
+	PA1		¡ª¡ª		
+	PA2		¡ª¡ª	RX_ÍÓÂİÒÇ
+	PA3		¡ª¡ª	TX_ÍÓÂİÒÇ
+	PA4		¡ª¡ª
+	PA5		¡ª¡ª
+	PA6		¡ª¡ª
+	PA7		¡ª¡ª
+	PA8		¡ª¡ª	
+	PA9		¡ª¡ª	RX_¶æ»ú¿ØÖÆÆ÷
+	PA10	¡ª¡ª	TX_¶æ»ú¿ØÖÆÆ÷
+	PA11	¡ª¡ª
+	PA12	¡ª¡ª
+	PA13	¡ª¡ª	CLK_SWD
+	PA14	¡ª¡ª	DIO_SWD
+	PA15	¡ª¡ª
+
+	PB0		¡ª¡ª
+	PB1		¡ª¡ª
+	PB2		¡ª¡ª
+	PB3		¡ª¡ª
+	PB4		¡ª¡ª
+	PB5		¡ª¡ª
+	PB6		¡ª¡ª
+	PB7		¡ª¡ª
+	PB8		¡ª¡ª		
+	PB9		¡ª¡ª
+	PB10	¡ª¡ª	RX_ÉãÏñÍ·
+	PB11	¡ª¡ª	TX_ÉãÏñÍ·
+	PB12	¡ª¡ª	CLK_PS2ÊÖ±ú½ÓÊÕÆ÷
+	PB13	¡ª¡ª	CS_PS2ÊÖ±ú½ÓÊÕÆ÷
+	PB14	¡ª¡ª	DO_PS2ÊÖ±ú½ÓÊÕÆ÷
+	PB15	¡ª¡ª	DI_PS2ÊÖ±ú½ÓÊÕÆ÷
+
+
+	PC10	¡ª¡ª	RX_Ğ¡32´Ó»ú
+	PC11	¡ª¡ª	TX_Ğ¡32´Ó»ú
+	
+	PC6		¡ª¡ª	RX_PC
+	PC7		¡ª¡ª	TX_PC
+	
+*/
+
+/*
+
+	ÈÎÎñ¿ì½İÈë¿Ú						ÓÒ¼ü¡ª>Go To Defination of ¡®XXXXX¡¯
+		start_task					ÈÎÎñ´´½¨
+		task_enable_flag		ÈÎÎñ¿ª¹Ø
+		action_task					¶à×ãĞ­µ÷¿ØÖÆ
+		banlance_task				ÔË¶¯Ñ§Äæ½âÆ÷
+		angle_task					×ËÌ¬±Õ»·¿ØÖÆ
+		systime_task				ÏµÍ³Ê±¼ä
+		ps2_task						ÊÖ±ú
+		s32_task						ÇëÇóĞ¡stm32µÄÊı¾İ
+		genetic_task				ÒÅ´«Ëã·¨
+		touch_task					´¥µ×·´À¡
+	Í¨Ñ¶¿ì½İÈë¿Ú
+		CopeSerial2Data 		ÓëÍÓÂİÒÇÍ¨Ñ¶£¬»ñµÃÅ·À­½ÇºÍ½ÇËÙ¶È
+		CopeSerial3Data			ÓëÉãÏñÍ·Í¨Ñ¶£¬»ñµÃÄ¿±êµã×ø±ê
+		CopeSerial4Data			ÓëĞ¡stm32°åÍ¨Ñ¶£¬»ñÈ¡µ¥×ã²â¾à¾àÀë¡¢Èı¶æ»úµçÁ÷
+		USART1_IRQHandler		´®¿Ú1½ÓÊÕ
+		CopeSerial6Data			¼¤¹âÀ×´ï
+*/
+
+//³õÊ¼»¯
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);//ÉèÖÃÏµÍ³ÖĞ¶ÏÓÅÏÈ¼¶·Ö×é4
+	delay_init(168);					//³õÊ¼»¯ÑÓÊ±º¯Êı
+	uart1_init(9600);      				//³õÊ¼»¯´®¿Ú
+	uart2_init(115200);
+	uart3_init(115200);
+	uart4_init(9600);
+	uart6_init(115200); 
+	LED_Init();		        			//³õÊ¼»¯LED¶Ë¿Ú
+	PS2_Init();						//PS2ÊÖ±ú³õÊ¼»¯
+	PS2_SetInit();			 //ÅäÅäÖÃ³õÊ¼»¯,ÅäÖÃ¡°ºìÂÌµÆÄ£Ê½¡±£¬²¢Ñ¡ÔñÊÇ·ñ¿ÉÒÔĞŞ¸Ä
+	T06_init();					//³õÊ¼»¯Ä©¶ËÎ»ÖÃ
+	T06_init_ideal();		//³õÊ¼»¯Ä©¶ËÎ»ÖÃÀíÏëÖµ
+	KEY_EXTI_Init();
+	action_init();
 
 #if 1
-    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½
-    xTaskCreate((TaskFunction_t)start_task,  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-                (const char*)"start_task",   //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-                (uint16_t)START_STK_SIZE,    //ï¿½ï¿½ï¿½ï¿½ï¿½Õ»ï¿½ï¿½Ğ¡
-                (void*)NULL,  //ï¿½ï¿½ï¿½İ¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä²ï¿½ï¿½ï¿½
-                (UBaseType_t)START_TASK_PRIO,  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½
-                (TaskHandle_t*)&StartTask_Handler);  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-    vTaskStartScheduler();  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	//´´½¨¿ªÊ¼ÈÎÎñ
+    xTaskCreate((TaskFunction_t )start_task,            //ÈÎÎñº¯Êı
+                (const char*    )"start_task",          //ÈÎÎñÃû³Æ
+                (uint16_t       )START_STK_SIZE,        //ÈÎÎñ¶ÑÕ»´óĞ¡
+                (void*          )NULL,                  //´«µİ¸øÈÎÎñº¯ÊıµÄ²ÎÊı
+                (UBaseType_t    )START_TASK_PRIO,       //ÈÎÎñÓÅÏÈ¼¶
+                (TaskHandle_t*  )&StartTask_Handler);   //ÈÎÎñ¾ä±ú              
+    vTaskStartScheduler();          //¿ªÆôÈÎÎñµ÷¶È
 #endif
+								
+		while(1)
+		{
+//			adcx = Get_Adc(0);
+		}
 
-    while (1) {
-        //			adcx = Get_Adc(0);
-    }
+	
 }
+
+
+

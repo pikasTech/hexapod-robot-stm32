@@ -1,46 +1,50 @@
-#include "s32_task.h"
+#include "s32_task.h" 
 #include "FreeRTOS.h"
-#include "adc.h"
 #include "task.h"
-// s32ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½s32ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½
-// 0x25ï¿½ï¿½ï¿½ï¿½
+#include "adc.h"
+//s32ÈÎÎñº¯Êý
+//¸ÃÈÎÎñÎªºÍs32½øÐÐÍ¨ÐÅ
+//0x25¿ÉÓÃ
 
 float ave_rate = 0.1f;
 int ave_num = 10;
-void s32_task(void* pvParameters) {
-    while (1) {
-        u8 i;
-        float ADC_ave;
-        //		u16 ADC_sum;
-        u16 ADCX;
-        //		float ADC_ave_nom;
-        //		for (i=0;i<6;i++)
-        //		{
-        //			fputc4(0x55);
-        //			fputc4(0x25-i);
-        //			////printf("[%f,%f,%d,%d,%d,%d]\r\n",Roll_use,Pitch_use,RF_s32.dist,RF_s32.adc1,RF_s32.adc2,RF_s32.adc3);
+void s32_task(void *pvParameters)
+{
 
-        //		}
+	while(1)
+	{
+		u8 i;
+		float ADC_ave;
+//		u16 ADC_sum;
+		u16 ADCX;
+//		float ADC_ave_nom;
+//		for (i=0;i<6;i++)
+//		{
+//			fputc4(0x55);
+//			fputc4(0x25-i);
+//			////printf("[%f,%f,%d,%d,%d,%d]\r\n",Roll_use,Pitch_use,RF_s32.dist,RF_s32.adc1,RF_s32.adc2,RF_s32.adc3);
 
-        //			ADC_sum = 0;
+//		}
+			
+//			ADC_sum = 0;
 
-        for (i = 0; i < ave_num; i++) {
-            //				while(!DMA_GetITStatus(DMA2_Stream0, DMA_IT_TCIF0))
-            ////ï¿½È´ï¿½DMA2_Steam0×ªï¿½ï¿½ï¿½ï¿½ï¿½
-            //				{
+			for (i=0;i<ave_num;i++)
+			{
+//				while(!DMA_GetITStatus(DMA2_Stream0, DMA_IT_TCIF0)) //µÈ´ýDMA2_Steam0×ª»»Íê³É
+//				{
 
-            //				}
-            //				ADCX = ADC_ConvertedValue[0];
-            //				ADC_sum += ADCX;
-        }
-        //			ADC_ave_nom = ADC_sum/(float)ave_num;
-        ADC_ave = ADC_ave * (1 - ave_rate) + ADCX * (ave_rate);
-        //			printf("[%f,%f]\r\n",ADC_ave_nom -
-        //400.0f,T06_RF[2]+10.0f);
-        vTaskDelay(30);
-        //			fputc6(0xA5);
-        //			fputc6(0x20);
-        //			while(1)vTaskDelay(30);
-    }
+//				}
+//				ADCX = ADC_ConvertedValue[0];
+//				ADC_sum += ADCX;
+			}
+//			ADC_ave_nom = ADC_sum/(float)ave_num;
+			ADC_ave = ADC_ave*(1 - ave_rate) + ADCX*(ave_rate);
+//			printf("[%f,%f]\r\n",ADC_ave_nom - 400.0f,T06_RF[2]+10.0f);
+  		vTaskDelay(30);
+//			fputc6(0xA5);
+//			fputc6(0x20);
+//			while(1)vTaskDelay(30);
+
+	}
+
 }

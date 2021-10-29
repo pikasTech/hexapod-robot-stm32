@@ -1,368 +1,403 @@
-#include "genetic.h"
-#include <math.h>
 #include <stdio.h>
+#include <math.h>
 #include <stdlib.h>
 #include <time.h>
-#include "FreeRTOS.h"
+#include "genetic.h"
 #include "action_task_723.h"
+#include "FreeRTOS.h"
 #include "task.h"
-//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½âº¯ï¿½ï¿½y=x^6-10x^5-26x^4+344x^3+193x^2-1846x-1680ï¿½Ú£ï¿½-8ï¿½ï¿½8ï¿½ï¿½Ö®ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡Öµ
-
-struct gen  //ï¿½ï¿½ï¿½ï¿½È¾É«ï¿½ï¿½á¹¹
+//ÓÃÓÚÇó½âº¯Êýy=x^6-10x^5-26x^4+344x^3+193x^2-1846x-1680ÔÚ£¨-8£¬8£©Ö®¼äµÄ×îÐ¡Öµ 
+ 
+struct gen                //¶¨ÒåÈ¾É«Ìå½á¹¹
 {
-    int info[4];  //È¾É«ï¿½ï¿½á¹¹ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äºï¿½14Î»ï¿½ï¿½ÎªÈ¾É«ï¿½ï¿½ï¿½ï¿½ï¿½
-    float suitability;  //ï¿½ï¿½È¾É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½Èºï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½Ú±ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½Ê½ï¿½ï¿½Öµ
+	int info[4];        		//È¾É«Ìå½á¹¹£¬ÓÃÒ»ÕûÐÍÊýµÄºó14Î»×÷ÎªÈ¾É«Ìå±àÂë 
+	float suitability;		//´ÎÈ¾É«ÌåËù¶ÔÓ¦µÄÊÊÓ¦¶Èº¯ÊýÖµ£¬ÔÚ±¾ÌâÖÐÎª±í´ïÊ½µÄÖµ 
 };
-struct gen gen_group[SUM];  //ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½20ï¿½ï¿½È¾É«ï¿½ï¿½ï¿½ï¿½ï¿½
-struct gen gen_new[SUM];
-struct gen gen_family[2 * SUM];
-
-struct gen gen_result;     //ï¿½ï¿½Â¼ï¿½ï¿½ï¿½Åµï¿½È¾É«ï¿½ï¿½
-int result_unchange_time;  //ï¿½ï¿½Â¼ï¿½ï¿½genetic_errorÇ°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÖµÎªï¿½Ä±ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-
-struct log  //ï¿½Î³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¼Ã¿ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Åµï¿½ï¿½ï¿½Ó¦ï¿½ï¿½
+struct gen gen_group[SUM];//¶¨ÒåÒ»¸öº¬ÓÐ20¸öÈ¾É«ÌåµÄ×é
+struct gen gen_new[SUM];  
+struct gen gen_family[2*SUM];
+ 
+struct gen gen_result;    //¼ÇÂ¼×îÓÅµÄÈ¾É«Ìå
+int result_unchange_time; //¼ÇÂ¼ÔÚgenetic_errorÇ°ÌáÏÂ×îÓÅÖµÎª¸Ä±äµÄÑ­»·´ÎÊý
+ 
+struct log                //ÐÎ³ÉÁ´±í£¬¼ÇÂ¼Ã¿´ÎÑ­»·Ëù²úÉúµÄ×îÓÅµÄÊÊÓ¦¶È
 {
-    float suitability;
-    struct log* next;
-} llog, *head, *end;
-int log_num;  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	float suitability;
+	struct log *next;
+}llog,*head,*end;
+int log_num;              //Á´±í³¤¶È
 
-/**************ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½******************/
-void initiate(void);  //ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Èº
-void evaluation(int flag, int flag_move);  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Èºï¿½Ð¸ï¿½È¾É«ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½È£ï¿½ï¿½ï¿½ï¿½Ý´Ë½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-void cross(void);                          //ï¿½ï¿½ï¿½æº¯ï¿½ï¿½
-void selection(void);                      //Ñ¡ï¿½ï¿½ï¿½ï¿½
-int record(void);  //ï¿½ï¿½Â¼Ã¿ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å½â²¢ï¿½Ð¶ï¿½ï¿½Ç·ï¿½ï¿½ï¿½Ö¹Ñ­ï¿½ï¿½
-void mutation(int flag_move);  //ï¿½ï¿½ï¿½ìº¯ï¿½ï¿½
-void showresult(int);          //ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½
-//-----------------------ï¿½ï¿½ï¿½Ïºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½Óµï¿½ï¿½ï¿½
-int randsign(float p);  //ï¿½ï¿½ï¿½Õ¸ï¿½ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½0ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½ÖµÎª1ï¿½Ä¸ï¿½ï¿½ï¿½Îªp
-int randbit(int i, int j);  //ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½iï¿½ï¿½jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-int randnum(void);  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½14ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Éµï¿½È¾É«ï¿½ï¿½
-int convertionD2B(float x,
-                  float min,
-                  float max);  //ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½Õ¼ï¿½Ä¿ï¿½ï¿½Ü½ï¿½xï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½Æ±ï¿½ï¿½ë£¨È¾É«ï¿½ï¿½ï¿½ï¿½Ê½ï¿½ï¿½
-float convertionB2D(int x, float min, float max);  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ±ï¿½ï¿½ï¿½x×ªï¿½ï¿½Îªï¿½ï¿½Êµï¿½ï¿½Õ¼ï¿½ï¿½Öµ
-int createmask(int a);  //ï¿½ï¿½ï¿½Ú½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+/**************º¯ÊýÉùÃ÷******************/ 
+void initiate(void);          	//³õÊ¼»¯º¯Êý£¬Ö÷Òª¸ºÔð²úÉú³õÊ¼»¯ÖÖÈº 
+void evaluation(int flag,int flag_move);	//ÆÀ¹ÀÖÖÈºÖÐ¸÷È¾É«ÌåµÄÊÊÓ¦¶È£¬²¢¾Ý´Ë½øÐÐÅÅÐò 
+void cross(void);				//½»²æº¯Êý 
+void selection(void);			//Ñ¡Ôñº¯Êý 
+int  record(void);				//¼ÇÂ¼Ã¿´ÎÑ­»·²úÉúµÄ×îÓÅ½â²¢ÅÐ¶ÏÊÇ·ñÖÕÖ¹Ñ­»· 
+void mutation(int flag_move);			//±äÒìº¯Êý 
+void showresult(int);		//ÏÔÊ¾½á¹û 
+//-----------------------ÒÔÉÏº¯ÊýÓÉÖ÷º¯ÊýÖ±½Óµ÷ÓÃ 
+int   randsign(float p);	//°´ÕÕ¸ÅÂÊp²úÉúËæ»úÊý0¡¢1£¬ÆäÖµÎª1µÄ¸ÅÂÊÎªp 
+int   randbit(int i,int j);	//²úÉúÒ»¸öÔÚi£¬jÁ½¸öÊýÖ®¼äµÄËæ»úÕûÊý 
+int   randnum(void);			//Ëæ»ú²úÉúÒ»¸öÓÉ14¸ö»ùÒò×é³ÉµÄÈ¾É«Ìå 
+int   convertionD2B(float x,float min,float max);//¶ÔÏÖÊµ½â¿Õ¼äµÄ¿ÉÄÜ½âx½øÐÐ¶þ½øÖÆ±àÂë£¨È¾É«ÌåÐÎÊ½£© 
+float convertionB2D(int x,float min,float max);	//½«¶þ½øÖÆ±àÂëx×ª»¯ÎªÏÖÊµ½â¿Õ¼äµÄÖµ 
+int   createmask(int a);	//ÓÃÓÚ½»²æ²Ù×÷ 
 
-void gengetic_main(void) {
-    int i;
-    initiate();  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Èº
-    evaluation(0, 0);  //ï¿½Ô³ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Èºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-    for (i = 0; i < MAXloop; i++) {
-        cross();  //ï¿½ï¿½ï¿½Ð½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-        evaluation(1, 0);  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Èºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-        selection();  //ï¿½Ô¸ï¿½ï¿½ï¿½ï¿½ï¿½Èºï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½Åµï¿½NUMï¿½ï¿½ï¿½ï¿½Îªï¿½ÂµÄ¸ï¿½ï¿½ï¿½Èº
-        if (record() == 1)  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¹ï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½flag=1ï¿½ï¿½Í£Ö¹Ñ­ï¿½ï¿½
-        {
-            break;
-        }
-        mutation(1);  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-    }
-    //	showresult( flag );		//ï¿½ï¿½ï¿½ï¿½flagï¿½ï¿½Ê¾Ñ°ï¿½Å½ï¿½ï¿½
-}
-
-void initiate(void) {
-    int i, stime, n;
-    long ltime;
-    ltime = systime + 13547;
-    stime = (unsigned)ltime / 2;
-    srand(stime);
-    for (i = 0; i < SUM; i++) {
-        for (n = 0; n < 4; n++)
-            gen_group[i].info[n] = randnum();  //ï¿½ï¿½ï¿½ï¿½randnum()ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½Èº
-    }
-    for (n = 0; n < 4; n++)
-        gen_result.suitability = 1000;
-    result_unchange_time = 0;
-    //	head=(struct log *)malloc(sizeof(llog));//ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-    //	end=(struct log *)malloc(sizeof(llog));//ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-    //	if(head==NULL)
-    //	{
-    //		//printf("\nï¿½Ú´æ²»ï¿½ï¿½ï¿½ï¿½\n");
-    //		exit(0);
-    //	}
-    //	end->next = NULL;
-    log_num = 1;
-}
-float sum_adc = 0;
-
-float fitiniss_stand(int info[4]) {
-    int k;
-
-    sum_adc = 0;
-    H_init = convertionB2D(info[0], -18, -8);
-    L_init = convertionB2D(info[1], 9, 11);
-    flag_action_run_single = 1;
-    vTaskDelay(1500);
-    for (k = 0; k < 30; k++) {
-        vTaskDelay(50);
-        sum_adc += RF_s32.adc2 + RF_s32.adc3 + RM_s32.adc2 + RM_s32.adc3 +
-                   RB_s32.adc2 + RB_s32.adc3 + LF_s32.adc2 + LF_s32.adc3 +
-                   LM_s32.adc2 + LM_s32.adc3 + LB_s32.adc2 + LB_s32.adc3;
-    }
-    return sum_adc;
-}
-
-float fitiniss_move(int info[4]) {
-    int i /*, k*/;
-    //	int test_time;
-    int test_times = 0;
-    //	int test_step;
-    int STEP_number_last;
-    sum_adc = 0;
-    test_times = 0;
-    Action_T_per_V = convertionB2D(info[2], 8000, 13000);
-    Rf = convertionB2D(info[3], 0, 1);
-    Rz = convertionB2D(info[3], 0, 1);
-    flag_action_run_continiue = 1;
-
-    for (i = 0; i < 2; i++) {
-        STEP_number_last = STEP_number;
-        if (i == 0) {
-            //Ç°ï¿½ï¿½ï¿½ï¿½ï¿½Ë¶ï¿½ï¿½ï¿½ï¿½ï¿½
-            Order[0] = 0;
-            Order[1] = speed;
-            Order[2] = 0;
-        }
-
-        else if (i == 1) {
-            Order[0] = 0;
-            Order[1] = -speed;
-            Order[2] = 0;
-        }
-        while (STEP_number < STEP_number_last + 2) {
-            while (STA_STOP == 1)
-                vTaskDelay(30);
-            vTaskDelay(50);
-            sum_adc += RF_s32.adc1 + RF_s32.adc2 + RF_s32.adc3 + RM_s32.adc1 +
-                       RM_s32.adc2 + RM_s32.adc3 +
-                       /*RB_s32.adc1*/ +RB_s32.adc2 + RB_s32.adc3 +
-                       LF_s32.adc1 + LF_s32.adc2 + LF_s32.adc3 + LM_s32.adc1 +
-                       LM_s32.adc2 + LM_s32.adc3 + LB_s32.adc1 + LB_s32.adc2 +
-                       LB_s32.adc3;
-            test_times++;
-        }
-
-        Order[0] = 0;
-        Order[1] = 0;
-        Order[2] = 0;
-        vTaskDelay(1000);
-    }
-    return sum_adc / test_times;
-}
-
-void evaluation(int flag, int flag_move) {
-    int i, j, n;
-    struct gen* genp;
-    int gentinfo[4];
-    float gentsuitability;
-
-    if (flag == 0)  // flag=0ï¿½ï¿½Ê±ï¿½ï¿½Ô¸ï¿½ï¿½ï¿½Èºï¿½ï¿½ï¿½Ð²ï¿½ï¿½ï¿½
-        genp = gen_group;
-    else
-        genp = gen_new;
-    for (i = 0; i < SUM; i++)  //ï¿½ï¿½ï¿½ï¿½ï¿½È¾É«ï¿½ï¿½ï¿½Ó¦ï¿½Ä±ï¿½ï¿½ï¿½Ê½Öµ
-    {
-        if (flag_move == 0) {
-            genp[i].suitability = fitiniss_stand(genp[i].info);
-        } else if (flag_move == 1) {
-            genp[i].suitability = fitiniss_move(genp[i].info);
-        }
-    }
-    for (i = 0; i < SUM - 1; i++)  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-    {
-        for (j = i + 1; j < SUM; j++) {
-            if (genp[i].suitability > genp[j].suitability) {
-                for (n = 0; n < 4; n++) {
-                    gentinfo[n] = genp[i].info[n];
-                    genp[i].info[n] = genp[j].info[n];
-                    genp[j].info[n] = gentinfo[n];
-                }
-                gentsuitability = genp[i].suitability;
-                genp[i].suitability = genp[j].suitability;
-                genp[j].suitability = gentsuitability;
-            }
-        }
-    }
-}
-
-void cross(void) {
-    int i, j, k, n;
-    int mask1, mask2;
-    int a[SUM];
-    for (i = 0; i < SUM; i++)
-        a[i] = 0;
-    k = 0;
-    for (i = 0; i < SUM; i++) {
-        if (a[i] == 0) {
-            for (;;)  //ï¿½ï¿½ï¿½ï¿½Òµï¿½Ò»ï¿½ï¿½Î´ï¿½ï¿½ï¿½Ð¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¾É«ï¿½ï¿½ï¿½ï¿½a[i]ï¿½ï¿½ï¿½ï¿½
-            {
-                j = randbit(i + 1, SUM - 1);
-                if (a[j] == 0)
-                    break;
-            }
-            if (randsign(crossp) == 1)  //ï¿½ï¿½ï¿½ï¿½crosspï¿½Ä¸ï¿½ï¿½Ê¶ï¿½Ñ¡ï¿½ï¿½ï¿½È¾É«ï¿½ï¿½ï¿½ï¿½Ð½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-            {
-                mask1 =
-                    createmask(randbit(0, 14));  //ï¿½ï¿½ranbitÑ¡ï¿½ñ½»²ï¿½Î»
-                mask2 = ~mask1;  //ï¿½Î³ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 111000 000111Ö®ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-                for (n = 0; n < 4; n++) {
-                    gen_new[k].info[n] = ((gen_group[i].info[n]) & mask1) +
-                                         ((gen_group[j].info[n]) & mask2);
-                    gen_new[k + 1].info[n] = ((gen_group[i].info[n]) & mask2) +
-                                             ((gen_group[j].info[n]) & mask1);
-                }
-                k = k + 2;
-            } else  //ï¿½ï¿½ï¿½ï¿½ï¿½Ð½ï¿½ï¿½ï¿½
-            {
-                for (n = 0; n < 4; n++) {
-                    gen_new[k].info[n] = gen_group[i].info[n];
-                    gen_new[k + 1].info[n] = gen_group[j].info[n];
-                }
-                k = k + 2;
-            }
-            a[i] = a[j] = 1;
-        }
-    }
-}
-
-void selection(void) {
-    int i, j, n;
-    int gentinfo[4];
-    float gentsuitability;
-    for (i = 0; i < SUM; i++) {
-        for (n = 0; n < 4; n++)
-            gen_family[i].info[n] = gen_group[i].info[n];
-        gen_family[i].suitability = gen_group[i].suitability;
-
-        for (n = 0; n < 4; n++)
-            gen_family[i + SUM].info[n] = gen_new[i].info[n];
-        gen_family[i + SUM].suitability = gen_new[i].suitability;
-    }
-
-    for (i = 0; i < 2 * SUM - 1; i++)  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-    {
-        for (j = i + 1; j < 2 * SUM; j++) {
-            if (gen_family[i].suitability > gen_family[j].suitability) {
-                for (n = 0; n < 4; n++) {
-                    gentinfo[n] = gen_family[i].info[n];
-                    gen_family[i].info[n] = gen_family[j].info[n];
-                    gen_family[j].info[n] = gentinfo[n];
-                }
-                gentsuitability = gen_family[i].suitability;
-                gen_family[i].suitability = gen_family[j].suitability;
-                gen_family[j].suitability = gentsuitability;
-            }
-        }
-    }
-
-    for (i = 0; i < SUM; i++) {
-        for (n = 0; n < 4; n++)
-            gen_group[i].info[n] = gen_family[i].info[n];
-        gen_group[i].suitability = gen_family[i].suitability;
-    }
-    L_init_best = convertionB2D(gen_group[0].info[0], -18, -8);
-    H_init_best = convertionB2D(gen_group[0].info[1], 9, 11);
-}
-
-int record(void)  //ï¿½ï¿½Â¼ï¿½ï¿½ï¿½Å½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+void gengetic_main(void)
 {
-    float x;
-    int n;
-    //	struct log *r;
-    //	r=(struct log *)malloc(sizeof(llog));
-    //	if(r==NULL)
-    //	{
-    //		//printf("\nï¿½Ú´æ²»ï¿½ï¿½ï¿½ï¿½\n");
-    //		exit(0);
-    //	}
-    //	r->next = NULL;
-    //	end->suitability = gen_group[0].suitability;
-    //	end->next = r;
-    //	end = r;
-    //	log_num++;
-
-    x = gen_result.suitability - gen_group[0].suitability;
-    if (x < 0)
-        x = -x;
-    if (x < genetic_error) {
-        result_unchange_time++;
-        if (result_unchange_time >= 50)
-            return 1;
-    } else {
-        for (n = 0; n < 4; n++)
-            gen_result.info[n] = gen_group[0].info[n];
-        gen_result.suitability = gen_group[0].suitability;
-        result_unchange_time = 0;
-    }
-    return 0;
+	int i;
+	initiate();				//²úÉú³õÊ¼»¯ÖÖÈº 
+    evaluation( 0 ,0);		//¶Ô³õÊ¼»¯ÖÖÈº½øÐÐÆÀ¹À¡¢ÅÅÐò 
+	for( i = 0 ; i < MAXloop ; i++ )
+	{
+		cross();			//½øÐÐ½»²æ²Ù×÷ 
+		evaluation( 1 ,0);	//¶Ô×ÓÖÖÈº½øÐÐÆÀ¹À¡¢ÅÅÐò 
+		selection();		//¶Ô¸¸×ÓÖÖÈºÖÐÑ¡Ôñ×îÓÅµÄNUM¸ö×÷ÎªÐÂµÄ¸¸ÖÖÈº 
+		if( record() == 1 )	//Âú×ãÖÕÖ¹¹æÔò1£¬Ôòflag=1²¢Í£Ö¹Ñ­»· 
+		{
+			break;
+		}
+		mutation(1);			//±äÒì²Ù×÷ 
+	}
+//	showresult( flag );		//°´ÕÕflagÏÔÊ¾Ñ°ÓÅ½á¹û 
 }
 
-void mutation(int flag_move) {
-    int i, j, n;
-    float gmp;
-    int gentinfo[4];
-    float gentsuitability;
-    gmp = 1 - pow(1 - mp, 11);  //ï¿½Ú»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÎªmpÊ±ï¿½ï¿½ï¿½ï¿½È¾É«ï¿½ï¿½Ä±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-    for (i = 3; i < SUM; i++) {
-        if (randsign(gmp) == 1) {
-            if (flag_move == 0) {
-                gen_group[i].suitability = fitiniss_stand(gen_group[i].info);
-            } else if (flag_move == 1) {
-                gen_group[i].suitability = fitiniss_move(gen_group[i].info);
-            }
-        }
-    }
-    for (i = 0; i < SUM - 1; i++) {
-        for (j = i + 1; j < SUM; j++) {
-            if (gen_group[i].suitability > gen_group[j].suitability) {
-                for (n = 0; n < 4; n++) {
-                    gentinfo[n] = gen_group[i].info[n];
-                    gen_group[i].info[n] = gen_group[j].info[n];
-                    gen_group[j].info[n] = gentinfo[n];
-                }
-                gentsuitability = gen_group[i].suitability;
-                gen_group[i].suitability = gen_group[j].suitability;
-                gen_group[j].suitability = gentsuitability;
-            }
-        }
-    }
-    /*
-     *Îªï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½ï¿½Ù¶È£ï¿½ï¿½Ú½ï¿½ï¿½Ð±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Ã»ï¿½ï¿½Ö±ï¿½ï¿½È·ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Ð±ï¿½ï¿½ï¿½ï¿½Î»
-     *ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½cmpï¿½ï¿½ï¿½ï¿½È·ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¾É«ï¿½å£¬ï¿½Ù´ï¿½È¾É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½ï¿½ï¿½
-     *ï¿½ï¿½ï¿½Ú½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½Í±ï¿½ï¿½ï¿½ó¸¸´ï¿½ï¿½ï¿½Èºï¿½Ä´ï¿½ï¿½ï¿½ï¿½Ñ±ï¿½ï¿½ï¿½ï¿½Ò£ï¿½ï¿½ï¿½Ë£ï¿½ï¿½Ú±ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½Èºï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-     */
+void initiate(void)
+{
+	int i , stime,n;	
+	long ltime;
+	ltime=systime+13547;
+	stime=(unsigned)ltime/2;
+	srand(stime);
+	for( i = 0 ; i < SUM ; i++ )
+	{
+		for(n=0;n<4;n++)gen_group[i].info[n] = randnum();		//µ÷ÓÃrandnum()º¯Êý½¨Á¢³õÊ¼ÖÖÈº	 
+	}
+	for(n=0;n<4;n++)gen_result.suitability=1000;
+	result_unchange_time=0;
+//	head=(struct log *)malloc(sizeof(llog));//³õÊ¼»¯Á´±í 
+//	end=(struct log *)malloc(sizeof(llog));//³õÊ¼»¯Á´±í 
+//	if(head==NULL)
+//	{
+//		//printf("\nÄÚ´æ²»¹»£¡\n");
+//		exit(0);
+//	}
+//	end->next = NULL;
+	log_num = 1;
+}
+float sum_adc=0;
+
+float fitiniss_stand(int info[4])
+{
+	int k;
+	
+			sum_adc=0;
+			H_init = convertionB2D( info[0], -18, -8);
+			L_init = convertionB2D( info[1], 9, 11);
+			flag_action_run_single=1;
+			vTaskDelay(1500);
+			for (k=0;k<30;k++)
+			{
+				vTaskDelay(50);
+				sum_adc+=RF_s32.adc2+RF_s32.adc3	\
+								+RM_s32.adc2+RM_s32.adc3	\
+								+RB_s32.adc2+RB_s32.adc3	\
+								+LF_s32.adc2+LF_s32.adc3	\
+								+LM_s32.adc2+LM_s32.adc3	\
+								+LB_s32.adc2+LB_s32.adc3	\
+								;				
+			}
+			return sum_adc;			
 }
 
-// void showresult(int flag)//ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½ï¿½Ú´ï¿½
+float fitiniss_move(int info[4])
+{
+	int i/*, k*/;
+//	int test_time;
+	int test_times=0;
+//	int test_step;
+	int STEP_number_last;
+			sum_adc=0;
+			test_times=0;
+			Action_T_per_V = convertionB2D( info[2], 8000, 13000);
+			Rf = convertionB2D( info[3], 0, 1);
+			Rz = convertionB2D( info[3], 0, 1);
+			flag_action_run_continiue=1;
+				
+			for(i=0;i<2;i++)
+			{
+				STEP_number_last=STEP_number;
+				if(i==0)
+				{
+				//Ç°½øµÄÔË¶¯ÃüÁî
+				Order[0]=0;
+				Order[1]=speed;	
+				Order[2]=0;	
+				}
+
+				else if(i==1)
+				{
+				Order[0]=0;
+				Order[1]=-speed;	
+				Order[2]=0;	
+				}
+				while (STEP_number<STEP_number_last+2)
+				{	
+					while(STA_STOP==1)vTaskDelay(30);	
+					vTaskDelay(50);
+					sum_adc+=RF_s32.adc1+RF_s32.adc2+RF_s32.adc3	\
+									+RM_s32.adc1+RM_s32.adc2+RM_s32.adc3	\
+									+/*RB_s32.adc1*/+RB_s32.adc2+RB_s32.adc3	\
+									+LF_s32.adc1+LF_s32.adc2+LF_s32.adc3	\
+									+LM_s32.adc1+LM_s32.adc2+LM_s32.adc3	\
+									+LB_s32.adc1+LB_s32.adc2+LB_s32.adc3	\
+									;				
+					test_times++;
+				}
+				
+				Order[0]=0;
+				Order[1]=0;	
+				Order[2]=0;	
+				vTaskDelay(1000);
+			}
+			return sum_adc/test_times;		
+			
+}
+
+
+void evaluation(int flag,int flag_move)
+{
+	int i,j,n;
+	struct gen *genp;
+	int gentinfo[4];
+	float gentsuitability;
+
+	if( flag == 0 )			// flag=0µÄÊ±ºò¶Ô¸¸ÖÖÈº½øÐÐ²Ù×÷ 
+		genp = gen_group;
+	else genp = gen_new;
+	for(i = 0 ; i < SUM ; i++)//¼ÆËã¸÷È¾É«Ìå¶ÔÓ¦µÄ±í´ïÊ½Öµ
+	{
+		if(flag_move==0)
+		{
+			genp[i].suitability=fitiniss_stand(genp[i].info);
+		}
+		else if(flag_move==1)
+		{
+			genp[i].suitability=fitiniss_move(genp[i].info);
+		}
+		
+	}
+	for(i = 0 ; i < SUM - 1 ; i++)//°´±í´ïÊ½µÄÖµ½øÐÐÅÅÐò£¬
+	{
+		for(j = i + 1 ; j < SUM ; j++)
+		{
+			if( genp[i].suitability > genp[j].suitability )
+			{
+				for(n=0;n<4;n++)
+				{
+					gentinfo[n] = genp[i].info[n];
+					genp[i].info[n] = genp[j].info[n];
+					genp[j].info[n] = gentinfo[n];
+				}	
+				gentsuitability = genp[i].suitability;
+				genp[i].suitability = genp[j].suitability;
+				genp[j].suitability = gentsuitability;						
+			}
+		}
+	}
+}
+ 
+void cross(void)
+{
+	int i , j , k , n;
+	int mask1 , mask2;
+	int a[SUM];
+	for(i = 0 ; i < SUM ; i++)  a[i] = 0;
+	k = 0;
+	for(i = 0 ; i < SUM ; i++)
+	{
+		if( a[i] == 0)
+		{
+			for( ; ; )//Ëæ»úÕÒµ½Ò»×éÎ´½øÐÐ¹ý½»²æµÄÈ¾É«ÌåÓëa[i]½»²æ
+			{
+   				j = randbit(i + 1 , SUM - 1);
+				if( a[j] == 0)	break;
+			}
+			if(randsign(crossp) == 1)		//°´ÕÕcrosspµÄ¸ÅÂÊ¶ÔÑ¡ÔñµÄÈ¾É«Ìå½øÐÐ½»²æ²Ù×÷ 
+			{
+				mask1 = createmask(randbit(0 , 14));		//ÓÉranbitÑ¡Ôñ½»²æÎ» 
+				mask2 = ~mask1;				//ÐÎ³ÉÒ»¸öÀàËÆ 111000 000111Ö®ÀàµÄ¶þ½øÖÆÂë±àÂë 
+				for(n=0;n<4;n++)
+				{
+					gen_new[k].info[n] = ((gen_group[i].info[n]) & mask1 )+((gen_group[j].info[n]) & mask2);
+					gen_new[k+1].info[n]=((gen_group[i].info[n]) & mask2 )+((gen_group[j].info[n]) & mask1);
+				}
+				k = k + 2;
+			}
+			else 		//²»½øÐÐ½»²æ 
+			{
+				for(n=0;n<4;n++)
+				{
+					gen_new[k].info[n]=gen_group[i].info[n];
+					gen_new[k+1].info[n]=gen_group[j].info[n];
+				}
+				k = k + 2;
+			}
+			a[i] = a[j] = 1;
+		}
+	}
+}
+ 
+void selection(void)
+{
+	int i , j , n;
+	int gentinfo[4];
+	float gentsuitability;
+	for(i=0;i<SUM;i++)
+	{
+		for(n=0;n<4;n++)gen_family[i].info[n]=gen_group[i].info[n];
+		gen_family[i].suitability=gen_group[i].suitability;
+		
+		for(n=0;n<4;n++)gen_family[i+SUM].info[n]=gen_new[i].info[n];
+		gen_family[i+SUM].suitability=gen_new[i].suitability;		
+	}
+	
+		for(i = 0 ; i < 2*SUM - 1 ; i++)//°´±í´ïÊ½µÄÖµ½øÐÐÅÅÐò£¬
+	{
+		for(j = i + 1 ; j < 2*SUM ; j++)
+		{
+			if( gen_family[i].suitability > gen_family[j].suitability )
+			{
+				for(n=0;n<4;n++)
+				{
+					gentinfo[n] = gen_family[i].info[n];
+					gen_family[i].info[n] = gen_family[j].info[n];
+					gen_family[j].info[n] = gentinfo[n];
+				}	
+				gentsuitability = gen_family[i].suitability;
+				gen_family[i].suitability = gen_family[j].suitability;
+				gen_family[j].suitability = gentsuitability;						
+			}
+		}
+	}
+	
+		for(i=0;i<SUM;i++)
+	{
+		for(n=0;n<4;n++)gen_group[i].info[n]=gen_family[i].info[n];
+		gen_group[i].suitability=gen_family[i].suitability;
+	}
+		L_init_best=convertionB2D( gen_group[0].info[0],-18,-8);
+		H_init_best=convertionB2D( gen_group[0].info[1], 9, 11);
+	
+}
+ 
+int record(void)	//¼ÇÂ¼×îÓÅ½âºÍÅÐ¶ÏÊÇ·ñÂú×ãÌõ¼þ 
+{
+	float x;
+	int n;
+//	struct log *r;
+//	r=(struct log *)malloc(sizeof(llog));
+//	if(r==NULL)
+//	{
+//		//printf("\nÄÚ´æ²»¹»£¡\n");
+//		exit(0);
+//	}
+//	r->next = NULL;
+//	end->suitability = gen_group[0].suitability;
+//	end->next = r;
+//	end = r;
+//	log_num++;
+ 
+	x = gen_result.suitability - gen_group[0].suitability;
+	if(x < 0)x = -x;
+	if(x < genetic_error)
+	{
+		result_unchange_time++;
+		if(result_unchange_time >= 50)return 1;
+	}
+	else
+	{
+		for(n=0;n<4;n++)gen_result.info[n] = gen_group[0].info[n];
+		gen_result.suitability = gen_group[0].suitability;
+		result_unchange_time=0;
+	}
+	return 0;
+}
+ 
+void mutation(int flag_move)
+{
+	int i , j , n;
+	float gmp;
+	int gentinfo[4];
+	float gentsuitability;
+	gmp = 1 - pow(1 - mp , 11);//ÔÚ»ùÒò±äÒì¸ÅÂÊÎªmpÊ±ÕûÌõÈ¾É«ÌåµÄ±äÒì¸ÅÂÊ
+	for(i = 3 ; i < SUM ; i++)
+	{
+		if(randsign(gmp) == 1)
+		{
+			if(flag_move==0)
+			{
+				gen_group[i].suitability=fitiniss_stand(gen_group[i].info);
+			}
+			else if(flag_move==1)
+			{
+				gen_group[i].suitability=fitiniss_move(gen_group[i].info);
+			}
+		}
+	}
+	for(i = 0 ; i < SUM - 1 ; i++)
+	{
+		for(j = i + 1 ; j < SUM ; j++)
+		{
+			if(gen_group[i].suitability > gen_group[j].suitability)
+			{
+				for(n=0;n<4;n++)
+				{
+					gentinfo[n] = gen_group[i].info[n];
+					gen_group[i].info[n] = gen_group[j].info[n];
+					gen_group[j].info[n] = gentinfo[n];
+				}
+				gentsuitability = gen_group[i].suitability;
+				gen_group[i].suitability = gen_group[j].suitability;
+				gen_group[j].suitability = gentsuitability;
+			}
+		}
+	}
+	/*
+	*ÎªÁËÌá¸ßÖ´ÐÐËÙ¶È£¬ÔÚ½øÐÐ±äÒì²Ù×÷µÄÊ±ºò²¢Ã»ÓÐÖ±½ÓÈ·¶¨ÐèÒª½øÐÐ±äÒìµÄÎ»
+	*¶øÊÇÏÈÒÔcmp¸ÅÂÊÈ·¶¨½«Òª·¢Éú±äÒìµÄÈ¾É«Ìå£¬ÔÙ´ÓÈ¾É«ÌåÖÐËæ½øÑ¡ÔñÒ»¸ö»ùÒò½øÐÐ±äÒì
+	*ÓÉÓÚ½øÐÐÑ¡ÔñºÍ±äÒìºó¸¸´úÖÖÈºµÄ´ÎÐòÒÑ±»´òÂÒ£¬Òò´Ë£¬ÔÚ±äÒìÇ°ºó¶ÔÖÖÈº½øÐÐÒ»´ÎÅÅÐò 
+	*/ 
+}
+ 
+//void showresult(int flag)//ÏÔÊ¾ËÑË÷½á¹û²¢ÊÍ·ÅÄÚ´æ
 //{
 //	int i , j;
 //	struct log *logprint,*logfree;
 //	FILE *logf;
 //	if(flag == 0)
-//		//printf("ï¿½Ñµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½Ü£ï¿½");
-//	else
+//		//printf("ÒÑµ½×î´óËÑË÷´ÎÊý£¬ËÑË÷Ê§°Ü£¡");
+//	else 
 //	{
-//		//printf("ï¿½ï¿½È¡Öµ%fÊ±ï¿½ï¿½ï¿½ï¿½Ê½ï¿½ïµ½ï¿½ï¿½Ð¡ÖµÎª%f\n",convertionB2D(gen_result.info),gen_result.suitability);
-//		//printf("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì¼ï¿½Â¼ï¿½ï¿½ï¿½Ä¼ï¿½log.txt");
+//		//printf("µ±È¡Öµ%fÊ±±í´ïÊ½´ïµ½×îÐ¡ÖµÎª%f\n",convertionB2D(gen_result.info),gen_result.suitability);
+//		//printf("ÊÕÁ²¹ý³Ì¼ÇÂ¼ÓÚÎÄ¼þlog.txt");
 //		if((logf = fopen("log.txt" , "w+")) == NULL)
 //		{
 //			//printf("Cannot create/open file");
 //			exit(1);
 //		}
 //		logprint=head;
-//		for(i = 0 ; i < log_num ; i = i + 5)//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾
+//		for(i = 0 ; i < log_num ; i = i + 5)//¶ÔÊÕÁ²¹ý³Ì½øÐÐÏÔÊ¾
 //		{
 //			for(j = 0 ; (j < 5) & ((i + j) < log_num-1) ; j++)
 //			{
 //				fprintf(logf , "%20f" , logprint->suitability);
-//				logprint=logprint->next;
+//				logprint=logprint->next;				
 //			}
 //			fprintf(logf,"\n\n");
 //		}
 //	}
-//	for(i = 0 ; i< log_num ; i++)//ï¿½Í·ï¿½ï¿½Ú´ï¿½
+//	for(i = 0 ; i< log_num ; i++)//ÊÍ·ÅÄÚ´æ
 //	{
 //		logfree=head;
 //		head=head->next;
@@ -371,41 +406,45 @@ void mutation(int flag_move) {
 //	}
 //	getchar();
 //}
-//
-int randsign(float p)  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½1
+// 
+int randsign(float p)//°´¸ÅÂÊp·µ»Ø1
 {
-    if (rand() > (p * 32768))
-        return 0;
-    else
-        return 1;
+	if(rand() > (p * 32768))
+		return 0;
+	else return 1;
 }
-int randbit(int i, int j)  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½ï¿½jÖ®ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+int randbit(int i, int j)//²úÉúÔÚiÓëjÖ®¼äµÄÒ»¸öËæ»úÊý
 {
-    int a, l;
-    l = j - i + 1;
-    a = i + rand() * l / 32768;
-    return a;
+	int a , l;
+	l = j - i + 1;
+	a = i + rand() * l / 32768;
+	return a;
 }
-int randnum() {
-    int x;
-    x = rand() / 2;
-    return x;
+int randnum()
+{
+	int x;
+	x = rand() / 2;
+	return x;
 }
-float convertionB2D(int x, float min, float max) {
-    float y;
-    y = x;
-    y = y / 16384.0f;  //ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ãµï¿½[0,1]ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-    y = y * (max - min);
-    y = y + min;
-    return y;
+float convertionB2D(int x,float min,float max)
+{
+	float y;
+	y = x;
+	y = y/16384.0f;//¹éÒ»»¯£¬µÃµ½[0,1]µÄËæ»úÊý
+	y = y*(max-min);
+	y = y+min;
+	return y;
+	
 }
-int convertionD2B(float x, float min, float max) {
-    int g;
-    g = (x * 1000) + 8192;
-    return g;
+int convertionD2B(float x,float min,float max)
+{
+	int g;
+	g = (x * 1000) + 8192;
+	return g;
 }
-int createmask(int a) {
-    int mask;
-    mask = (1 << (a + 1)) - 1;
-    return mask;
+int createmask(int a)
+{
+	int mask;
+	mask=(1 << (a + 1)) - 1;
+	return mask;
 }
