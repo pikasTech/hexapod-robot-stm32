@@ -144,16 +144,12 @@ void xyz_to_theat(double T03[3][1], double T06[3], double d[4], double tt[6]) {
     g = (x26 - d6) / cos(tt3) - d4;
     tt5 = -acos((g * g + y26 * y26 - d5 * d5 - d6 * d6) / (d5 * d6 * 2.0f));
     //计算 T4
-    cc4 =
-
-        (d5 * g + d6 * g * cos(tt5) + d6 * y26 * sin(tt5)) /
-        (d6 * d6 * cos(tt5) * cos(tt5) + d6 * d6 * sin(tt5) * sin(tt5) +
-         d5 * d5 + 2.0f * d5 * d6 * cos(tt5));
-    ss4 =
-
-        (d5 * y26 - d6 * g * sin(tt5) + d6 * y26 * cos(tt5)) /
-        (d6 * d6 * cos(tt5) * cos(tt5) + d6 * d6 * sin(tt5) * sin(tt5) +
-         d5 * d5 + 2.0f * d5 * d6 * cos(tt5));
+    cc4 = (d5 * g + d6 * g * cos(tt5) + d6 * y26 * sin(tt5)) /
+          (d6 * d6 * cos(tt5) * cos(tt5) + d6 * d6 * sin(tt5) * sin(tt5) +
+           d5 * d5 + 2.0f * d5 * d6 * cos(tt5));
+    ss4 = (d5 * y26 - d6 * g * sin(tt5) + d6 * y26 * cos(tt5)) /
+          (d6 * d6 * cos(tt5) * cos(tt5) + d6 * d6 * sin(tt5) * sin(tt5) +
+           d5 * d5 + 2.0f * d5 * d6 * cos(tt5));
     tt4 = atan2(ss4, cc4);
 
     tt[1] = tt1;
@@ -276,45 +272,32 @@ void xyz_to_theat_math(void) {
 //执行逆运动学运算结果
 void xyz_to_theat_action(int time) {
     /*检测是否超出活动空间*/
-    if (isnan(tt_RF[5]))
-
-    {
+    if (isnan(tt_RF[5])) {
         tt_RF[3] = tt_RF_last[3];
         tt_RF[4] = tt_RF_last[4];
         tt_RF[5] = tt_RF_last[5];
     }
-
-    if (isnan(tt_RM[5]))
-
-    {
+    if (isnan(tt_RM[5])) {
         tt_RM[3] = tt_RM_last[3];
         tt_RM[4] = tt_RM_last[4];
         tt_RM[5] = tt_RM_last[5];
     }
-    if (isnan(tt_RB[5]))
-
-    {
+    if (isnan(tt_RB[5])) {
         tt_RB[3] = tt_RB_last[3];
         tt_RB[4] = tt_RB_last[4];
         tt_RB[5] = tt_RB_last[5];
     }
-    if (isnan(tt_LF[5]))
-
-    {
+    if (isnan(tt_LF[5])) {
         tt_LF[3] = tt_LF_last[3];
         tt_LF[4] = tt_LF_last[4];
         tt_LF[5] = tt_LF_last[5];
     }
-    if (isnan(tt_LM[5]))
-
-    {
+    if (isnan(tt_LM[5])) {
         tt_LM[3] = tt_LM_last[3];
         tt_LM[4] = tt_LM_last[4];
         tt_LM[5] = tt_LM_last[5];
     }
-    if (isnan(tt_LB[5]))
-
-    {
+    if (isnan(tt_LB[5])) {
         tt_LB[3] = tt_LB_last[3];
         tt_LB[4] = tt_LB_last[4];
         tt_LB[5] = tt_LB_last[5];
@@ -410,6 +393,7 @@ void T06_init_ideal(void) {
         T06_init_LB_ideal[i] = T06_init_LB[i];
     }
 }
+
 void gain_Angle_And_Gyro(void) {
     Roll_use = stcAngle.Angle[0] / 32768.0 * 180;
     Pitch_use = stcAngle.Angle[1] / 32768.0 * 180;
@@ -420,7 +404,7 @@ void gain_Angle_And_Gyro(void) {
 void Balance_Pid_Contral(void) {
     PidOutPut_Pitch = balance_Pitch(Pitch_use, Gyro_Pitch);  //俯仰角控制
     PidOutPut_Roll = balance_Roll(Roll_use, Gyro_Roll);      //横滚角控制
-                                                         //设定旋转角度
+    //设定旋转角度
     theaty -= PidOutPut_Roll;
     theatx -= PidOutPut_Pitch;
     //限制角度范围
@@ -435,7 +419,7 @@ void Balance_Pid_Contral(void) {
         theaty = -20;
 }
 void directContralForBalance(void) {
-    //                      //获取当前时间
+    //获取当前时间
     angle_t = systime - angle_t0;
 
     //获取当前相位
@@ -474,9 +458,7 @@ void angle_task(void* pvParameters) {
 }
 u8 flag_action_run_single = 0, flag_action_run_continiue = 0;
 ///////////////////////////////////////banlance任务函数////////////////////////////////
-void banlance_task(void* pvParameters)
-
-{
+void banlance_task(void* pvParameters) {
     while (1) {
         if (flag_action_run_single == 2) {
             //角度制转弧度制
